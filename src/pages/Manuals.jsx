@@ -1,14 +1,18 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, Plus, FileText, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
+import ManualForm from "../components/ManualForm";
+import { Toaster } from "sonner";
 
 export default function ManualsPage() {
   const [selectedManual, setSelectedManual] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [showForm, setShowForm] = useState(false);
+  const queryClient = useQueryClient();
 
   const { data: manuals = [], isLoading } = useQuery({
     queryKey: ["manuals"],
@@ -143,13 +147,25 @@ export default function ManualsPage() {
         )}
 
         {/* Add Manual Button - Fixed at bottom */}
-        <div className="fixed bottom-4 left-4 right-4 max-w-4xl mx-auto">
-          <Button className="w-full bg-green-600 hover:bg-green-700 h-14 text-base font-medium shadow-lg">
+        <div className="fixed bottom-20 left-4 right-4 max-w-4xl mx-auto">
+          <Button 
+            onClick={() => setShowForm(true)}
+            className="w-full bg-green-600 hover:bg-green-700 h-14 text-base font-medium shadow-lg"
+          >
             <Plus className="w-5 h-5 mr-2" />
             Add New Manual
           </Button>
         </div>
       </div>
+
+      {showForm && (
+        <ManualForm 
+          onClose={() => setShowForm(false)} 
+          onSuccess={() => queryClient.invalidateQueries(["manuals"])}
+        />
+      )}
+
+      <Toaster position="top-center" />
     </div>
   );
 }
