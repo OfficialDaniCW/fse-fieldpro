@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Mic, Send, Image as ImageIcon, Loader2 } from "lucide-react";
+import { Mic, Send, Image as ImageIcon, Loader2, BookOpen } from "lucide-react";
 import MessageBubble from "../components/MessageBubble";
 
 export default function ChatPage() {
@@ -126,14 +127,22 @@ export default function ChatPage() {
     <div className="flex flex-col h-screen bg-slate-950">
       {/* Header */}
       <div className="bg-slate-900 border-b border-slate-800 px-4 py-3 flex-shrink-0">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
-            <div className="w-4 h-4 rounded bg-blue-500"></div>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
+              <div className="w-4 h-4 rounded bg-blue-500"></div>
+            </div>
+            <div>
+              <h1 className="text-base font-semibold text-white">FSE Assistant</h1>
+              <p className="text-xs text-slate-400">Technical support & diagnostics</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-base font-semibold text-white">FSE Assistant</h1>
-            <p className="text-xs text-slate-400">Technical support & diagnostics</p>
-          </div>
+          <Link to="/manuals">
+            <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white hover:bg-slate-800">
+              <BookOpen className="w-4 h-4 mr-1.5" />
+              <span className="text-xs">Database</span>
+            </Button>
+          </Link>
         </div>
       </div>
 
