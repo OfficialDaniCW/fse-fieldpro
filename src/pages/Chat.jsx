@@ -123,7 +123,7 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gradient-to-b from-slate-50 to-white">
+    <div className="flex flex-col h-screen bg-gradient-to-b from-slate-50 to-white pb-32">
       {/* Header */}
       <div className="bg-blue-600 text-white px-4 py-4 shadow-lg">
         <h1 className="text-xl font-bold">🔧 Field Service Assistant</h1>
@@ -131,7 +131,7 @@ export default function ChatPage() {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 mb-4">
         {messages.length === 0 && (
           <div className="text-center text-gray-500 mt-8">
             <p className="text-lg mb-2">👋 Hi! I'm your Field Service Assistant.</p>
@@ -153,7 +153,7 @@ export default function ChatPage() {
       </div>
 
       {/* Input Area */}
-      <div className="bg-white border-t border-gray-200 p-4 shadow-lg">
+      <div className="fixed bottom-16 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg">
         {imageFile && (
           <div className="mb-2 flex items-center gap-2 bg-blue-50 px-3 py-2 rounded-lg">
             <ImageIcon className="w-4 h-4 text-blue-600" />
