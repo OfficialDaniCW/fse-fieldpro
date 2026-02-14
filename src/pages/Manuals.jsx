@@ -5,7 +5,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, Plus, FileText, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
-import { createPageUrl } from "./utils";
 
 export default function ManualsPage() {
   const [selectedManual, setSelectedManual] = useState(null);
@@ -77,7 +76,7 @@ export default function ManualsPage() {
             </div>
           )}
 
-          <Link to={createPageUrl("Chat")}>
+          <Link to="/">
             <Button className="w-full bg-blue-600 hover:bg-blue-700 h-12 text-base">
               Ask AI about this manual
             </Button>

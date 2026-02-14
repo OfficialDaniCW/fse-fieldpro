@@ -1,6 +1,5 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { createPageUrl } from "./utils";
 import { MessageSquare, BookOpen } from "lucide-react";
 
 export default function Layout({ children, currentPageName }) {
@@ -17,7 +16,7 @@ export default function Layout({ children, currentPageName }) {
       <nav className="bg-white border-t border-gray-200 fixed bottom-0 left-0 right-0 shadow-lg">
         <div className="max-w-4xl mx-auto flex">
           <Link
-            to={createPageUrl("Chat")}
+            to="/"
             className={`flex-1 flex flex-col items-center justify-center py-3 ${
               isChat
                 ? "text-blue-600 border-t-2 border-blue-600"
@@ -28,7 +27,7 @@ export default function Layout({ children, currentPageName }) {
             <span className="text-xs font-medium">Chat</span>
           </Link>
           <Link
-            to={createPageUrl("Manuals")}
+            to="/manuals"
             className={`flex-1 flex flex-col items-center justify-center py-3 ${
               isManuals
                 ? "text-blue-600 border-t-2 border-blue-600"
