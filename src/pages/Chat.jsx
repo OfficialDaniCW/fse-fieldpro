@@ -123,25 +123,40 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gradient-to-b from-slate-50 to-white">
+    <div className="flex flex-col h-screen bg-slate-950">
       {/* Header */}
-      <div className="bg-blue-600 text-white px-4 py-4 shadow-lg flex-shrink-0">
-        <h1 className="text-xl font-bold">🔧 Field Service Assistant</h1>
-        <p className="text-xs text-blue-100 mt-1">Ask about error codes, troubleshooting, procedures</p>
+      <div className="bg-slate-900 border-b border-slate-800 px-4 py-3 flex-shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
+            <div className="w-4 h-4 rounded bg-blue-500"></div>
+          </div>
+          <div>
+            <h1 className="text-base font-semibold text-white">FSE Assistant</h1>
+            <p className="text-xs text-slate-400">Technical support & diagnostics</p>
+          </div>
+        </div>
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4" style={{ paddingBottom: "180px" }}>
+      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3" style={{ paddingBottom: "180px" }}>
         {messages.length === 0 && (
-          <div className="text-center text-gray-500 mt-8">
-            <p className="text-lg mb-2">👋 Hi! I'm your Field Service Assistant.</p>
-            <p className="text-sm">Ask me about equipment troubleshooting, error codes, or procedures.</p>
-            <div className="mt-6 space-y-2 text-left max-w-md mx-auto">
-              <div className="bg-blue-50 border-l-4 border-blue-400 p-3 rounded">
-                <p className="text-sm font-medium text-gray-700">💡 Try asking:</p>
-                <p className="text-xs text-gray-600 mt-1">"What does Gilbarco E47 mean?"</p>
-                <p className="text-xs text-gray-600">"How to replace a fuel filter?"</p>
-                <p className="text-xs text-gray-600">"Wayne Ovation ERR 03 troubleshooting"</p>
+          <div className="mt-8 space-y-4">
+            <div className="text-center mb-6">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-slate-800 mb-3">
+                <div className="w-6 h-6 rounded-md bg-blue-500"></div>
+              </div>
+              <h2 className="text-lg font-semibold text-white mb-1">Field Service Engine</h2>
+              <p className="text-sm text-slate-400">Query equipment data, error codes & procedures</p>
+            </div>
+            
+            <div className="space-y-2">
+              <div className="bg-slate-900 border border-slate-800 rounded-lg p-3">
+                <p className="text-xs font-mono text-slate-500 mb-2">EXAMPLE QUERIES:</p>
+                <div className="space-y-1.5">
+                  <p className="text-sm text-slate-300">"Gilbarco E47 error meaning"</p>
+                  <p className="text-sm text-slate-300">"Fuel filter replacement procedure"</p>
+                  <p className="text-sm text-slate-300">"Wayne Ovation ERR 03 diagnostic"</p>
+                </div>
               </div>
             </div>
           </div>
@@ -153,14 +168,14 @@ export default function ChatPage() {
       </div>
 
       {/* Input Area */}
-      <div className="fixed bottom-16 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg z-10">
+      <div className="fixed bottom-16 left-0 right-0 bg-slate-900 border-t border-slate-800 p-3 z-10">
         {imageFile && (
-          <div className="mb-2 flex items-center gap-2 bg-blue-50 px-3 py-2 rounded-lg">
-            <ImageIcon className="w-4 h-4 text-blue-600" />
-            <span className="text-sm text-gray-700 flex-1">{imageFile.name}</span>
+          <div className="mb-2 flex items-center gap-2 bg-slate-800 px-3 py-2 rounded-lg border border-slate-700">
+            <ImageIcon className="w-4 h-4 text-blue-400" />
+            <span className="text-xs text-slate-300 flex-1">{imageFile.name}</span>
             <button
               onClick={() => setImageFile(null)}
-              className="text-red-500 text-sm font-medium"
+              className="text-red-400 text-xs font-medium"
             >
               Remove
             </button>
@@ -175,17 +190,17 @@ export default function ChatPage() {
               onChange={handleImageUpload}
               className="hidden"
             />
-            <div className="bg-gray-100 hover:bg-gray-200 text-gray-700 p-3 rounded-lg cursor-pointer">
+            <button className="bg-slate-800 hover:bg-slate-700 text-slate-300 p-2.5 rounded-lg border border-slate-700">
               <ImageIcon className="w-5 h-5" />
-            </div>
+            </button>
           </label>
 
           <button
             onClick={handleVoiceInput}
-            className={`flex-shrink-0 p-3 rounded-lg ${
+            className={`flex-shrink-0 p-2.5 rounded-lg border ${
               isListening
-                ? "bg-red-500 text-white animate-pulse"
-                : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                ? "bg-red-500/20 border-red-500 text-red-400 animate-pulse"
+                : "bg-slate-800 hover:bg-slate-700 border-slate-700 text-slate-300"
             }`}
             title="Voice input"
           >
@@ -197,16 +212,16 @@ export default function ChatPage() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={(e) => e.key === "Enter" && handleSend()}
-            placeholder="Ask about error codes, procedures..."
-            className="flex-1 text-base h-12"
+            placeholder="Query equipment database..."
+            className="flex-1 text-sm h-11 bg-slate-800 border-slate-700 text-white placeholder:text-slate-500"
           />
 
           <Button
             onClick={handleSend}
             disabled={(!input.trim() && !imageFile) || !conversationId}
-            className="flex-shrink-0 bg-blue-600 hover:bg-blue-700 h-12 px-6"
+            className="flex-shrink-0 bg-blue-600 hover:bg-blue-700 h-11 px-4 disabled:opacity-50"
           >
-            <Send className="w-5 h-5" />
+            <Send className="w-4 h-4" />
           </Button>
         </div>
       </div>

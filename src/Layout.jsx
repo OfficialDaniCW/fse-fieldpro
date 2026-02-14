@@ -13,29 +13,29 @@ export default function Layout({ children, currentPageName }) {
       </main>
 
       {/* Bottom Navigation */}
-      <nav className="bg-white border-t border-gray-200 fixed bottom-0 left-0 right-0 shadow-lg">
+      <nav className="bg-slate-900 border-t border-slate-800 fixed bottom-0 left-0 right-0">
         <div className="max-w-4xl mx-auto flex">
           <Link
             to="/"
             className={`flex-1 flex flex-col items-center justify-center py-3 ${
               isChat
-                ? "text-blue-600 border-t-2 border-blue-600"
-                : "text-gray-500 hover:text-gray-700"
+                ? "text-blue-400 border-t-2 border-blue-500"
+                : "text-slate-500 hover:text-slate-400"
             }`}
           >
-            <MessageSquare className="w-6 h-6 mb-1" />
-            <span className="text-xs font-medium">Chat</span>
+            <MessageSquare className="w-5 h-5 mb-1" />
+            <span className="text-xs font-medium">Assistant</span>
           </Link>
           <Link
             to="/manuals"
             className={`flex-1 flex flex-col items-center justify-center py-3 ${
               isManuals
-                ? "text-blue-600 border-t-2 border-blue-600"
-                : "text-gray-500 hover:text-gray-700"
+                ? "text-blue-400 border-t-2 border-blue-500"
+                : "text-slate-500 hover:text-slate-400"
             }`}
           >
-            <BookOpen className="w-6 h-6 mb-1" />
-            <span className="text-xs font-medium">Manuals</span>
+            <BookOpen className="w-5 h-5 mb-1" />
+            <span className="text-xs font-medium">Database</span>
           </Link>
         </div>
       </nav>

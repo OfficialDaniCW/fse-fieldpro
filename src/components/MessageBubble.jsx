@@ -6,18 +6,18 @@ export default function MessageBubble({ message }) {
   const isUser = message.role === "user";
   
   return (
-    <div className={`flex gap-3 ${isUser ? "justify-end" : "justify-start"}`}>
+    <div className={`flex gap-2.5 ${isUser ? "justify-end" : "justify-start"}`}>
       {!isUser && (
-        <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-          <span className="text-sm">🔧</span>
+        <div className="h-7 w-7 rounded-lg bg-blue-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+          <div className="h-3 w-3 rounded bg-blue-500"></div>
         </div>
       )}
       <div className={`max-w-[85%] ${isUser && "flex flex-col items-end"}`}>
         <div
-          className={`rounded-2xl px-4 py-3 ${
+          className={`rounded-xl px-3.5 py-2.5 ${
             isUser
               ? "bg-blue-600 text-white"
-              : "bg-white border border-gray-200 text-gray-800"
+              : "bg-slate-800 border border-slate-700 text-slate-100"
           }`}
         >
           {message.content && (
@@ -65,17 +65,17 @@ export default function MessageBubble({ message }) {
               const status = tool.status || "pending";
               const isComplete = status === "completed" || status === "success";
               const isError = status === "failed" || status === "error";
-              
+
               return (
                 <div
                   key={idx}
-                  className="text-xs flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2"
+                  className="text-xs flex items-center gap-2 bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5"
                 >
-                  {isComplete && <CheckCircle2 className="w-3 h-3 text-green-600" />}
-                  {isError && <AlertCircle className="w-3 h-3 text-red-500" />}
-                  {!isComplete && !isError && <Clock className="w-3 h-3 text-slate-400" />}
-                  <span className="text-slate-600">
-                    {tool.name?.split(".").pop() || "Searching manuals"}
+                  {isComplete && <CheckCircle2 className="w-3 h-3 text-green-400" />}
+                  {isError && <AlertCircle className="w-3 h-3 text-red-400" />}
+                  {!isComplete && !isError && <Clock className="w-3 h-3 text-slate-500" />}
+                  <span className="text-slate-400 font-mono">
+                    {tool.name?.split(".").pop() || "query_database"}
                   </span>
                 </div>
               );
