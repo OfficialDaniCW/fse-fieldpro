@@ -51,6 +51,8 @@ import Chat from './pages/Chat';
 import Manuals from './pages/Manuals';
 import Parts from './pages/Parts';
 import Profile from './pages/Profile';
+import Admin from './pages/Admin';
+import Stats from './pages/Stats';
 import __Layout from './Layout.jsx';
 
 
@@ -59,6 +61,8 @@ export const PAGES = {
     "Manuals": Manuals,
     "Parts": Parts,
     "Profile": Profile,
+    "Admin": Admin,
+    "Stats": Stats,
 }
 
 export const pagesConfig = {
