@@ -1,5 +1,6 @@
 import React from "react";
-import { User, Info, ExternalLink } from "lucide-react";
+import { Info, ExternalLink } from "lucide-react";
+import PageHeader from "../components/PageHeader";
 
 export default function ProfilePage() {
   return (

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Mic, Send, Image as ImageIcon, Loader2, BookOpen } from "lucide-react";
 import MessageBubble from "../components/MessageBubble";
+import PageHeader from "../components/PageHeader";
 
 export default function ChatPage() {
   const [conversationId, setConversationId] = useState(null);
