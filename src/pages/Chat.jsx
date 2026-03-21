@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Mic, Send, Image as ImageIcon, Loader2, BookOpen } from "lucide-react";
@@ -8,6 +9,7 @@ import MessageBubble from "../components/MessageBubble";
 import PageHeader from "../components/PageHeader";
 
 export default function ChatPage() {
+  const queryClient = useQueryClient();
   const [conversationId, setConversationId] = useState(null);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -125,7 +127,13 @@ export default function ChatPage() {
   const NOT_FOUND_MSG = "This part is not currently in the TSG database. Please check with your supervisor or contact the TSG stores team.";
 
   const searchParts = async (query) => {
-    const allParts = await base44.entities.Part.list("-created_date", 2000);
+    // Use TanStack Query cache if available (works offline)
+    let allParts = queryClient.getQueryData(["parts"]);
+    if (!allParts || allParts.length === 0) {
+      allParts = await base44.entities.Part.list("-created_date", 2000);
+      // Seed the cache for future offline use
+      queryClient.setQueryData(["parts"], allParts);
+    }
     const q = query.toLowerCase().trim();
 
     // Exact part number match first
