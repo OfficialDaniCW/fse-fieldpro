@@ -45,14 +45,14 @@ export default function PartCard({ part }) {
             {part.part_number}
           </span>
 
-          {/* Description — all caps bold */}
-          <p className="font-extrabold text-gray-900 text-base leading-tight uppercase tracking-tight">
+          {/* Description */}
+          <p className="font-semibold text-gray-900 text-base leading-snug">
             {part.description}
           </p>
 
           {/* Variant spec subtitle */}
           {part.variant_spec && (
-            <p className="text-xs text-gray-400 uppercase tracking-wide leading-snug">{part.variant_spec}</p>
+            <p className="text-xs text-gray-500 leading-snug">{part.variant_spec}</p>
           )}
 
           {/* Tags */}
@@ -78,26 +78,26 @@ export default function PartCard({ part }) {
           <div className="grid grid-cols-2 gap-4">
             {part.pump_model && (
               <div>
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Pump Model</p>
-                <p className="text-sm font-bold text-gray-900">{part.pump_model}</p>
+                <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Pump Model</p>
+                <p className="text-sm font-semibold text-gray-900">{part.pump_model}</p>
               </div>
             )}
             {part.system_area && (
               <div>
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">System / Area</p>
-                <p className="text-sm font-bold text-gray-900">{part.system_area}</p>
+                <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">System / Area</p>
+                <p className="text-sm font-semibold text-gray-900">{part.system_area}</p>
               </div>
             )}
             {part.component_type && (
               <div>
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Component</p>
-                <p className="text-sm font-bold text-gray-900 uppercase">{part.component_type}</p>
+                <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Component</p>
+                <p className="text-sm font-semibold text-gray-900">{part.component_type}</p>
               </div>
             )}
             {part.brand && (
               <div>
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Brand</p>
-                <p className="text-sm font-bold text-gray-900">{part.brand}</p>
+                <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Brand</p>
+                <p className="text-sm font-semibold text-gray-900">{part.brand}</p>
               </div>
             )}
           </div>
@@ -105,7 +105,7 @@ export default function PartCard({ part }) {
           {/* What it does */}
           {part.what_it_does && (
             <div>
-              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">What it does</p>
+              <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">What it does</p>
               <p className="text-sm text-gray-700 leading-relaxed">{part.what_it_does}</p>
             </div>
           )}
@@ -113,7 +113,7 @@ export default function PartCard({ part }) {
           {/* Installation steps */}
           {steps.length > 0 && (
             <div>
-              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Installation</p>
+              <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-3">Installation</p>
               <div className="space-y-3">
                 {steps.map((step, idx) => (
                   <div key={idx} className="flex gap-3 items-start">

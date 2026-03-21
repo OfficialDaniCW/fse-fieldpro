@@ -51,7 +51,7 @@ export default function Layout({ children, currentPageName }) {
                 }`}
               >
                 <Icon className="w-5 h-5 mb-0.5" />
-                <span className="text-xs font-extrabold tracking-tight">{label}</span>
+                <span className="text-xs font-medium">{label}</span>
               </Link>
             );
           })}
