@@ -86,16 +86,18 @@ export default function ManualsPage() {
           </div>
         )}
 
-        {/* Add Manual Button - Fixed at bottom */}
-        <div className="fixed bottom-20 left-4 right-4 max-w-4xl mx-auto">
-          <Button 
-            onClick={() => setShowForm(true)}
-            className="w-full bg-[#CC0000] hover:bg-[#aa0000] h-14 text-base font-medium shadow-lg"
-          >
-            <Plus className="w-5 h-5 mr-2" />
-            Add New Manual
-          </Button>
-        </div>
+        {/* Add Manual Button - Admin only */}
+        {isAdmin && (
+          <div className="fixed bottom-20 left-4 right-4 max-w-4xl mx-auto">
+            <Button 
+              onClick={() => setShowForm(true)}
+              className="w-full bg-[#CC0000] hover:bg-[#aa0000] h-14 text-base font-medium shadow-lg"
+            >
+              <Plus className="w-5 h-5 mr-2" />
+              Add New Manual
+            </Button>
+          </div>
+        )}
       </div>
 
       {showForm && (
