@@ -10,6 +10,7 @@ export default function Layout({ children, currentPageName }) {
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
   const [pendingCount, setPendingCount] = useState(() => getQueue().length);
   const queryClient = useQueryClient();
+  const { isAdmin, isManager } = useCurrentUser();
 
   useEffect(() => {
     const goOffline = () => setIsOffline(true);
@@ -35,6 +36,8 @@ export default function Layout({ children, currentPageName }) {
     { name: "Parts", label: "Parts", icon: Search, to: "/Parts" },
     { name: "Favorites", label: "Favourites", icon: Star, to: "/Favorites" },
     { name: "Manuals", label: "Manuals", icon: BookOpen, to: "/Manuals" },
+    ...(isAdmin ? [{ name: "Admin", label: "Admin", icon: Shield, to: "/Admin" }] : []),
+    ...(isManager && !isAdmin ? [{ name: "Stats", label: "Stats", icon: BarChart2, to: "/Stats" }] : []),
     { name: "Profile", label: "Profile", icon: User, to: "/Profile" },
   ];
 

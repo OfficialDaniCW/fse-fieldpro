@@ -3,11 +3,11 @@ import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-// Button still used for Add Manual
 import { Search, Plus, FileText, ChevronRight } from "lucide-react";
 import ManualForm from "../components/ManualForm";
 import ManualViewer from "../components/ManualViewer";
 import PageHeader from "../components/PageHeader";
+import { useCurrentUser } from "../lib/useCurrentUser";
 import { Toaster } from "sonner";
 
 export default function ManualsPage() {
