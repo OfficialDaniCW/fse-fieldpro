@@ -49,12 +49,16 @@
  */
 import Chat from './pages/Chat';
 import Manuals from './pages/Manuals';
+import Parts from './pages/Parts';
+import Profile from './pages/Profile';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "Chat": Chat,
     "Manuals": Manuals,
+    "Parts": Parts,
+    "Profile": Profile,
 }
 
 export const pagesConfig = {
