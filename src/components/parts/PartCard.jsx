@@ -19,6 +19,19 @@ const Tag = ({ label, color }) => {
 export default function PartCard({ part }) {
   const [expanded, setExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [favorited, setFavorited] = useState(() => isFavorite(part.id));
+
+  useEffect(() => {
+    const handler = () => setFavorited(isFavorite(part.id));
+    window.addEventListener('favorites-changed', handler);
+    return () => window.removeEventListener('favorites-changed', handler);
+  }, [part.id]);
+
+  const handleFavorite = (e) => {
+    e.stopPropagation();
+    const nowFav = toggleFavorite(part.id);
+    setFavorited(nowFav);
+  };
 
   const steps = [
     part.installation_step_1,
