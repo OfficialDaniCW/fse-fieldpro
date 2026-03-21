@@ -171,13 +171,13 @@ function TableView({ parts }) {
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b-2 border-[#CC0000]">
-            <th className="text-left px-4 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider whitespace-nowrap">Part No.</th>
-            <th className="text-left px-4 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider">Description</th>
-            <th className="text-left px-4 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider whitespace-nowrap">Ref Code</th>
-            <th className="text-left px-4 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider">Brand</th>
-            <th className="text-left px-4 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider">Model</th>
-            <th className="text-left px-4 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider">System</th>
-            <th className="text-left px-4 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider">Component</th>
+            <th className="text-left px-4 py-3 text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap">Part No.</th>
+            <th className="text-left px-4 py-3 text-xs font-medium text-gray-400 uppercase tracking-wider">Description</th>
+            <th className="text-left px-4 py-3 text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap">Ref Code</th>
+            <th className="text-left px-4 py-3 text-xs font-medium text-gray-400 uppercase tracking-wider">Brand</th>
+            <th className="text-left px-4 py-3 text-xs font-medium text-gray-400 uppercase tracking-wider">Model</th>
+            <th className="text-left px-4 py-3 text-xs font-medium text-gray-400 uppercase tracking-wider">System</th>
+            <th className="text-left px-4 py-3 text-xs font-medium text-gray-400 uppercase tracking-wider">Component</th>
           </tr>
         </thead>
         <tbody>
