@@ -97,30 +97,123 @@ export default function ChatPage() {
     }
   };
 
+  // --- Part lookup helpers ---
+  const PART_NUMBER_REGEX = /^[A-Z0-9]{4,}[-/]?[A-Z0-9]*$/i;
+
+  const formatPartFull = (p) => {
+    const steps = [p.installation_step_1, p.installation_step_2, p.installation_step_3].filter(Boolean);
+    return [
+      `**${p.part_number}** — ${p.description}`,
+      p.brand ? `**Brand:** ${p.brand}` : null,
+      p.pump_model ? `**Model:** ${p.pump_model}` : null,
+      p.system_area ? `**System:** ${p.system_area}` : null,
+      p.component_type ? `**Component:** ${p.component_type}` : null,
+      p.what_it_does ? `\n**What it does:**\n${p.what_it_does}` : null,
+      steps.length ? `\n**Installation:**\n${steps.map((s, i) => `${i + 1}. ${s}`).join("\n")}` : null,
+      p.safety_warning ? `\n⚠️ **Safety Warning:** ${p.safety_warning}` : null,
+      p.variant_spec ? `\n**Specification:** ${p.variant_spec}` : null,
+    ].filter(Boolean).join("\n");
+  };
+
+  const formatPartSummary = (p) => [
+    `**${p.part_number}** — ${p.description}`,
+    p.brand ? `Brand: ${p.brand}` : null,
+    p.pump_model ? `Model: ${p.pump_model}` : null,
+  ].filter(Boolean).join(" · ");
+
+  const NOT_FOUND_MSG = "This part is not currently in the TSG database. Please check with your supervisor or contact the TSG stores team.";
+
+  const searchParts = async (query) => {
+    const allParts = await base44.entities.Part.list();
+    const q = query.toLowerCase().trim();
+
+    // Exact part number match first
+    const exact = allParts.find(p => p.part_number?.toLowerCase() === q);
+    if (exact) return { type: "exact", parts: [exact] };
+
+    // Looks like a part number pattern — search part_number field
+    if (PART_NUMBER_REGEX.test(query.trim())) {
+      const matches = allParts.filter(p => p.part_number?.toLowerCase().includes(q));
+      return { type: "part_number", parts: matches.slice(0, 3) };
+    }
+
+    // Description / brand search — top 3
+    const words = q.split(/\s+/);
+    const scored = allParts
+      .map(p => {
+        const haystack = [p.description, p.brand, p.pump_model, p.system_area, p.component_type]
+          .join(" ").toLowerCase();
+        const score = words.filter(w => haystack.includes(w)).length;
+        return { part: p, score };
+      })
+      .filter(x => x.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3)
+      .map(x => x.part);
+
+    return { type: "description", parts: scored };
+  };
+
+  const buildPartResponse = ({ type, parts }) => {
+    if (!parts.length) return NOT_FOUND_MSG;
+    if (type === "exact" || (type === "part_number" && parts.length === 1)) {
+      return formatPartFull(parts[0]);
+    }
+    return `Found ${parts.length} matching part${parts.length > 1 ? "s" : ""}:\n\n` +
+      parts.map(formatPartSummary).join("\n\n");
+  };
+
+  const injectAssistantMessage = (conversation, content) => {
+    base44.agents.addMessage(conversation, { role: "assistant", content });
+  };
+
+  // --- Send handler ---
   const handleSend = async () => {
     if (!input.trim() && !imageFile) return;
     if (!conversationId) return;
 
-    try {
-      const conversation = await base44.agents.getConversation(conversationId);
-      
-      let file_urls = null;
-      if (imageFile) {
-        const { file_url } = await base44.integrations.Core.UploadFile({ file: imageFile });
-        file_urls = [file_url];
-      }
+    const userText = input.trim();
+    setInput("");
+    setImageFile(null);
 
+    const conversation = await base44.agents.getConversation(conversationId);
+
+    // Image path — OCR then search parts
+    if (imageFile) {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file: imageFile });
       await base44.agents.addMessage(conversation, {
         role: "user",
-        content: input || "What does this error mean?",
-        file_urls: file_urls
+        content: userText || "What part is this?",
+        file_urls: [file_url]
       });
 
-      setInput("");
-      setImageFile(null);
-    } catch (error) {
-      console.error("Error sending message:", error);
+      const ocrResult = await base44.integrations.Core.InvokeLLM({
+        prompt: "Extract all visible text, numbers, part numbers, codes and labels from this image. Return only the extracted text, nothing else.",
+        file_urls: [file_url],
+      });
+
+      if (ocrResult) {
+        const result = await searchParts(ocrResult.trim());
+        if (result.parts.length > 0) {
+          injectAssistantMessage(conversation, `I found the following from the image:\n\n${buildPartResponse(result)}`);
+          return;
+        }
+      }
+      // Fall through to agent if no OCR match
+      injectAssistantMessage(conversation, NOT_FOUND_MSG);
+      return;
     }
+
+    // Text path — search parts first
+    await base44.agents.addMessage(conversation, { role: "user", content: userText });
+
+    const result = await searchParts(userText);
+    if (result.parts.length > 0) {
+      injectAssistantMessage(conversation, buildPartResponse(result));
+      return;
+    }
+
+    // No part match — let the agent handle it (already sent user message above)
   };
 
   return (
