@@ -7,10 +7,12 @@ import { getQueue } from "./lib/pendingQueue";
 
 export default function Layout({ children, currentPageName }) {
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
+  const [pendingCount, setPendingCount] = useState(() => getQueue().length);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const goOffline = () => setIsOffline(true);
-    const goOnline = () => setIsOffline(false);
+    const goOnline = () => { setIsOffline(false); setPendingCount(getQueue().length); };
     window.addEventListener("offline", goOffline);
     window.addEventListener("online", goOnline);
     return () => {
@@ -19,9 +21,18 @@ export default function Layout({ children, currentPageName }) {
     };
   }, []);
 
+  // Sync manager — fires when device reconnects
+  useSyncManager({
+    onSynced: () => {
+      setPendingCount(getQueue().length);
+      queryClient.invalidateQueries({ queryKey: ["manuals"] });
+    },
+  });
+
   const tabs = [
     { name: "Chat", label: "Assistant", icon: MessageSquare, to: "/" },
     { name: "Parts", label: "Parts", icon: Search, to: "/Parts" },
+    { name: "Favorites", label: "Favourites", icon: Star, to: "/Favorites" },
     { name: "Manuals", label: "Manuals", icon: BookOpen, to: "/Manuals" },
     { name: "Profile", label: "Profile", icon: User, to: "/Profile" },
   ];
