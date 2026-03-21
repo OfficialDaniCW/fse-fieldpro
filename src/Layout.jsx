@@ -1,8 +1,21 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { MessageSquare, Search, BookOpen, User } from "lucide-react";
+import { MessageSquare, Search, BookOpen, User, WifiOff } from "lucide-react";
 
 export default function Layout({ children, currentPageName }) {
+  const [isOffline, setIsOffline] = useState(!navigator.onLine);
+
+  useEffect(() => {
+    const goOffline = () => setIsOffline(true);
+    const goOnline = () => setIsOffline(false);
+    window.addEventListener("offline", goOffline);
+    window.addEventListener("online", goOnline);
+    return () => {
+      window.removeEventListener("offline", goOffline);
+      window.removeEventListener("online", goOnline);
+    };
+  }, []);
+
   const tabs = [
     { name: "Chat", label: "Assistant", icon: MessageSquare, to: "/" },
     { name: "Parts", label: "Parts", icon: Search, to: "/Parts" },
@@ -12,7 +25,13 @@ export default function Layout({ children, currentPageName }) {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <main className="flex-1">
+      {isOffline && (
+        <div className="fixed top-0 left-0 right-0 z-[100] bg-amber-500 text-white text-xs font-semibold flex items-center justify-center gap-1.5 py-1.5">
+          <WifiOff className="w-3.5 h-3.5" />
+          Offline — showing cached data
+        </div>
+      )}
+      <main className={`flex-1 ${isOffline ? "pt-7" : ""}`}>
         {children}
       </main>
 
