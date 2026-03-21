@@ -255,9 +255,9 @@ export default function ChatPage() {
               <div className="bg-slate-900 border border-slate-800 rounded-lg p-3">
                 <p className="text-xs font-mono text-slate-500 mb-2">EXAMPLE QUERIES:</p>
                 <div className="space-y-1.5">
-                  <p className="text-sm text-slate-300">"Gilbarco E47 error meaning"</p>
-                  <p className="text-sm text-slate-300">"Fuel filter replacement procedure"</p>
-                  <p className="text-sm text-slate-300">"Wayne Ovation ERR 03 diagnostic"</p>
+                  <p className="text-sm text-slate-300">"140852556" — look up a part number</p>
+                  <p className="text-sm text-slate-300">"SK700 VR hose" — search by description</p>
+                  <p className="text-sm text-slate-300">📷 Photo of a part label — auto-identify</p>
                 </div>
               </div>
             </div>
