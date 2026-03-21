@@ -3,6 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+// Button still used for Add Manual
 import { Search, Plus, FileText } from "lucide-react";
 import ManualForm from "../components/ManualForm";
 import ManualViewer from "../components/ManualViewer";
