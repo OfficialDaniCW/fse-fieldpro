@@ -19,7 +19,7 @@ export default function FilterPanel({ options, filters, onSelect, onClose }) {
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <Icon className="w-4 h-4 text-[#CC0000]" />
-                <span className="text-xs font-bold text-gray-800 uppercase tracking-widest">{label}</span>
+                <span className="text-xs font-semibold text-gray-700 uppercase tracking-wider">{label}</span>
               </div>
               <span className="text-xs text-gray-400">{hint}</span>
             </div>

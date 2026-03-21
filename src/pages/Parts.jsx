@@ -195,7 +195,7 @@ function TableView({ parts }) {
               <td className="px-4 py-3">
                 {part.system_area && <span className="text-xs font-bold text-green-700 border border-green-300 bg-green-50 px-2 py-0.5 rounded whitespace-nowrap">{part.system_area}</span>}
               </td>
-              <td className="px-4 py-3 text-xs font-bold text-gray-800 uppercase">{part.component_type}</td>
+              <td className="px-4 py-3 text-xs font-medium text-gray-700">{part.component_type}</td>
             </tr>
           ))}
         </tbody>
