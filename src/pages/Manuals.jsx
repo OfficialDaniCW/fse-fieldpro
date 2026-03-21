@@ -33,11 +33,8 @@ export default function ManualsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-      <div className="bg-[#CC0000] text-white px-4 py-4 shadow-lg">
-        <h1 className="text-xl font-bold">📚 Equipment Manuals</h1>
-        <p className="text-xs text-red-100 mt-1">{manuals.length} manuals in library</p>
-      </div>
+    <div className="min-h-screen bg-gray-50">
+      <PageHeader title="FSE FieldPro" subtitle={`Equipment Manuals · ${manuals.length} in library`} />
 
       <div className="max-w-4xl mx-auto p-4">
         {/* Search */}

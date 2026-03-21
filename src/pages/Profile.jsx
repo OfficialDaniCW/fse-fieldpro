@@ -5,10 +5,7 @@ import PageHeader from "../components/PageHeader";
 export default function ProfilePage() {
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
-      <div className="bg-[#CC0000] text-white px-4 py-4 shadow-lg">
-        <h1 className="text-xl font-bold">FSE FieldPro</h1>
-        <p className="text-xs text-red-100 mt-1">Profile & Settings</p>
-      </div>
+      <PageHeader title="FSE FieldPro" subtitle="Profile & Settings" />
 
       <div className="max-w-4xl mx-auto p-4 space-y-4">
         {/* About Section */}

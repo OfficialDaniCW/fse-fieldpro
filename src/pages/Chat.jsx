@@ -219,26 +219,14 @@ export default function ChatPage() {
 
   return (
     <div className="flex flex-col h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-[#CC0000] shadow-lg px-4 py-3 flex-shrink-0">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center">
-              <span className="text-xs font-bold text-[#CC0000] tracking-tight">FSE</span>
-            </div>
-            <div>
-              <h1 className="text-base font-semibold text-white">FSE FieldPro</h1>
-              <p className="text-xs text-red-200">Technical support & diagnostics</p>
-            </div>
-          </div>
-          <Link to="/manuals">
-            <Button variant="ghost" size="sm" className="text-white hover:text-white hover:bg-red-700">
-              <BookOpen className="w-4 h-4 mr-1.5" />
-              <span className="text-xs">Database</span>
-            </Button>
-          </Link>
-        </div>
-      </div>
+      <PageHeader title="FSE FieldPro" subtitle="Technical support & diagnostics">
+        <Link to="/manuals">
+          <Button variant="ghost" size="sm" className="text-white hover:text-white hover:bg-red-700">
+            <BookOpen className="w-4 h-4 mr-1.5" />
+            <span className="text-xs">Database</span>
+          </Button>
+        </Link>
+      </PageHeader>
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3" style={{ paddingBottom: "180px" }}>
