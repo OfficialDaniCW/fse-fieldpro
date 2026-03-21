@@ -104,21 +104,21 @@ export default function PartsPage() {
       {/* Results bar */}
       <div className="px-4 py-3 flex items-center justify-between bg-white border-b border-gray-200">
         <p className="text-sm text-gray-700">
-          <span className="font-bold text-gray-900">{filtered.length.toLocaleString()}</span> parts
+          <span className="font-semibold text-gray-900">{filtered.length.toLocaleString()}</span> parts
         </p>
         <div className="flex items-center gap-1 border border-gray-200 rounded-lg p-0.5">
           <button
             onClick={() => setViewMode("cards")}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${
-              viewMode === "cards" ? "bg-gray-100 text-gray-900" : "text-gray-400 hover:text-gray-600"
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+            viewMode === "cards" ? "bg-gray-100 text-gray-900" : "text-gray-400 hover:text-gray-600"
             }`}
-          >
+            >
             <LayoutGrid className="w-3.5 h-3.5" /> Cards
-          </button>
-          <button
+            </button>
+            <button
             onClick={() => setViewMode("table")}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${
-              viewMode === "table" ? "bg-gray-100 text-gray-900" : "text-gray-400 hover:text-gray-600"
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+            viewMode === "table" ? "bg-gray-100 text-gray-900" : "text-gray-400 hover:text-gray-600"
             }`}
           >
             <List className="w-3.5 h-3.5" /> Table
@@ -183,8 +183,8 @@ function TableView({ parts }) {
         <tbody>
           {parts.map((part, idx) => (
             <tr key={part.id} className={`border-b border-gray-100 ${idx % 2 === 0 ? "bg-white" : "bg-gray-50"}`}>
-              <td className="px-4 py-3 font-mono text-xs font-bold text-[#CC0000] whitespace-nowrap">{part.part_number}</td>
-              <td className="px-4 py-3 font-bold text-gray-900 text-xs uppercase leading-snug">{part.description}</td>
+              <td className="px-4 py-3 font-mono text-xs font-semibold text-[#CC0000] whitespace-nowrap">{part.part_number}</td>
+              <td className="px-4 py-3 font-medium text-gray-900 text-xs leading-snug">{part.description}</td>
               <td className="px-4 py-3 text-xs text-gray-400 max-w-24">{part.variant_spec}</td>
               <td className="px-4 py-3">
                 {part.brand && <span className="text-xs font-semibold text-red-700 border border-red-200 bg-red-50 px-2 py-0.5 rounded whitespace-nowrap">{part.brand}</span>}
