@@ -147,27 +147,26 @@ export default function ChatPage() {
     let allParts = queryClient.getQueryData(["parts"]);
     if (!allParts || allParts.length === 0) {
       allParts = await base44.entities.Part.list("-created_date", 2000);
-      // Seed the cache for future offline use
       queryClient.setQueryData(["parts"], allParts);
     }
     const q = query.toLowerCase().trim();
 
-    // Exact part number match first
+    // 1. Exact part number match
     const exact = allParts.find(p => p.part_number?.toLowerCase() === q);
     if (exact) return { type: "exact", parts: [exact] };
 
-    // Looks like a part number pattern — search part_number field
-    if (PART_NUMBER_REGEX.test(query.trim())) {
+    // 2. Looks like a part number (alphanumeric, 4+ chars, no spaces) — search part_number field
+    if (PART_NUMBER_REGEX.test(q) && !q.includes(" ")) {
       const matches = allParts.filter(p => p.part_number?.toLowerCase().includes(q));
-      return { type: "part_number", parts: matches.slice(0, 3) };
+      if (matches.length > 0) return { type: "part_number", parts: matches.slice(0, 3) };
     }
 
-    // Description / brand search — top 3
-    const words = q.split(/\s+/);
+    // 3. Free-text description / brand search
+    const words = q.split(/\s+/).filter(w => w.length > 1);
     const scored = allParts
       .map(p => {
-        const haystack = [p.description, p.brand, p.pump_model, p.system_area, p.component_type]
-          .join(" ").toLowerCase();
+        const haystack = [p.part_number, p.description, p.brand, p.pump_model, p.system_area, p.component_type]
+          .filter(Boolean).join(" ").toLowerCase();
         const score = words.filter(w => haystack.includes(w)).length;
         return { part: p, score };
       })
