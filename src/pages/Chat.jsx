@@ -124,7 +124,7 @@ export default function ChatPage() {
   const NOT_FOUND_MSG = "This part is not currently in the TSG database. Please check with your supervisor or contact the TSG stores team.";
 
   const searchParts = async (query) => {
-    const allParts = await base44.entities.Part.list();
+    const allParts = await base44.entities.Part.list("-created_date", 2000);
     const q = query.toLowerCase().trim();
 
     // Exact part number match first
