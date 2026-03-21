@@ -191,6 +191,41 @@ export default function ChatPage() {
     base44.agents.addMessage(conversation, { role: "assistant", content });
   };
 
+  // --- Manual text search ---
+  const searchManuals = async (query) => {
+    let allManuals = queryClient.getQueryData(["manuals"]);
+    if (!allManuals || allManuals.length === 0) {
+      allManuals = await base44.entities.Manual.list("-created_date");
+      queryClient.setQueryData(["manuals"], allManuals);
+    }
+    const q = query.toLowerCase();
+    // Find manuals whose text or metadata contain query keywords
+    const words = q.split(/\s+/).filter(w => w.length > 2);
+    return allManuals
+      .filter(m => m.manual_text || m.error_codes || m.troubleshooting_steps)
+      .map(m => {
+        const haystack = [m.title, m.equipment_manufacturer, m.equipment_model, m.manual_text, m.error_codes, m.troubleshooting_steps]
+          .filter(Boolean).join(" ").toLowerCase();
+        const score = words.filter(w => haystack.includes(w)).length;
+        return { manual: m, score };
+      })
+      .filter(x => x.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 2)
+      .map(x => x.manual);
+  };
+
+  const buildManualContext = (manuals) => {
+    return manuals.map(m => {
+      const sections = [];
+      sections.push(`**Manual: ${m.title}** (${m.equipment_manufacturer} ${m.equipment_model})`);
+      if (m.manual_text) sections.push(m.manual_text.slice(0, 3000));
+      if (m.error_codes) sections.push(`Error Codes:\n${m.error_codes}`);
+      if (m.troubleshooting_steps) sections.push(`Troubleshooting:\n${m.troubleshooting_steps}`);
+      return sections.join("\n\n");
+    }).join("\n\n---\n\n");
+  };
+
   // --- Send handler ---
   const handleSend = async () => {
     if (!input.trim() && !imageFile) return;
@@ -202,7 +237,7 @@ export default function ChatPage() {
 
     const conversation = await base44.agents.getConversation(conversationId);
 
-    // Image path — OCR then search parts
+    // Image path — OCR then search parts, then manuals
     if (imageFile) {
       const { file_url } = await base44.integrations.Core.UploadFile({ file: imageFile });
       await base44.agents.addMessage(conversation, {
@@ -222,8 +257,17 @@ export default function ChatPage() {
           injectAssistantMessage(conversation, `I found the following from the image:\n\n${buildPartResponse(result)}`);
           return;
         }
+        // Try manuals with OCR text
+        const matchedManuals = await searchManuals(ocrResult.trim());
+        if (matchedManuals.length > 0) {
+          const context = buildManualContext(matchedManuals);
+          const answer = await base44.integrations.Core.InvokeLLM({
+            prompt: `You are a field service assistant. Use ONLY the following manual content to answer the engineer's question. Be concise and safety-first.\n\nMANUAL CONTENT:\n${context}\n\nQUESTION: ${userText || "What is this part or error code?"}\n\nIf the answer is not in the manual content, say so clearly.`,
+          });
+          injectAssistantMessage(conversation, answer);
+          return;
+        }
       }
-      // Fall through to agent if no OCR match
       injectAssistantMessage(conversation, NOT_FOUND_MSG);
       return;
     }
@@ -231,13 +275,24 @@ export default function ChatPage() {
     // Text path — search parts first
     await base44.agents.addMessage(conversation, { role: "user", content: userText });
 
-    const result = await searchParts(userText);
-    if (result.parts.length > 0) {
-      injectAssistantMessage(conversation, buildPartResponse(result));
+    const partResult = await searchParts(userText);
+    if (partResult.parts.length > 0) {
+      injectAssistantMessage(conversation, buildPartResponse(partResult));
       return;
     }
 
-    // No part match — let the agent handle it (already sent user message above)
+    // No part match — search manual text
+    const matchedManuals = await searchManuals(userText);
+    if (matchedManuals.length > 0) {
+      const context = buildManualContext(matchedManuals);
+      const answer = await base44.integrations.Core.InvokeLLM({
+        prompt: `You are a field service assistant. Use ONLY the following manual content to answer the engineer's question. Be concise, safety-first, and cite the manual source.\n\nMANUAL CONTENT:\n${context}\n\nQUESTION: ${userText}\n\nIf the answer is not in the manual content, say so clearly.`,
+      });
+      injectAssistantMessage(conversation, answer);
+      return;
+    }
+
+    // Nothing in DB — let the agent handle it (user message already sent)
   };
 
   return (
