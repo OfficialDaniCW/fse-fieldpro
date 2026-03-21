@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 // Button still used for Add Manual
-import { Search, Plus, FileText } from "lucide-react";
+import { Search, Plus, FileText, ChevronRight } from "lucide-react";
 import ManualForm from "../components/ManualForm";
 import ManualViewer from "../components/ManualViewer";
 import PageHeader from "../components/PageHeader";
@@ -75,8 +75,8 @@ export default function ManualsPage() {
                     <p className="text-sm text-gray-600 mt-1">
                       {manual.equipment_manufacturer} • {manual.equipment_model}
                     </p>
-                    <p className="text-xs text-[#CC0000] mt-2 font-medium">
-                      Tap to view details →
+                    <p className="text-xs text-[#CC0000] mt-2 font-medium flex items-center gap-0.5">
+                      Tap to view details <ChevronRight className="w-3 h-3" />
                     </p>
                   </div>
                 </div>

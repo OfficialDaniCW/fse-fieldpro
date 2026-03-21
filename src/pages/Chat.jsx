@@ -124,7 +124,7 @@ export default function ChatPage() {
     p.pump_model ? `Model: ${p.pump_model}` : null,
   ].filter(Boolean).join(" · ");
 
-  const NOT_FOUND_MSG = "This part is not currently in the TSG database. Please check with your supervisor or contact the TSG stores team.";
+  const NOT_FOUND_MSG = "This part is not in the TSG FieldPro database yet. Please check with your supervisor or contact the TSG stores team.";
 
   const searchParts = async (query) => {
     // Use TanStack Query cache if available (works offline)
