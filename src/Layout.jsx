@@ -5,9 +5,9 @@ import { MessageSquare, Search, BookOpen, User } from "lucide-react";
 export default function Layout({ children, currentPageName }) {
   const tabs = [
     { name: "Chat", label: "Assistant", icon: MessageSquare, to: "/" },
-    { name: "Parts", label: "Parts", icon: Search, to: "/parts" },
+    { name: "Parts", label: "Parts", icon: Search, to: "/Parts" },
     { name: "Manuals", label: "Manuals", icon: BookOpen, to: "/Manuals" },
-    { name: "Profile", label: "Profile", icon: User, to: "/profile" },
+    { name: "Profile", label: "Profile", icon: User, to: "/Profile" },
   ];
 
   return (
