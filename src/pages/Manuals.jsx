@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Search, Plus, FileText, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import ManualForm from "../components/ManualForm";
+import ManualViewer from "../components/ManualViewer";
 import { Toaster } from "sonner";
 
 export default function ManualsPage() {
