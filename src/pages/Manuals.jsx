@@ -28,67 +28,7 @@ export default function ManualsPage() {
   );
 
   if (selectedManual) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-        <div className="bg-[#CC0000] text-white px-4 py-4 shadow-lg">
-          <button
-            onClick={() => setSelectedManual(null)}
-            className="flex items-center gap-2 text-white hover:text-red-100 mb-2"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            <span className="font-medium">Back to Manuals</span>
-          </button>
-          <h1 className="text-xl font-bold">{selectedManual.title}</h1>
-          <p className="text-sm text-red-100 mt-1">
-            {selectedManual.equipment_manufacturer} {selectedManual.equipment_model}
-          </p>
-        </div>
-
-        <div className="max-w-4xl mx-auto p-4 space-y-6">
-          {selectedManual.error_codes && (
-            <div className="bg-white rounded-lg shadow-md p-4 border-l-4 border-yellow-400">
-              <h3 className="font-bold text-lg text-gray-800 mb-3 flex items-center gap-2">
-                ⚠️ Error Codes
-              </h3>
-              <pre className="whitespace-pre-wrap text-sm text-gray-700 font-mono">
-                {selectedManual.error_codes}
-              </pre>
-            </div>
-          )}
-
-          {selectedManual.troubleshooting_steps && (
-            <div className="bg-white rounded-lg shadow-md p-4 border-l-4 border-[#CC0000]">
-              <h3 className="font-bold text-lg text-gray-800 mb-3 flex items-center gap-2">
-                🔧 Troubleshooting Procedures
-              </h3>
-              <pre className="whitespace-pre-wrap text-sm text-gray-700 font-mono">
-                {selectedManual.troubleshooting_steps}
-              </pre>
-            </div>
-          )}
-
-          {selectedManual.pdf_file && (
-            <div className="bg-white rounded-lg shadow-md p-4">
-              <h3 className="font-bold text-lg text-gray-800 mb-3">📄 Full Manual</h3>
-              <a
-                href={selectedManual.pdf_file}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[#CC0000] hover:text-[#aa0000] underline"
-              >
-                View PDF Manual
-              </a>
-            </div>
-          )}
-
-          <Link to="/">
-            <Button className="w-full bg-[#CC0000] hover:bg-[#aa0000] h-12 text-base">
-              Ask AI about this manual
-            </Button>
-          </Link>
-        </div>
-      </div>
-    );
+    return <ManualViewer manual={selectedManual} onBack={() => setSelectedManual(null)} />;
   }
 
   return (
