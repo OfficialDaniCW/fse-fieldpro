@@ -48,10 +48,10 @@ export default function ProfilePage() {
         {/* Logo */}
         <div className="flex justify-center pt-6">
           <div className="w-14 h-14 rounded-2xl bg-white border border-gray-200 shadow-sm flex items-center justify-center">
-            <span className="text-lg font-bold text-[#CC0000] tracking-tight">FSE</span>
+            <span className="text-xs font-extrabold text-[#CC0000] tracking-tight">FSE</span>
           </div>
         </div>
-        <p className="text-center text-xs text-gray-400">FSE FieldPro</p>
+        <p className="text-center text-xs text-gray-400 font-medium tracking-wide">FSE FieldPro · v1.0.0</p>
       </div>
     </div>
   );
