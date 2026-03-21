@@ -15,6 +15,7 @@ export default function ManualsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [showForm, setShowForm] = useState(false);
   const queryClient = useQueryClient();
+  const { isAdmin } = useCurrentUser();
 
   const { data: manuals = [], isLoading } = useQuery({
     queryKey: ["manuals"],
