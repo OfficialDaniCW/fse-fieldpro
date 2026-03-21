@@ -1,0 +1,164 @@
+import React, { useState } from "react";
+import { base44 } from "@/api/base44Client";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Search, Plus, Trash2, Edit, FileText, Package } from "lucide-react";
+import PageHeader from "../components/PageHeader";
+import ManualForm from "../components/ManualForm";
+import { useCurrentUser } from "../lib/useCurrentUser";
+import { toast } from "sonner";
+import { Toaster } from "sonner";
+
+export default function AdminPage() {
+  const { isAdmin, loading } = useCurrentUser();
+  const queryClient = useQueryClient();
+  const [searchParts, setSearchParts] = useState("");
+  const [searchManuals, setSearchManuals] = useState("");
+  const [showManualForm, setShowManualForm] = useState(false);
+
+  const { data: parts = [] } = useQuery({
+    queryKey: ["parts"],
+    queryFn: () => base44.entities.Part.list("-created_date", 500),
+  });
+
+  const { data: manuals = [] } = useQuery({
+    queryKey: ["manuals"],
+    queryFn: () => base44.entities.Manual.list("-created_date"),
+  });
+
+  if (loading) return <div className="flex items-center justify-center h-screen"><div className="w-8 h-8 border-4 border-slate-200 border-t-[#CC0000] rounded-full animate-spin" /></div>;
+
+  if (!isAdmin) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen gap-3 text-gray-500">
+        <Shield className="w-12 h-12 text-gray-300" />
+        <p className="font-medium">Admin access only</p>
+      </div>
+    );
+  }
+
+  const filteredParts = parts.filter(p =>
+    p.part_number?.toLowerCase().includes(searchParts.toLowerCase()) ||
+    p.description?.toLowerCase().includes(searchParts.toLowerCase()) ||
+    p.brand?.toLowerCase().includes(searchParts.toLowerCase())
+  );
+
+  const filteredManuals = manuals.filter(m =>
+    m.title?.toLowerCase().includes(searchManuals.toLowerCase()) ||
+    m.equipment_manufacturer?.toLowerCase().includes(searchManuals.toLowerCase()) ||
+    m.equipment_model?.toLowerCase().includes(searchManuals.toLowerCase())
+  );
+
+  const deletePart = async (id) => {
+    if (!confirm("Delete this part?")) return;
+    await base44.entities.Part.delete(id);
+    queryClient.invalidateQueries({ queryKey: ["parts"] });
+    toast.success("Part deleted");
+  };
+
+  const deleteManual = async (id) => {
+    if (!confirm("Delete this manual?")) return;
+    await base44.entities.Manual.delete(id);
+    queryClient.invalidateQueries({ queryKey: ["manuals"] });
+    toast.success("Manual deleted");
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <PageHeader title="Admin Panel" subtitle="Manage parts & manuals" />
+
+      <div className="max-w-4xl mx-auto p-4 pb-24">
+        <Tabs defaultValue="manuals">
+          <TabsList className="w-full mb-4">
+            <TabsTrigger value="manuals" className="flex-1">
+              <FileText className="w-4 h-4 mr-1.5" />
+              Manuals ({manuals.length})
+            </TabsTrigger>
+            <TabsTrigger value="parts" className="flex-1">
+              <Package className="w-4 h-4 mr-1.5" />
+              Parts ({parts.length})
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Manuals Tab */}
+          <TabsContent value="manuals">
+            <div className="flex gap-2 mb-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Input placeholder="Search manuals..." value={searchManuals} onChange={e => setSearchManuals(e.target.value)} className="pl-9" />
+              </div>
+              <Button onClick={() => setShowManualForm(true)} className="bg-[#CC0000] hover:bg-[#aa0000] shrink-0">
+                <Plus className="w-4 h-4 mr-1" /> Add
+              </Button>
+            </div>
+
+            <div className="space-y-2">
+              {filteredManuals.map(m => (
+                <div key={m.id} className="bg-white rounded-lg border border-gray-200 p-3 flex items-center gap-3">
+                  <div className="bg-red-50 rounded-lg p-2 shrink-0">
+                    <FileText className="w-5 h-5 text-[#CC0000]" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm text-gray-900 truncate">{m.title}</p>
+                    <p className="text-xs text-gray-500">{m.equipment_manufacturer} · {m.equipment_model}</p>
+                    {m.manual_text && <p className="text-xs text-green-600 mt-0.5">✓ Text extracted</p>}
+                    {!m.manual_text && <p className="text-xs text-amber-500 mt-0.5">⚠ No text extracted</p>}
+                  </div>
+                  <div className="flex gap-1 shrink-0">
+                    {m.pdf_file && (
+                      <a href={m.pdf_file} target="_blank" rel="noopener noreferrer">
+                        <Button variant="ghost" size="sm" className="text-gray-500 h-8 w-8 p-0">
+                          <FileText className="w-4 h-4" />
+                        </Button>
+                      </a>
+                    )}
+                    <Button variant="ghost" size="sm" onClick={() => deleteManual(m.id)} className="text-red-400 h-8 w-8 p-0 hover:text-red-600">
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+              {filteredManuals.length === 0 && <p className="text-center text-gray-400 py-8">No manuals found</p>}
+            </div>
+          </TabsContent>
+
+          {/* Parts Tab */}
+          <TabsContent value="parts">
+            <div className="relative mb-4">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Input placeholder="Search parts..." value={searchParts} onChange={e => setSearchParts(e.target.value)} className="pl-9" />
+            </div>
+
+            <div className="space-y-2">
+              {filteredParts.map(p => (
+                <div key={p.id} className="bg-white rounded-lg border border-gray-200 p-3 flex items-center gap-3">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm text-gray-900">{p.part_number}</p>
+                    <p className="text-xs text-gray-500 truncate">{p.description}</p>
+                    {(p.brand || p.pump_model) && (
+                      <p className="text-xs text-gray-400">{p.brand}{p.pump_model ? ` · ${p.pump_model}` : ""}</p>
+                    )}
+                  </div>
+                  <Button variant="ghost" size="sm" onClick={() => deletePart(p.id)} className="text-red-400 h-8 w-8 p-0 hover:text-red-600 shrink-0">
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              ))}
+              {filteredParts.length === 0 && <p className="text-center text-gray-400 py-8">No parts found</p>}
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
+
+      {showManualForm && (
+        <ManualForm
+          onClose={() => setShowManualForm(false)}
+          onSuccess={() => queryClient.invalidateQueries({ queryKey: ["manuals"] })}
+        />
+      )}
+      <Toaster position="top-center" />
+    </div>
+  );
+}
