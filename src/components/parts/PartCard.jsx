@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import { ChevronDown, ChevronUp, Copy, Check, AlertTriangle } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { ChevronDown, ChevronUp, Copy, Check, AlertTriangle, Star } from "lucide-react";
+import { isFavorite, toggleFavorite } from "../../lib/favorites";
 
 const Tag = ({ label, color }) => {
   const colors = {

@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { X, Upload, Loader2 } from "lucide-react";
+import { X, Upload, Loader2, CloudOff } from "lucide-react";
 import { toast } from "sonner";
+import { enqueue, ACTION_TYPES } from "../lib/pendingQueue";
 
 export default function ManualForm({ onClose, onSuccess }) {
   const [formData, setFormData] = useState({
