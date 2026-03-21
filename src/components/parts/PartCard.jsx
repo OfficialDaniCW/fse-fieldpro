@@ -1,16 +1,15 @@
 import React, { useState } from "react";
-import { ChevronDown, ChevronUp, Copy, Check } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ChevronDown, ChevronUp, Copy, Check, AlertTriangle } from "lucide-react";
 
 const Tag = ({ label, color }) => {
   const colors = {
     red: "bg-red-50 text-red-700 border-red-200",
     blue: "bg-blue-50 text-blue-700 border-blue-200",
-    green: "bg-green-50 text-green-700 border-green-200",
+    green: "bg-green-50 text-green-800 border-green-300",
     purple: "bg-purple-50 text-purple-700 border-purple-200",
   };
   return (
-    <span className={`text-xs font-medium px-2 py-0.5 rounded-full border ${colors[color]}`}>
+    <span className={`text-xs font-semibold px-2 py-0.5 rounded border tracking-wide ${colors[color]}`}>
       {label}
     </span>
   );
@@ -26,27 +25,35 @@ export default function PartCard({ part }) {
     part.installation_step_3,
   ].filter(Boolean);
 
-  const handleCopy = () => {
+  const handleCopy = (e) => {
+    e.stopPropagation();
     navigator.clipboard.writeText(part.part_number);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-      {/* Card header — always visible */}
+    <div className="bg-white border border-gray-200 overflow-hidden rounded-none border-l-0 border-r-0 -mx-4 px-4">
+      {/* Card header */}
       <button
         onClick={() => setExpanded(e => !e)}
-        className="w-full text-left px-4 py-4 flex items-start gap-3"
+        className="w-full text-left pt-4 pb-3 flex items-start justify-between gap-3"
       >
         <div className="flex-1 min-w-0 space-y-2">
-          {/* Part number badge */}
-          <span className="inline-block font-mono text-sm font-bold px-2.5 py-1 border-2 border-[#CC0000] text-[#CC0000] rounded-lg bg-red-50">
+          {/* Part number */}
+          <span className="inline-block font-mono text-xs font-bold px-2 py-1 border border-[#CC0000] text-[#CC0000] rounded bg-white tracking-widest">
             {part.part_number}
           </span>
 
-          {/* Description */}
-          <p className="font-bold text-gray-900 text-base leading-snug">{part.description}</p>
+          {/* Description — all caps bold */}
+          <p className="font-extrabold text-gray-900 text-base leading-tight uppercase tracking-tight">
+            {part.description}
+          </p>
+
+          {/* Variant spec subtitle */}
+          {part.variant_spec && (
+            <p className="text-xs text-gray-400 uppercase tracking-wide leading-snug">{part.variant_spec}</p>
+          )}
 
           {/* Tags */}
           <div className="flex flex-wrap gap-1.5">
@@ -57,41 +64,63 @@ export default function PartCard({ part }) {
           </div>
         </div>
 
-        <div className="flex-shrink-0 mt-1 text-gray-400">
-          {expanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+        <div className={`flex-shrink-0 mt-1 w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
+          expanded ? "bg-[#CC0000] text-white" : "bg-gray-100 text-gray-500"
+        }`}>
+          {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
         </div>
       </button>
 
       {/* Expanded content */}
       {expanded && (
-        <div className="border-t border-gray-100 px-4 py-4 space-y-4">
+        <div className="border-t border-gray-100 pt-4 pb-4 space-y-5">
+          {/* Specs grid */}
+          <div className="grid grid-cols-2 gap-4">
+            {part.pump_model && (
+              <div>
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Pump Model</p>
+                <p className="text-sm font-bold text-gray-900">{part.pump_model}</p>
+              </div>
+            )}
+            {part.system_area && (
+              <div>
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">System / Area</p>
+                <p className="text-sm font-bold text-gray-900">{part.system_area}</p>
+              </div>
+            )}
+            {part.component_type && (
+              <div>
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Component</p>
+                <p className="text-sm font-bold text-gray-900 uppercase">{part.component_type}</p>
+              </div>
+            )}
+            {part.brand && (
+              <div>
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Brand</p>
+                <p className="text-sm font-bold text-gray-900">{part.brand}</p>
+              </div>
+            )}
+          </div>
+
           {/* What it does */}
           {part.what_it_does && (
             <div>
-              <h4 className="text-sm font-bold text-gray-500 uppercase tracking-wide mb-1">What it does</h4>
-              <p className="text-base text-gray-700 leading-relaxed">{part.what_it_does}</p>
-            </div>
-          )}
-
-          {/* Variant spec */}
-          {part.variant_spec && (
-            <div>
-              <h4 className="text-sm font-bold text-gray-500 uppercase tracking-wide mb-1">Specification</h4>
-              <p className="text-base text-gray-700">{part.variant_spec}</p>
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">What it does</p>
+              <p className="text-sm text-gray-700 leading-relaxed">{part.what_it_does}</p>
             </div>
           )}
 
           {/* Installation steps */}
           {steps.length > 0 && (
             <div>
-              <h4 className="text-sm font-bold text-gray-500 uppercase tracking-wide mb-2">Installation</h4>
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Installation</p>
               <div className="space-y-3">
                 {steps.map((step, idx) => (
                   <div key={idx} className="flex gap-3 items-start">
-                    <span className="flex-shrink-0 w-7 h-7 rounded-full bg-[#CC0000] text-white text-sm font-bold flex items-center justify-center shadow-sm">
+                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[#CC0000] text-white text-xs font-bold flex items-center justify-center">
                       {idx + 1}
                     </span>
-                    <p className="text-base text-gray-700 leading-relaxed pt-0.5">{step}</p>
+                    <p className="text-sm text-gray-700 leading-relaxed pt-0.5">{step}</p>
                   </div>
                 ))}
               </div>
@@ -100,23 +129,23 @@ export default function PartCard({ part }) {
 
           {/* Safety warning */}
           {part.safety_warning && (
-            <div className="bg-orange-50 border border-orange-300 rounded-lg px-4 py-3 flex gap-3 items-start">
-              <span className="text-xl flex-shrink-0">⚠️</span>
-              <p className="text-orange-900 font-medium text-base leading-relaxed">{part.safety_warning}</p>
+            <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3 flex gap-3 items-start">
+              <AlertTriangle className="w-4 h-4 text-[#CC0000] flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-red-900 font-semibold leading-relaxed">{part.safety_warning}</p>
             </div>
           )}
 
           {/* Copy button */}
-          <Button
+          <button
             onClick={handleCopy}
-            className="w-full bg-[#CC0000] hover:bg-[#aa0000] h-11 text-base font-medium"
+            className="w-full flex items-center justify-center gap-2 h-11 border-2 border-gray-200 rounded-lg text-sm font-semibold text-gray-700 hover:border-gray-300 hover:bg-gray-50 transition-colors"
           >
             {copied ? (
-              <><Check className="w-4 h-4 mr-2" /> Copied!</>
+              <><Check className="w-4 h-4 text-green-600" /> Copied!</>
             ) : (
-              <><Copy className="w-4 h-4 mr-2" /> Copy Part Number</>
+              <><Copy className="w-4 h-4" /> Copy Part Number</>
             )}
-          </Button>
+          </button>
         </div>
       )}
     </div>
