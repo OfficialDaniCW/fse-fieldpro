@@ -78,10 +78,21 @@ export default function PartCard({ part }) {
           </div>
         </div>
 
-        <div className={`flex-shrink-0 mt-1 w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
-          expanded ? "bg-[#CC0000] text-white" : "bg-gray-100 text-gray-500"
-        }`}>
-          {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        <div className="flex items-center gap-2 flex-shrink-0 mt-1">
+          <button
+            onClick={handleFavorite}
+            className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
+              favorited ? "bg-amber-50 text-amber-500" : "bg-gray-100 text-gray-400 hover:text-amber-400"
+            }`}
+            title={favorited ? "Remove from favourites" : "Add to favourites"}
+          >
+            <Star className={`w-4 h-4 ${favorited ? "fill-amber-400 text-amber-400" : ""}`} />
+          </button>
+          <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
+            expanded ? "bg-[#CC0000] text-white" : "bg-gray-100 text-gray-500"
+          }`}>
+            {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          </div>
         </div>
       </button>
 

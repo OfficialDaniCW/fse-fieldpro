@@ -23,19 +23,31 @@ export default function ManualForm({ onClose, onSuccess }) {
     e.preventDefault();
     setUploading(true);
 
+    // If offline, queue the action for later sync (PDF upload requires connectivity)
+    if (!navigator.onLine) {
+      if (pdfFile) {
+        toast.error("PDF upload requires an internet connection. Add the manual without a PDF, or try again when online.");
+        setUploading(false);
+        return;
+      }
+      enqueue({ type: ACTION_TYPES.CREATE_MANUAL, payload: { ...formData, pdf_file: null } });
+      toast.success("Saved offline — will sync automatically when you reconnect.", {
+        icon: <CloudOff className="w-4 h-4" />,
+        duration: 5000,
+      });
+      onSuccess?.();
+      onClose();
+      setUploading(false);
+      return;
+    }
+
     try {
       let pdf_file = null;
-      
       if (pdfFile) {
         const { file_url } = await base44.integrations.Core.UploadFile({ file: pdfFile });
         pdf_file = file_url;
       }
-
-      await base44.entities.Manual.create({
-        ...formData,
-        pdf_file
-      });
-
+      await base44.entities.Manual.create({ ...formData, pdf_file });
       toast.success("Manual added successfully!");
       onSuccess?.();
       onClose();
