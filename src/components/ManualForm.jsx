@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { X, Upload, Loader2, CloudOff } from "lucide-react";
+import { X, Upload, Loader2, CloudOff, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { enqueue, ACTION_TYPES } from "../lib/pendingQueue";
 
@@ -18,6 +18,7 @@ export default function ManualForm({ onClose, onSuccess }) {
   });
   const [pdfFile, setPdfFile] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [uploadStage, setUploadStage] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -43,18 +44,35 @@ export default function ManualForm({ onClose, onSuccess }) {
 
     try {
       let pdf_file = null;
+      let manual_text = null;
+      let summary = null;
+
       if (pdfFile) {
+        setUploadStage("Uploading PDF...");
         const { file_url } = await base44.integrations.Core.UploadFile({ file: pdfFile });
         pdf_file = file_url;
+
+        setUploadStage("Extracting text from PDF...");
+        try {
+          const extracted = await base44.functions.invoke("extractPdfText", { pdf_url: pdf_file });
+          manual_text = extracted.data?.manual_text || null;
+          summary = extracted.data?.summary || null;
+        } catch (extractErr) {
+          console.warn("PDF text extraction failed:", extractErr);
+          toast("PDF uploaded but text extraction failed. Manual will still be saved.", { icon: "⚠️" });
+        }
       }
-      await base44.entities.Manual.create({ ...formData, pdf_file });
-      toast.success("Manual added successfully!");
+
+      setUploadStage("Saving manual...");
+      await base44.entities.Manual.create({ ...formData, pdf_file, manual_text, summary });
+      toast.success("Manual added successfully!" + (manual_text ? " Text extracted for AI search." : ""));
       onSuccess?.();
       onClose();
     } catch (error) {
       toast.error("Failed to add manual: " + error.message);
     } finally {
       setUploading(false);
+      setUploadStage("");
     }
   };
 
