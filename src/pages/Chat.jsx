@@ -257,7 +257,7 @@ export default function ChatPage() {
                 <div className="space-y-1.5">
                   <p className="text-sm text-slate-300">"140852556" — look up a part number</p>
                   <p className="text-sm text-slate-300">"SK700 VR hose" — search by description</p>
-                  <p className="text-sm text-slate-300">📷 Photo of a part label — auto-identify</p>
+                  <p className="text-sm text-slate-300">Photo of a part label — auto-identify</p>
                 </div>
               </div>
             </div>
