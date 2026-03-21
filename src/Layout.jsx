@@ -28,11 +28,11 @@ export default function Layout({ children, currentPageName }) {
                 className={`flex-1 flex flex-col items-center justify-center py-3 transition-colors ${
                   isActive
                     ? "text-[#CC0000] border-t-2 border-[#CC0000]"
-                    : "text-gray-400 hover:text-gray-600 border-t-2 border-transparent"
+                    : "text-gray-400 hover:text-gray-500 border-t-2 border-transparent"
                 }`}
               >
                 <Icon className="w-5 h-5 mb-0.5" />
-                <span className="text-xs font-medium">{label}</span>
+                <span className="text-xs font-extrabold tracking-tight">{label}</span>
               </Link>
             );
           })}
