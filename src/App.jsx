@@ -60,6 +60,11 @@ const AuthenticatedApp = () => {
           }
         />
       ))}
+      <Route path="/Favorites" element={
+        <Layout currentPageName="Favorites">
+          <Favorites />
+        </Layout>
+      } />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
