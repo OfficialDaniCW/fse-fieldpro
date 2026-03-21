@@ -272,9 +272,9 @@ export default function ChatPage() {
       {/* Input Area */}
       <div className="fixed bottom-16 left-0 right-0 bg-white border-t border-gray-200 p-3 z-10">
         {imageFile && (
-          <div className="mb-2 flex items-center gap-2 bg-slate-800 px-3 py-2 rounded-lg border border-slate-700">
+          <div className="mb-2 flex items-center gap-2 bg-gray-100 px-3 py-2 rounded-lg border border-gray-200">
             <ImageIcon className="w-4 h-4 text-[#CC0000]" />
-            <span className="text-xs text-slate-300 flex-1">{imageFile.name}</span>
+            <span className="text-xs text-gray-700 flex-1">{imageFile.name}</span>
             <button
               onClick={() => setImageFile(null)}
               className="text-red-400 text-xs font-medium"
@@ -292,7 +292,7 @@ export default function ChatPage() {
               onChange={handleImageUpload}
               className="hidden"
             />
-            <button className="bg-slate-800 hover:bg-slate-700 text-slate-300 p-2.5 rounded-lg border border-slate-700">
+            <button className="bg-white hover:bg-gray-100 text-gray-600 p-2.5 rounded-lg border border-gray-300">
               <ImageIcon className="w-5 h-5" />
             </button>
           </label>
@@ -301,8 +301,8 @@ export default function ChatPage() {
             onClick={handleVoiceInput}
             className={`flex-shrink-0 p-2.5 rounded-lg border ${
               isListening
-                ? "bg-red-500/20 border-red-500 text-red-400 animate-pulse"
-                : "bg-slate-800 hover:bg-slate-700 border-slate-700 text-slate-300"
+                ? "bg-red-100 border-red-400 text-red-600 animate-pulse"
+                : "bg-white hover:bg-gray-100 border-gray-300 text-gray-600"
             }`}
             title="Voice input"
           >
@@ -315,7 +315,7 @@ export default function ChatPage() {
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={(e) => e.key === "Enter" && handleSend()}
             placeholder="Query equipment database..."
-            className="flex-1 text-sm h-11 bg-slate-800 border-slate-700 text-white placeholder:text-slate-500"
+            className="flex-1 text-sm h-11 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
           />
 
           <Button

@@ -8,8 +8,8 @@ export default function MessageBubble({ message }) {
   return (
     <div className={`flex gap-2.5 ${isUser ? "justify-end" : "justify-start"}`}>
       {!isUser && (
-        <div className="h-7 w-7 rounded-lg bg-white flex items-center justify-center flex-shrink-0 mt-0.5">
-          <span className="text-[8px] font-bold text-[#CC0000] tracking-tight">TSG</span>
+        <div className="h-7 w-7 rounded-lg bg-[#CC0000] flex items-center justify-center flex-shrink-0 mt-0.5">
+          <span className="text-[8px] font-bold text-white tracking-tight">FSE</span>
         </div>
       )}
       <div className={`max-w-[85%] ${isUser && "flex flex-col items-end"}`}>
@@ -17,7 +17,7 @@ export default function MessageBubble({ message }) {
           className={`rounded-xl px-3.5 py-2.5 ${
             isUser
               ? "bg-[#CC0000] text-white"
-              : "bg-slate-800 border border-slate-700 text-slate-100"
+              : "bg-white border border-gray-200 text-gray-800 shadow-sm"
           }`}
         >
           {message.content && (
@@ -69,12 +69,12 @@ export default function MessageBubble({ message }) {
               return (
                 <div
                   key={idx}
-                  className="text-xs flex items-center gap-2 bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5"
+                  className="text-xs flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5"
                 >
                   {isComplete && <CheckCircle2 className="w-3 h-3 text-green-400" />}
                   {isError && <AlertCircle className="w-3 h-3 text-red-400" />}
                   {!isComplete && !isError && <Clock className="w-3 h-3 text-slate-500" />}
-                  <span className="text-slate-400 font-mono">
+                  <span className="text-gray-500 font-mono">
                     {tool.name?.split(".").pop() || "query_database"}
                   </span>
                 </div>
