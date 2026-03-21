@@ -16,7 +16,7 @@ export default function PartsPage() {
 
   const { data: parts = [], isLoading } = useQuery({
     queryKey: ["parts"],
-    queryFn: () => base44.entities.Part.list("-created_date"),
+    queryFn: () => base44.entities.Part.list("-created_date", 2000),
     initialData: [],
   });
 
