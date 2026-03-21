@@ -110,7 +110,7 @@ export default function ChatPage() {
       p.component_type ? `**Component:** ${p.component_type}` : null,
       p.what_it_does ? `\n**What it does:**\n${p.what_it_does}` : null,
       steps.length ? `\n**Installation:**\n${steps.map((s, i) => `${i + 1}. ${s}`).join("\n")}` : null,
-      p.safety_warning ? `\n⚠️ **Safety Warning:** ${p.safety_warning}` : null,
+      p.safety_warning ? `\n**Safety Warning:** ${p.safety_warning}` : null,
       p.variant_spec ? `\n**Specification:** ${p.variant_spec}` : null,
     ].filter(Boolean).join("\n");
   };

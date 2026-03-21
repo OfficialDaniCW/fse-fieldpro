@@ -1,5 +1,5 @@
 import React from "react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, AlertTriangle, Info, FileText, Wrench } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
@@ -13,27 +13,24 @@ function parseLine(line, idx) {
 
   if (!trimmed) return <div key={idx} className="h-3" />;
 
-  // Safety warning line
   if (SAFETY_KEYWORDS.test(trimmed)) {
     return (
       <div key={idx} className="bg-orange-50 border border-orange-300 rounded-lg px-4 py-3 flex gap-3 items-start">
-        <span className="text-xl flex-shrink-0">⚠️</span>
+        <AlertTriangle className="w-4 h-4 text-orange-600 flex-shrink-0 mt-0.5" />
         <p className="text-orange-900 font-medium text-base leading-relaxed">{trimmed}</p>
       </div>
     );
   }
 
-  // Cost / price info
   if (COST_KEYWORDS.test(trimmed)) {
     return (
       <div key={idx} className="bg-gray-100 border border-gray-300 rounded-lg px-4 py-3 flex gap-3 items-start">
-        <span className="text-xl flex-shrink-0">ℹ️</span>
+        <Info className="w-4 h-4 text-gray-500 flex-shrink-0 mt-0.5" />
         <p className="text-gray-700 text-base leading-relaxed">{trimmed}</p>
       </div>
     );
   }
 
-  // Numbered step e.g. "1. Do this" or "1) Do this"
   const stepMatch = trimmed.match(STEP_REGEX);
   if (stepMatch) {
     return (
@@ -46,7 +43,6 @@ function parseLine(line, idx) {
     );
   }
 
-  // Section heading: markdown-style or ALL CAPS line
   const headingMatch = trimmed.match(HEADING_REGEX);
   if (headingMatch) {
     const text = headingMatch[2] || headingMatch[3];
@@ -57,7 +53,6 @@ function parseLine(line, idx) {
     );
   }
 
-  // Plain body text
   return (
     <p key={idx} className="text-base text-gray-700 leading-relaxed">
       {trimmed}
@@ -65,17 +60,14 @@ function parseLine(line, idx) {
   );
 }
 
-function ContentSection({ label, emoji, content, borderColor = "border-gray-200" }) {
+function ContentSection({ label, icon: Icon, content, borderColor = "border-gray-200" }) {
   if (!content) return null;
-
   const lines = content.split("\n");
-
   return (
     <div className={`bg-white rounded-xl shadow-sm border ${borderColor} overflow-hidden`}>
-      <div className="px-5 py-4 border-b border-gray-100 bg-gray-50">
-        <h2 className="font-bold text-gray-800 text-lg">
-          {emoji} {label}
-        </h2>
+      <div className="px-5 py-4 border-b border-gray-100 bg-gray-50 flex items-center gap-2">
+        <Icon className="w-4 h-4 text-[#CC0000]" />
+        <h2 className="font-bold text-gray-800 text-lg">{label}</h2>
       </div>
       <div className="px-5 py-4 space-y-3">
         {lines.map((line, idx) => parseLine(line, idx))}
@@ -87,7 +79,6 @@ function ContentSection({ label, emoji, content, borderColor = "border-gray-200"
 export default function ManualViewer({ manual, onBack }) {
   return (
     <div className="min-h-screen bg-gray-50 pb-24">
-      {/* Header */}
       <div className="bg-[#CC0000] text-white px-4 py-4 shadow-lg">
         <button
           onClick={onBack}
@@ -102,31 +93,33 @@ export default function ManualViewer({ manual, onBack }) {
         </p>
       </div>
 
-      {/* Content */}
       <div className="max-w-4xl mx-auto p-4 space-y-5">
         <ContentSection
           label="Error Codes"
-          emoji="⚠️"
+          icon={AlertTriangle}
           content={manual.error_codes}
           borderColor="border-yellow-200"
         />
         <ContentSection
           label="Troubleshooting Procedures"
-          emoji="🔧"
+          icon={Wrench}
           content={manual.troubleshooting_steps}
           borderColor="border-red-100"
         />
 
         {manual.pdf_file && (
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 px-5 py-4">
-            <h2 className="font-bold text-gray-800 text-lg mb-3">📄 Full Manual PDF</h2>
+            <div className="flex items-center gap-2 mb-3">
+              <FileText className="w-4 h-4 text-[#CC0000]" />
+              <h2 className="font-bold text-gray-800 text-lg">Full Manual PDF</h2>
+            </div>
             <a
               href={manual.pdf_file}
               target="_blank"
               rel="noopener noreferrer"
               className="text-[#CC0000] hover:underline font-medium text-base"
             >
-              Open PDF Document →
+              Open PDF Document
             </a>
           </div>
         )}
