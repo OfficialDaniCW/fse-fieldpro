@@ -101,21 +101,37 @@ export default function ChatPage() {
   };
 
   // --- Part lookup helpers ---
-  const PART_NUMBER_REGEX = /^[A-Z0-9]{4,}[-/]?[A-Z0-9]*$/i;
+  // Matches part numbers: pure numeric (e.g. 140852556) or alphanumeric codes (e.g. SK700-A)
+  const PART_NUMBER_REGEX = /^[A-Z0-9]{4,}([-/][A-Z0-9]+)*$/i;
 
   const formatPartFull = (p) => {
     const steps = [p.installation_step_1, p.installation_step_2, p.installation_step_3].filter(Boolean);
-    return [
+    const lines = [
       `**${p.part_number}** — ${p.description}`,
-      p.brand ? `**Brand:** ${p.brand}` : null,
-      p.pump_model ? `**Model:** ${p.pump_model}` : null,
-      p.system_area ? `**System:** ${p.system_area}` : null,
-      p.component_type ? `**Component:** ${p.component_type}` : null,
-      p.what_it_does ? `\n**What it does:**\n${p.what_it_does}` : null,
-      steps.length ? `\n**Installation:**\n${steps.map((s, i) => `${i + 1}. ${s}`).join("\n")}` : null,
-      p.safety_warning ? `\n**Safety Warning:** ${p.safety_warning}` : null,
-      p.variant_spec ? `\n**Specification:** ${p.variant_spec}` : null,
-    ].filter(Boolean).join("\n");
+    ];
+    if (p.brand || p.pump_model || p.system_area || p.component_type) {
+      lines.push("");
+      if (p.brand) lines.push(`**Brand:** ${p.brand}`);
+      if (p.pump_model) lines.push(`**Model:** ${p.pump_model}`);
+      if (p.system_area) lines.push(`**System:** ${p.system_area}`);
+      if (p.component_type) lines.push(`**Component:** ${p.component_type}`);
+    }
+    if (p.variant_spec) lines.push(`**Spec:** ${p.variant_spec}`);
+    if (p.what_it_does) {
+      lines.push("");
+      lines.push(`**What it does:**`);
+      lines.push(p.what_it_does);
+    }
+    if (steps.length) {
+      lines.push("");
+      lines.push(`**Installation steps:**`);
+      steps.forEach((s, i) => lines.push(`${i + 1}. ${s}`));
+    }
+    if (p.safety_warning) {
+      lines.push("");
+      lines.push(`**Safety Warning:** ${p.safety_warning}`);
+    }
+    return lines.join("\n");
   };
 
   const formatPartSummary = (p) => [
