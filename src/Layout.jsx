@@ -19,7 +19,7 @@ export default function Layout({ children, currentPageName }) {
             to="/"
             className={`flex-1 flex flex-col items-center justify-center py-3 ${
               isChat
-                ? "text-blue-400 border-t-2 border-blue-500"
+                ? "text-[#CC0000] border-t-2 border-[#CC0000]"
                 : "text-slate-500 hover:text-slate-400"
             }`}
           >
@@ -30,7 +30,7 @@ export default function Layout({ children, currentPageName }) {
             to="/manuals"
             className={`flex-1 flex flex-col items-center justify-center py-3 ${
               isManuals
-                ? "text-blue-400 border-t-2 border-blue-500"
+                ? "text-[#CC0000] border-t-2 border-[#CC0000]"
                 : "text-slate-500 hover:text-slate-400"
             }`}
           >

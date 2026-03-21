@@ -8,15 +8,15 @@ export default function MessageBubble({ message }) {
   return (
     <div className={`flex gap-2.5 ${isUser ? "justify-end" : "justify-start"}`}>
       {!isUser && (
-        <div className="h-7 w-7 rounded-lg bg-blue-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-          <div className="h-3 w-3 rounded bg-blue-500"></div>
+        <div className="h-7 w-7 rounded-lg bg-white flex items-center justify-center flex-shrink-0 mt-0.5">
+          <span className="text-[8px] font-bold text-[#CC0000] tracking-tight">TSG</span>
         </div>
       )}
       <div className={`max-w-[85%] ${isUser && "flex flex-col items-end"}`}>
         <div
           className={`rounded-xl px-3.5 py-2.5 ${
             isUser
-              ? "bg-blue-600 text-white"
+              ? "bg-[#CC0000] text-white"
               : "bg-slate-800 border border-slate-700 text-slate-100"
           }`}
         >

@@ -120,7 +120,7 @@ export default function ManualForm({ onClose, onSuccess }) {
           <div>
             <Label htmlFor="pdf">PDF Manual (Optional)</Label>
             <div className="mt-1">
-              <label className="flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-6 cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-colors">
+              <label className="flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-6 cursor-pointer hover:border-[#CC0000] hover:bg-red-50 transition-colors">
                 <input
                   type="file"
                   id="pdf"
@@ -152,7 +152,7 @@ export default function ManualForm({ onClose, onSuccess }) {
             <Button
               type="submit"
               disabled={uploading}
-              className="flex-1 bg-blue-600 hover:bg-blue-700"
+              className="flex-1 bg-[#CC0000] hover:bg-[#aa0000]"
             >
               {uploading ? (
                 <>

@@ -129,8 +129,8 @@ export default function ChatPage() {
       <div className="bg-slate-900 border-b border-slate-800 px-4 py-3 flex-shrink-0">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
-              <div className="w-4 h-4 rounded bg-blue-500"></div>
+            <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center">
+              <span className="text-xs font-bold text-[#CC0000] tracking-tight">TSG</span>
             </div>
             <div>
               <h1 className="text-base font-semibold text-white">FSE Assistant</h1>
@@ -138,7 +138,7 @@ export default function ChatPage() {
             </div>
           </div>
           <Link to="/manuals">
-            <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white hover:bg-slate-800">
+            <Button variant="ghost" size="sm" className="text-[#CC0000] hover:text-white hover:bg-slate-800">
               <BookOpen className="w-4 h-4 mr-1.5" />
               <span className="text-xs">Database</span>
             </Button>
@@ -151,8 +151,8 @@ export default function ChatPage() {
         {messages.length === 0 && (
           <div className="mt-8 space-y-4">
             <div className="text-center mb-6">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-slate-800 mb-3">
-                <div className="w-6 h-6 rounded-md bg-blue-500"></div>
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-white mb-3">
+                <span className="text-sm font-bold text-[#CC0000] tracking-tight">TSG</span>
               </div>
               <h2 className="text-lg font-semibold text-white mb-1">Field Service Engine</h2>
               <p className="text-sm text-slate-400">Query equipment data, error codes & procedures</p>
@@ -180,7 +180,7 @@ export default function ChatPage() {
       <div className="fixed bottom-16 left-0 right-0 bg-slate-900 border-t border-slate-800 p-3 z-10">
         {imageFile && (
           <div className="mb-2 flex items-center gap-2 bg-slate-800 px-3 py-2 rounded-lg border border-slate-700">
-            <ImageIcon className="w-4 h-4 text-blue-400" />
+            <ImageIcon className="w-4 h-4 text-[#CC0000]" />
             <span className="text-xs text-slate-300 flex-1">{imageFile.name}</span>
             <button
               onClick={() => setImageFile(null)}
@@ -228,7 +228,7 @@ export default function ChatPage() {
           <Button
             onClick={handleSend}
             disabled={(!input.trim() && !imageFile) || !conversationId}
-            className="flex-shrink-0 bg-blue-600 hover:bg-blue-700 h-11 px-4 disabled:opacity-50"
+            className="flex-shrink-0 bg-[#CC0000] hover:bg-[#aa0000] h-11 px-4 disabled:opacity-50"
           >
             <Send className="w-4 h-4" />
           </Button>

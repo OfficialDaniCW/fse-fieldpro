@@ -29,16 +29,16 @@ export default function ManualsPage() {
   if (selectedManual) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-        <div className="bg-blue-600 text-white px-4 py-4 shadow-lg">
+        <div className="bg-[#CC0000] text-white px-4 py-4 shadow-lg">
           <button
             onClick={() => setSelectedManual(null)}
-            className="flex items-center gap-2 text-white hover:text-blue-100 mb-2"
+            className="flex items-center gap-2 text-white hover:text-red-100 mb-2"
           >
             <ArrowLeft className="w-5 h-5" />
             <span className="font-medium">Back to Manuals</span>
           </button>
           <h1 className="text-xl font-bold">{selectedManual.title}</h1>
-          <p className="text-sm text-blue-100 mt-1">
+          <p className="text-sm text-red-100 mt-1">
             {selectedManual.equipment_manufacturer} {selectedManual.equipment_model}
           </p>
         </div>
@@ -56,7 +56,7 @@ export default function ManualsPage() {
           )}
 
           {selectedManual.troubleshooting_steps && (
-            <div className="bg-white rounded-lg shadow-md p-4 border-l-4 border-blue-400">
+            <div className="bg-white rounded-lg shadow-md p-4 border-l-4 border-[#CC0000]">
               <h3 className="font-bold text-lg text-gray-800 mb-3 flex items-center gap-2">
                 🔧 Troubleshooting Procedures
               </h3>
@@ -73,7 +73,7 @@ export default function ManualsPage() {
                 href={selectedManual.pdf_file}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-600 hover:text-blue-700 underline"
+                className="text-[#CC0000] hover:text-[#aa0000] underline"
               >
                 View PDF Manual
               </a>
@@ -81,7 +81,7 @@ export default function ManualsPage() {
           )}
 
           <Link to="/">
-            <Button className="w-full bg-blue-600 hover:bg-blue-700 h-12 text-base">
+            <Button className="w-full bg-[#CC0000] hover:bg-[#aa0000] h-12 text-base">
               Ask AI about this manual
             </Button>
           </Link>
@@ -92,9 +92,9 @@ export default function ManualsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-      <div className="bg-blue-600 text-white px-4 py-4 shadow-lg">
+      <div className="bg-[#CC0000] text-white px-4 py-4 shadow-lg">
         <h1 className="text-xl font-bold">📚 Equipment Manuals</h1>
-        <p className="text-xs text-blue-100 mt-1">{manuals.length} manuals in library</p>
+        <p className="text-xs text-red-100 mt-1">{manuals.length} manuals in library</p>
       </div>
 
       <div className="max-w-4xl mx-auto p-4">
@@ -126,8 +126,8 @@ export default function ManualsPage() {
                 className="bg-white rounded-lg shadow-md p-4 cursor-pointer hover:shadow-lg transition-shadow border border-gray-200"
               >
                 <div className="flex items-start gap-3">
-                  <div className="bg-blue-100 rounded-lg p-2 flex-shrink-0">
-                    <FileText className="w-6 h-6 text-blue-600" />
+                  <div className="bg-red-50 rounded-lg p-2 flex-shrink-0">
+                    <FileText className="w-6 h-6 text-[#CC0000]" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-bold text-base text-gray-800 truncate">
@@ -136,7 +136,7 @@ export default function ManualsPage() {
                     <p className="text-sm text-gray-600 mt-1">
                       {manual.equipment_manufacturer} • {manual.equipment_model}
                     </p>
-                    <p className="text-xs text-blue-600 mt-2 font-medium">
+                    <p className="text-xs text-[#CC0000] mt-2 font-medium">
                       Tap to view details →
                     </p>
                   </div>
