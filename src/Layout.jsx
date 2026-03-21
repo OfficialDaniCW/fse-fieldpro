@@ -42,7 +42,7 @@ export default function Layout({ children, currentPageName }) {
       {isOffline && (
         <div className="fixed top-0 left-0 right-0 z-[100] bg-amber-500 text-white text-xs font-semibold flex items-center justify-center gap-1.5 py-1.5">
           <WifiOff className="w-3.5 h-3.5" />
-          Offline — showing cached data
+          Offline — cached data{pendingCount > 0 ? ` · ${pendingCount} action${pendingCount > 1 ? "s" : ""} queued` : ""}
         </div>
       )}
       <main className={`flex-1 ${isOffline ? "pt-7" : ""}`}>
