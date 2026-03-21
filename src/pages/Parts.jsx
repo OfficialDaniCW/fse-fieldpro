@@ -62,11 +62,11 @@ export default function PartsPage() {
         <div className="px-4 pt-4 pb-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center flex-shrink-0">
-              <span className="text-xs font-extrabold text-[#CC0000] tracking-tight">TSG</span>
+              <span className="text-xs font-extrabold text-[#CC0000] tracking-tight">FSE</span>
             </div>
             <div>
-              <h1 className="text-white text-lg font-extrabold leading-tight tracking-tight">Parts Finder</h1>
-              <p className="text-red-200 text-xs font-medium tracking-widest uppercase">FE Pocket Edition</p>
+              <h1 className="text-white text-lg font-extrabold leading-tight tracking-tight">FSE FieldPro</h1>
+              <p className="text-red-200 text-xs font-medium tracking-widest uppercase">Parts Finder</p>
             </div>
           </div>
           <div className="bg-white/20 rounded-full px-3 py-1 flex items-center gap-1.5">

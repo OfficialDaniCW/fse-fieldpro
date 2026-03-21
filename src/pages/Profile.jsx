@@ -5,8 +5,8 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       <div className="bg-[#CC0000] text-white px-4 py-4 shadow-lg">
-        <h1 className="text-xl font-bold">Profile & Settings</h1>
-        <p className="text-xs text-red-100 mt-1">Account & app information</p>
+        <h1 className="text-xl font-bold">FSE FieldPro</h1>
+        <p className="text-xs text-red-100 mt-1">Profile & Settings</p>
       </div>
 
       <div className="max-w-4xl mx-auto p-4 space-y-4">
@@ -50,10 +50,10 @@ export default function ProfilePage() {
         {/* Logo */}
         <div className="flex justify-center pt-6">
           <div className="w-14 h-14 rounded-2xl bg-white border border-gray-200 shadow-sm flex items-center justify-center">
-            <span className="text-lg font-bold text-[#CC0000] tracking-tight">TSG</span>
+            <span className="text-lg font-bold text-[#CC0000] tracking-tight">FSE</span>
           </div>
         </div>
-        <p className="text-center text-xs text-gray-400">FSE Pocket Assistant</p>
+        <p className="text-center text-xs text-gray-400">FSE FieldPro</p>
       </div>
     </div>
   );

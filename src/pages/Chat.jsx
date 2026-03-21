@@ -217,21 +217,21 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-slate-950">
+    <div className="flex flex-col h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-slate-900 border-b border-slate-800 px-4 py-3 flex-shrink-0">
+      <div className="bg-[#CC0000] shadow-lg px-4 py-3 flex-shrink-0">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center">
-              <span className="text-xs font-bold text-[#CC0000] tracking-tight">TSG</span>
+              <span className="text-xs font-bold text-[#CC0000] tracking-tight">FSE</span>
             </div>
             <div>
-              <h1 className="text-base font-semibold text-white">FSE Assistant</h1>
-              <p className="text-xs text-slate-400">Technical support & diagnostics</p>
+              <h1 className="text-base font-semibold text-white">FSE FieldPro</h1>
+              <p className="text-xs text-red-200">Technical support & diagnostics</p>
             </div>
           </div>
           <Link to="/manuals">
-            <Button variant="ghost" size="sm" className="text-[#CC0000] hover:text-white hover:bg-slate-800">
+            <Button variant="ghost" size="sm" className="text-white hover:text-white hover:bg-red-700">
               <BookOpen className="w-4 h-4 mr-1.5" />
               <span className="text-xs">Database</span>
             </Button>
@@ -244,20 +244,20 @@ export default function ChatPage() {
         {messages.length === 0 && (
           <div className="mt-8 space-y-4">
             <div className="text-center mb-6">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-white mb-3">
-                <span className="text-sm font-bold text-[#CC0000] tracking-tight">TSG</span>
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-[#CC0000] mb-3">
+                <span className="text-sm font-bold text-white tracking-tight">FSE</span>
               </div>
-              <h2 className="text-lg font-semibold text-white mb-1">Field Service Engine</h2>
-              <p className="text-sm text-slate-400">Query equipment data, error codes & procedures</p>
+              <h2 className="text-lg font-semibold text-gray-900 mb-1">FSE FieldPro Assistant</h2>
+              <p className="text-sm text-gray-500">Query equipment data, error codes & procedures</p>
             </div>
             
             <div className="space-y-2">
-              <div className="bg-slate-900 border border-slate-800 rounded-lg p-3">
-                <p className="text-xs font-mono text-slate-500 mb-2">EXAMPLE QUERIES:</p>
+              <div className="bg-white border border-gray-200 rounded-lg p-3 shadow-sm">
+                <p className="text-xs font-mono text-gray-400 mb-2">EXAMPLE QUERIES:</p>
                 <div className="space-y-1.5">
-                  <p className="text-sm text-slate-300">"140852556" — look up a part number</p>
-                  <p className="text-sm text-slate-300">"SK700 VR hose" — search by description</p>
-                  <p className="text-sm text-slate-300">Photo of a part label — auto-identify</p>
+                  <p className="text-sm text-gray-700">"140852556" — look up a part number</p>
+                  <p className="text-sm text-gray-700">"SK700 VR hose" — search by description</p>
+                  <p className="text-sm text-gray-700">Photo of a part label — auto-identify</p>
                 </div>
               </div>
             </div>
@@ -270,7 +270,7 @@ export default function ChatPage() {
       </div>
 
       {/* Input Area */}
-      <div className="fixed bottom-16 left-0 right-0 bg-slate-900 border-t border-slate-800 p-3 z-10">
+      <div className="fixed bottom-16 left-0 right-0 bg-white border-t border-gray-200 p-3 z-10">
         {imageFile && (
           <div className="mb-2 flex items-center gap-2 bg-slate-800 px-3 py-2 rounded-lg border border-slate-700">
             <ImageIcon className="w-4 h-4 text-[#CC0000]" />
