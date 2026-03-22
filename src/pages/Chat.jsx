@@ -240,41 +240,94 @@ export default function ChatPage() {
     base44.agents.addMessage(conversation, { role: "assistant", content });
   };
 
-  // --- Manual text search ---
+  // --- Semantic manual search ---
   const searchManuals = async (query) => {
     let allManuals = queryClient.getQueryData(["manuals"]);
     if (!allManuals || allManuals.length === 0) {
       allManuals = await base44.entities.Manual.list("-created_date");
       queryClient.setQueryData(["manuals"], allManuals);
     }
+
+    const withContent = allManuals.filter(m => m.manual_text || m.error_codes || m.troubleshooting_steps || m.summary);
+    if (withContent.length === 0) return [];
+
+    // Build a lightweight index (id + metadata + summary) for the AI ranker
+    // Avoids sending full text in the ranking call — cheaper and faster
+    const index = withContent.map((m, i) => ({
+      idx: i,
+      id: m.id,
+      title: m.title,
+      manufacturer: m.equipment_manufacturer,
+      model: m.equipment_model,
+      version: m.version || "",
+      summary: m.summary || "",
+      has_error_codes: !!m.error_codes,
+      has_troubleshooting: !!m.troubleshooting_steps,
+    }));
+
+    // Phase 1: keyword pre-filter to narrow candidates (fast, no API call)
     const q = query.toLowerCase();
-    // Find manuals whose text or metadata contain query keywords
     const words = q.split(/\s+/).filter(w => w.length > 2);
-    return allManuals
-      .filter(m => m.manual_text || m.error_codes || m.troubleshooting_steps)
-      .map(m => {
-        const haystack = [m.title, m.equipment_manufacturer, m.equipment_model, m.manual_text, m.error_codes, m.troubleshooting_steps]
+    const candidates = index
+      .map(entry => {
+        const haystack = [entry.title, entry.manufacturer, entry.model, entry.version, entry.summary]
           .filter(Boolean).join(" ").toLowerCase();
         const score = words.filter(w => haystack.includes(w)).length;
-        return { manual: m, score };
+        return { entry, score };
       })
-      .filter(x => x.score > 0)
       .sort((a, b) => b.score - a.score)
-      .slice(0, 2)
-      .map(x => x.manual);
+      .slice(0, Math.min(8, index.length)) // top 8 candidates for semantic re-ranking
+      .map(x => x.entry);
+
+    if (candidates.length === 0) return [];
+
+    // Phase 2: AI semantic re-ranking across the candidate set
+    const ranked = await base44.integrations.Core.InvokeLLM({
+      prompt: `You are a technical document retrieval system for field service engineers.
+Given the engineer's query and a list of equipment manuals, return the IDs of the most relevant manuals in order of relevance.
+Only include manuals that are genuinely relevant. Return at most 2 IDs.
+
+ENGINEER QUERY: "${query}"
+
+AVAILABLE MANUALS:
+${candidates.map(c => `ID:${c.idx} | ${c.manufacturer} ${c.model} ${c.version} | "${c.title}" | Summary: ${c.summary || "N/A"} | Has error codes: ${c.has_error_codes} | Has troubleshooting: ${c.has_troubleshooting}`).join("\n")}`,
+      response_json_schema: {
+        type: "object",
+        properties: {
+          relevant_indices: {
+            type: "array",
+            items: { type: "number" },
+            description: "The idx values of relevant manuals, most relevant first, max 2"
+          },
+          reasoning: { type: "string" }
+        }
+      }
+    });
+
+    const relevantIndices = ranked?.relevant_indices || [];
+    if (relevantIndices.length === 0) return [];
+
+    return relevantIndices
+      .filter(i => withContent[i])
+      .map(i => withContent[i]);
   };
 
-  const buildManualContext = (manuals) => {
+  const buildManualContext = (manuals, query) => {
     return manuals.map(m => {
       const sections = [];
       const meta = [m.equipment_manufacturer, m.equipment_model, m.version].filter(Boolean).join(" ");
-      sections.push(`**Manual: ${m.title}** (${meta})`);
-      if (m.summary) sections.push(`Summary: ${m.summary}`);
-      if (m.manual_text) sections.push(m.manual_text.slice(0, 4000));
-      if (m.error_codes) sections.push(`Error Codes:\n${m.error_codes}`);
-      if (m.troubleshooting_steps) sections.push(`Troubleshooting:\n${m.troubleshooting_steps}`);
+      sections.push(`=== Manual: ${m.title} (${meta}) ===`);
+      if (m.summary) sections.push(`Overview: ${m.summary}`);
+      // Prioritise error codes / troubleshooting for diagnostic queries
+      if (m.error_codes) sections.push(`--- Error Codes ---\n${m.error_codes}`);
+      if (m.troubleshooting_steps) sections.push(`--- Troubleshooting ---\n${m.troubleshooting_steps}`);
+      // Include raw text, trimmed — give more space to the first (most relevant) manual
+      if (m.manual_text) {
+        const limit = manuals.length === 1 ? 6000 : 3000;
+        sections.push(`--- Full Text (excerpt) ---\n${m.manual_text.slice(0, limit)}`);
+      }
       return sections.join("\n\n");
-    }).join("\n\n---\n\n");
+    }).join("\n\n========\n\n");
   };
 
   const logSearch = (query, result_type, result_count = 0) => {
