@@ -4,9 +4,10 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, Plus, Trash2, Edit, FileText, Package } from "lucide-react";
+import { Search, Plus, Trash2, FileText, Package, Shield } from "lucide-react";
 import PageHeader from "../components/PageHeader";
 import ManualForm from "../components/ManualForm";
+import PartForm from "../components/PartForm";
 import { useCurrentUser } from "../lib/useCurrentUser";
 import { toast } from "sonner";
 import { Toaster } from "sonner";
@@ -17,6 +18,7 @@ export default function AdminPage() {
   const [searchParts, setSearchParts] = useState("");
   const [searchManuals, setSearchManuals] = useState("");
   const [showManualForm, setShowManualForm] = useState(false);
+  const [showPartForm, setShowPartForm] = useState(false);
 
   const { data: parts = [] } = useQuery({
     queryKey: ["parts"],
@@ -126,9 +128,14 @@ export default function AdminPage() {
 
           {/* Parts Tab */}
           <TabsContent value="parts">
-            <div className="relative mb-4">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input placeholder="Search parts..." value={searchParts} onChange={e => setSearchParts(e.target.value)} className="pl-9" />
+            <div className="flex gap-2 mb-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Input placeholder="Search parts..." value={searchParts} onChange={e => setSearchParts(e.target.value)} className="pl-9" />
+              </div>
+              <Button onClick={() => setShowPartForm(true)} className="bg-[#CC0000] hover:bg-[#aa0000] shrink-0">
+                <Plus className="w-4 h-4 mr-1" /> Add
+              </Button>
             </div>
 
             <div className="space-y-2">
@@ -156,6 +163,12 @@ export default function AdminPage() {
         <ManualForm
           onClose={() => setShowManualForm(false)}
           onSuccess={() => queryClient.invalidateQueries({ queryKey: ["manuals"] })}
+        />
+      )}
+      {showPartForm && (
+        <PartForm
+          onClose={() => setShowPartForm(false)}
+          onSuccess={() => queryClient.invalidateQueries({ queryKey: ["parts"] })}
         />
       )}
       <Toaster position="top-center" />
