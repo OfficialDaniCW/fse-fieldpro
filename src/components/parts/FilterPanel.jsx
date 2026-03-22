@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Tag, Settings, Layers, Wrench, ChevronDown, ChevronUp, X } from "lucide-react";
 
-// Hardcoded clean values — these match exactly what's stored in the database
-const BRAND_OPTIONS = [
+// Dynamic — but include a list of expected brands for reference
+const DEFAULT_BRAND_OPTIONS = [
   "Adder (Tokheim CCTV)", "Dunclare", "Elaflex", "Fleet / Commercial",
   "Flexi / Gaskets", "GVR", "GVR / Tank Gauge", "Gilbarco", "Hose",
   "Hytek", "Labels / Stickers", "Nozzle", "OPW", "POS / FuelPOS",
