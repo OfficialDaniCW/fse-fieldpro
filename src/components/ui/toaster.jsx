@@ -3,12 +3,11 @@ import {
   Toast,
   ToastClose,
   ToastDescription,
-  ToastProvider,
   ToastTitle,
   ToastViewport,
 } from "@/components/ui/toast";
 
-function ToasterContent() {
+export function Toaster() {
   const { toasts } = useToast();
 
   return (
@@ -29,13 +28,5 @@ function ToasterContent() {
       })}
       <ToastViewport />
     </>
-  );
-}
-
-export function Toaster() {
-  return (
-    <ToastProvider>
-      <ToasterContent />
-    </ToastProvider>
   );
 }
