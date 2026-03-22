@@ -331,23 +331,39 @@ export default function PartCard({ part, manuals = [], onOpenManual, allParts = 
                  </div>
                )}
 
+               {/* Also Known As */}
+               {part.also_known_as ? (
+                 <div className="bg-indigo-50 border border-indigo-200 rounded-lg px-4 py-3">
+                   <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Also Known As</p>
+                   <p className="text-sm text-indigo-900">{part.also_known_as}</p>
+                 </div>
+               ) : null}
+
                {/* Superseded By */}
                {part.superseded_by ? (
                  <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3">
                    <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Superseded By</p>
-                   <p className="font-mono text-sm font-semibold text-amber-900 break-all">{part.superseded_by}</p>
+                   <button
+                     onClick={() => {}}
+                     className="font-mono text-sm font-semibold text-amber-900 hover:underline break-all text-left"
+                   >
+                     {part.superseded_by}
+                   </button>
                    {replacementPart && (
-                     <p className="text-xs text-amber-700 mt-2">{replacementPart.description}</p>
+                     <p className="text-xs text-amber-700 mt-2">This part has been superseded — {replacementPart.description}</p>
                    )}
                  </div>
-               ) : (
-                 <div className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-3">
-                   <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Superseded By</p>
-                   <p className="text-sm text-gray-500 italic">Not superseded</p>
+               ) : null}
+
+               {/* Supersedes */}
+               {part.supersedes ? (
+                 <div className="bg-cyan-50 border border-cyan-200 rounded-lg px-4 py-3">
+                   <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Replaces</p>
+                   <p className="font-mono text-sm font-semibold text-cyan-900">{part.supersedes}</p>
                  </div>
+               ) : null}
+               </>
                )}
-             </>
-           )}
           </div>
           </div>
           )}
