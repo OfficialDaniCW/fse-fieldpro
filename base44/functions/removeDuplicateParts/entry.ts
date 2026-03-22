@@ -9,6 +9,11 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Admin access required' }, { status: 403 });
     }
 
+    // Get batch size from query param (default 50)
+    const url = new URL(req.url);
+    const batchNum = parseInt(url.searchParams.get('batch') || '0');
+    const batchSize = 50;
+
     // Fetch all parts
     const parts = await base44.asServiceRole.entities.Part.list();
     
@@ -24,33 +29,33 @@ Deno.serve(async (req) => {
       }
     });
 
-    // Delete in batches of 5 with delays
+    const startIdx = batchNum * batchSize;
+    const endIdx = Math.min(startIdx + batchSize, toDelete.length);
+    const batch = toDelete.slice(startIdx, endIdx);
+
     let deleted = 0;
-    const batchSize = 5;
-    
-    for (let i = 0; i < toDelete.length; i += batchSize) {
-      const batch = toDelete.slice(i, i + batchSize);
-      
-      for (const id of batch) {
-        try {
-          await base44.asServiceRole.entities.Part.delete(id);
-          deleted++;
-        } catch (e) {
-          console.error(`Failed to delete ${id}:`, e.message);
-        }
-      }
-      
-      // Wait 1 second between batches
-      if (i + batchSize < toDelete.length) {
-        await new Promise(resolve => setTimeout(resolve, 1000));
+    for (const id of batch) {
+      try {
+        await base44.asServiceRole.entities.Part.delete(id);
+        deleted++;
+      } catch (e) {
+        console.error(`Failed to delete ${id}:`, e.message);
       }
     }
 
+    const isComplete = endIdx >= toDelete.length;
+
     return Response.json({
       success: true,
-      total_deleted: deleted,
-      remaining_parts: parts.length - deleted,
-      message: `Removed ${deleted} duplicate parts. ${parts.length - deleted} unique parts remain.`
+      batch_deleted: deleted,
+      batch_num: batchNum,
+      total_to_delete: toDelete.length,
+      processed_so_far: endIdx,
+      is_complete: isComplete,
+      remaining_parts: parts.length - endIdx,
+      message: isComplete 
+        ? `Complete! Removed ${toDelete.length} duplicates. ${parts.length - toDelete.length} unique parts remain.`
+        : `Batch ${batchNum + 1} complete. ${toDelete.length - endIdx} duplicates remaining.`
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
