@@ -401,17 +401,21 @@ ${candidates.map(c => `ID:${c.idx} | ${c.manufacturer} ${c.model} ${c.version} |
     if (matchedManuals.length > 0) {
       logSearch(userText, "manual_found", matchedManuals.length);
       await base44.agents.addMessage(conversation, { role: "user", content: userText });
-      const context = buildManualContext(matchedManuals);
+      const context = buildManualContext(matchedManuals, userText);
       const answer = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are a senior field service engineer assistant. Use ONLY the following manual content to answer the engineer's question.
-Be concise, direct, and safety-first. Use numbered steps where relevant. Cite the manual name/model at the end.
+        prompt: `You are a senior field service engineer assistant. Use ONLY the manual content below to answer the engineer's question.
+Rules:
+- Be concise and direct
+- Prioritise safety — always surface warnings and cautions
+- Use numbered steps for procedures
+- If the query is about an error code, explain the code, its cause, and the fix
+- Cite the manual name and model at the end of your response
+- If the answer is NOT in the manual, say so and advise contacting a supervisor
 
 MANUAL CONTENT:
 ${context}
 
-ENGINEER'S QUESTION: ${userText}
-
-If the manual doesn't contain the answer, say so clearly and suggest they contact their supervisor.`,
+ENGINEER'S QUESTION: ${userText}`,
         model: "gemini_3_flash",
       });
       injectAssistantMessage(conversation, answer);
