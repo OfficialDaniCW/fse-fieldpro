@@ -1,11 +1,12 @@
 import React, { useState, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
-import { Search, SlidersHorizontal, ChevronLeft, ChevronRight, LayoutGrid, List } from "lucide-react";
+import { Search, SlidersHorizontal, ChevronLeft, ChevronRight, LayoutGrid, List, WifiOff } from "lucide-react";
 import Fuse from "fuse.js";
 import PartCard from "../components/parts/PartCard";
 import FilterPanel from "../components/parts/FilterPanel";
 import { useNavigate } from "react-router-dom";
+import { useOfflineCache, useCacheMetadata } from "@/hooks/useOfflineCache";
 
 const PAGE_SIZE = 15;
 
@@ -17,10 +18,11 @@ export default function PartsPage() {
   const [viewMode, setViewMode] = useState("cards"); // "cards" | "table"
   const navigate = useNavigate();
 
-  const { data: parts = [], isLoading } = useQuery({
+  const { data: parts = [], isLoading, isOfflineData } = useOfflineCache('parts', {
     queryKey: ["parts"],
     queryFn: () => base44.entities.Part.list("-updated_date", 5000),
   });
+  const cacheMetadata = useCacheMetadata();
 
   const { data: manuals = [] } = useQuery({
     queryKey: ["manuals"],
