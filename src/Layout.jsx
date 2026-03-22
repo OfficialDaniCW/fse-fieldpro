@@ -99,5 +99,6 @@ export default function Layout({ children, currentPageName }) {
         </div>
       </nav>
     </div>
+    </ConnectionBannerContext.Provider>
   );
 }
