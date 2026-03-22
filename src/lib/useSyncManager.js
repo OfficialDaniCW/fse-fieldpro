@@ -8,6 +8,8 @@ import { toast } from 'sonner';
 export async function replayAction(action) {
   if (action.type === ACTION_TYPES.CREATE_MANUAL) {
     await base44.entities.Manual.create(action.payload);
+  } else if (action.type === ACTION_TYPES.CREATE_PART) {
+    await base44.entities.Part.create(action.payload);
   } else {
     throw new Error(`Unknown action type: ${action.type}`);
   }

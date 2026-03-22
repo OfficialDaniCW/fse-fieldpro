@@ -50,4 +50,5 @@ export function clearQueue() {
 // ACTION TYPES
 export const ACTION_TYPES = {
   CREATE_MANUAL: 'CREATE_MANUAL',
+  CREATE_PART: 'CREATE_PART',
 };

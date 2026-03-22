@@ -9,6 +9,7 @@ import { formatDistanceToNow } from "date-fns";
 
 const ACTION_LABELS = {
   CREATE_MANUAL: "Create Manual",
+  CREATE_PART: "Create Part",
 };
 
 export default function SyncManagerPage() {
