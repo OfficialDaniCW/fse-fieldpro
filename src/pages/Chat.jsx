@@ -343,14 +343,23 @@ export default function ChatPage() {
       return;
     }
 
-    // No part match — search manual text
+    // No part match — search manual text (semantic via LLM re-ranking)
     const matchedManuals = await searchManuals(userText);
     if (matchedManuals.length > 0) {
       logSearch(userText, "manual_found", matchedManuals.length);
       await base44.agents.addMessage(conversation, { role: "user", content: userText });
       const context = buildManualContext(matchedManuals);
       const answer = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are a field service assistant. Use ONLY the following manual content to answer the engineer's question. Be concise, safety-first, and cite the manual source.\n\nMANUAL CONTENT:\n${context}\n\nQUESTION: ${userText}\n\nIf the answer is not in the manual content, say so clearly.`,
+        prompt: `You are a senior field service engineer assistant. Use ONLY the following manual content to answer the engineer's question.
+Be concise, direct, and safety-first. Use numbered steps where relevant. Cite the manual name/model at the end.
+
+MANUAL CONTENT:
+${context}
+
+ENGINEER'S QUESTION: ${userText}
+
+If the manual doesn't contain the answer, say so clearly and suggest they contact their supervisor.`,
+        model: "gemini_3_flash",
       });
       injectAssistantMessage(conversation, answer);
       setIsProcessing(false);

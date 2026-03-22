@@ -10,6 +10,7 @@ import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import Favorites from './pages/Favorites';
 import SyncManager from './pages/SyncManager';
 import ImportParts from './pages/ImportParts';
+import BulkUpload from './pages/BulkUpload';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
