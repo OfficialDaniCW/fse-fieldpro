@@ -91,24 +91,21 @@ export default function BulkUpload() {
         const { file_url } = await base44.integrations.Core.UploadFile({ file: fileEntry.file });
 
         // 2. Create Manual record
-        const manual = await base44.entities.Manual.create({
-          title: fileEntry.name,
-          equipment_manufacturer: fileEntry.manufacturer,
-          equipment_model: fileEntry.model,
-          version: fileEntry.version || null,
-          pdf_file: file_url,
-          extracted_parts_status: "pending",
-        });
+         // The entity automation will set extracted_parts_status = "pending"
+         // and the scheduled job will process it asynchronously
+         const manual = await base44.entities.Manual.create({
+           title: fileEntry.name,
+           equipment_manufacturer: fileEntry.manufacturer,
+           equipment_model: fileEntry.model,
+           version: fileEntry.version || null,
+           pdf_file: file_url,
+         });
 
-        updateFile(fileEntry.id, { status: STATUS.PROCESSING });
+         // Mark as processing (will be picked up by scheduled queue processor)
+         updateFile(fileEntry.id, { status: STATUS.PROCESSING });
 
-        // 3. Process via backend function (extract text + optionally parts)
-        await base44.functions.invoke("bulkProcessManual", {
-          manual_id: manual.id,
-          extract_parts: extractParts,
-        });
-
-        updateFile(fileEntry.id, { status: STATUS.DONE });
+         // The processManualQueue automation will handle extraction every 10 mins
+         // UI shows "processing" until the manual status changes to "done"
       } catch (err) {
         updateFile(fileEntry.id, { status: STATUS.ERROR, error: err.message });
       }
