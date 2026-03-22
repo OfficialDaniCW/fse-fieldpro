@@ -26,7 +26,7 @@ export default function FavoritesPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-24">
-      <PageHeader title="FSE FieldPro" subtitle="My Favourites">
+      <PageHeader title="Favorites" subtitle="Your saved parts">
         <div className="bg-white/20 rounded-full px-3 py-1 flex items-center gap-1.5">
           <Star className="w-3.5 h-3.5 text-white fill-white" />
           <span className="text-white text-xs font-semibold">{favoriteParts.length}</span>

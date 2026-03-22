@@ -94,7 +94,7 @@ export default function StatsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <PageHeader title="Library Stats" subtitle="Parts & manuals overview" />
+      <PageHeader title="Stats" subtitle="Library analytics" />
 
       <div className="max-w-4xl mx-auto p-4 pb-24 space-y-6">
         {/* Summary cards */}
