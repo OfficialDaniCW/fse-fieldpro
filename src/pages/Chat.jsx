@@ -371,9 +371,9 @@ ${candidates.map(c => `ID:${c.idx} | ${c.manufacturer} ${c.model} ${c.version} |
         const matchedManuals = await searchManuals(ocrResult.trim());
         if (matchedManuals.length > 0) {
           logSearch(ocrResult.trim(), "manual_found", matchedManuals.length);
-          const context = buildManualContext(matchedManuals);
+          const context = buildManualContext(matchedManuals, ocrResult.trim());
           const answer = await base44.integrations.Core.InvokeLLM({
-            prompt: `You are a field service assistant. Use ONLY the following manual content to answer the engineer's question. Be concise and safety-first.\n\nMANUAL CONTENT:\n${context}\n\nQUESTION: ${userText || "What is this part or error code?"}\n\nIf the answer is not in the manual content, say so clearly.`,
+            prompt: `You are a senior field service engineer assistant. The engineer has sent an image. Use ONLY the manual content below to answer their question. Be concise, safety-first, and use numbered steps where applicable. Cite the manual at the end.\n\nMANUAL CONTENT:\n${context}\n\nQUESTION: ${userText || "What is this part or error code?"}\n\nIf the answer is not in the manual content, say so clearly.`,
           });
           injectAssistantMessage(conversation, answer);
           setIsProcessing(false);
