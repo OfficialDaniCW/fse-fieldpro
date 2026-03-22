@@ -1,13 +1,15 @@
 import { useEffect, useCallback, useRef } from 'react';
-import { getQueue, dequeue } from './pendingQueue';
+import { getQueue, dequeue, markFailed } from './pendingQueue';
 import { base44 } from '@/api/base44Client';
 import { ACTION_TYPES } from './pendingQueue';
 import { toast } from 'sonner';
 
 // Replays a single queued action against the live API
-async function replayAction(action) {
+export async function replayAction(action) {
   if (action.type === ACTION_TYPES.CREATE_MANUAL) {
     await base44.entities.Manual.create(action.payload);
+  } else {
+    throw new Error(`Unknown action type: ${action.type}`);
   }
 }
 
@@ -28,7 +30,8 @@ export default function useSyncManager({ onSynced } = {}) {
         await replayAction(action);
         dequeue(action.id);
         successCount++;
-      } catch {
+      } catch (err) {
+        markFailed(action.id, err?.message || 'Unknown error');
         failCount++;
       }
     }
@@ -40,20 +43,14 @@ export default function useSyncManager({ onSynced } = {}) {
       onSynced?.();
     }
     if (failCount > 0) {
-      toast.error(`${failCount} action${failCount > 1 ? 's' : ''} failed to sync. Will retry on next connection.`);
+      toast.error(`${failCount} action${failCount > 1 ? 's' : ''} failed to sync. Check Sync Manager.`);
     }
   }, [onSynced]);
 
   useEffect(() => {
-    // Attempt sync on mount (in case app was offline and is now online)
     runSync();
-
-    const handleOnline = () => {
-      runSync();
-    };
-
-    window.addEventListener('online', handleOnline);
-    return () => window.removeEventListener('online', handleOnline);
+    window.addEventListener('online', runSync);
+    return () => window.removeEventListener('online', runSync);
   }, [runSync]);
 
   return { runSync };
