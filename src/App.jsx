@@ -13,6 +13,7 @@ import ImportParts from './pages/ImportParts';
 import BulkUpload from './pages/BulkUpload';
 import OfflineMode from './pages/OfflineMode';
 import ZipUpload from './pages/ZipUpload';
+import ManualUpload from './pages/ManualUpload';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -92,6 +93,11 @@ const AuthenticatedApp = () => {
       <Route path="/ZipUpload" element={
         <LayoutWrapper currentPageName="ZipUpload">
           <ZipUpload />
+        </LayoutWrapper>
+      } />
+      <Route path="/ManualUpload" element={
+        <LayoutWrapper currentPageName="ManualUpload">
+          <ManualUpload />
         </LayoutWrapper>
       } />
       <Route path="*" element={<PageNotFound />} />
