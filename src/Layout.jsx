@@ -69,7 +69,6 @@ export default function Layout({ children, currentPageName }) {
         <main className="flex-1">
           {children}
         </main>
-
         <nav className="bg-white border-t border-gray-200 fixed bottom-0 left-0 right-0 z-50">
           <div className="max-w-4xl mx-auto flex">
             {tabs.map(({ name, label, icon: Icon, to }) => {
