@@ -59,22 +59,22 @@ export default function ZipUpload() {
       setProgress({ stage: 'Processing metadata...', percent: 40 });
       setProgress({ stage: 'Uploading images...', percent: 55 });
       
-      const response = await base44.functions.invoke('processZipManual', { file });
+      const response = await uploadZipFile(file);
 
-      if (response.data.success) {
+      if (response.success) {
         setProgress({ stage: 'Linking parts to manual...', percent: 75 });
         
         // Trigger part linking after manual upload
         try {
-          await base44.functions.invoke('linkPartsToManuals', { manual_id: response.data.manual.id });
+          await base44.functions.invoke('linkPartsToManuals', { manual_id: response.manual.id });
           setProgress({ stage: 'Complete!', percent: 100 });
         } catch (linkErr) {
           console.warn('Part linking failed:', linkErr);
         }
         
-        setResult(response.data);
+        setResult(response);
       } else {
-        setError(response.data.error || 'Upload failed');
+        setError(response.error || 'Upload failed');
       }
     } catch (err) {
       setError(err.message || 'Error processing zip file');
