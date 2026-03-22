@@ -15,6 +15,7 @@ export default function ChatPage() {
   const [input, setInput] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [imageFile, setImageFile] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
   const messagesEndRef = useRef(null);
   const recognitionRef = useRef(null);
 
@@ -229,11 +230,12 @@ export default function ChatPage() {
   // --- Send handler ---
   const handleSend = async () => {
     if (!input.trim() && !imageFile) return;
-    if (!conversationId) return;
+    if (!conversationId || isProcessing) return;
 
     const userText = input.trim();
     setInput("");
     setImageFile(null);
+    setIsProcessing(true);
 
     const conversation = await base44.agents.getConversation(conversationId);
 
@@ -255,9 +257,9 @@ export default function ChatPage() {
         const result = await searchParts(ocrResult.trim());
         if (result.parts.length > 0) {
           injectAssistantMessage(conversation, `I found the following from the image:\n\n${buildPartResponse(result)}`);
+          setIsProcessing(false);
           return;
         }
-        // Try manuals with OCR text
         const matchedManuals = await searchManuals(ocrResult.trim());
         if (matchedManuals.length > 0) {
           const context = buildManualContext(matchedManuals);
@@ -265,34 +267,40 @@ export default function ChatPage() {
             prompt: `You are a field service assistant. Use ONLY the following manual content to answer the engineer's question. Be concise and safety-first.\n\nMANUAL CONTENT:\n${context}\n\nQUESTION: ${userText || "What is this part or error code?"}\n\nIf the answer is not in the manual content, say so clearly.`,
           });
           injectAssistantMessage(conversation, answer);
+          setIsProcessing(false);
           return;
         }
       }
       injectAssistantMessage(conversation, NOT_FOUND_MSG);
+      setIsProcessing(false);
       return;
     }
 
-    // Text path — search parts first
-    await base44.agents.addMessage(conversation, { role: "user", content: userText });
-
+    // Text path — search parts first (don't send to agent yet)
     const partResult = await searchParts(userText);
     if (partResult.parts.length > 0) {
+      await base44.agents.addMessage(conversation, { role: "user", content: userText });
       injectAssistantMessage(conversation, buildPartResponse(partResult));
+      setIsProcessing(false);
       return;
     }
 
     // No part match — search manual text
     const matchedManuals = await searchManuals(userText);
     if (matchedManuals.length > 0) {
+      await base44.agents.addMessage(conversation, { role: "user", content: userText });
       const context = buildManualContext(matchedManuals);
       const answer = await base44.integrations.Core.InvokeLLM({
         prompt: `You are a field service assistant. Use ONLY the following manual content to answer the engineer's question. Be concise, safety-first, and cite the manual source.\n\nMANUAL CONTENT:\n${context}\n\nQUESTION: ${userText}\n\nIf the answer is not in the manual content, say so clearly.`,
       });
       injectAssistantMessage(conversation, answer);
+      setIsProcessing(false);
       return;
     }
 
-    // Nothing in DB — let the agent handle it (user message already sent)
+    // Nothing in local DB — send to agent to handle freely
+    await base44.agents.addMessage(conversation, { role: "user", content: userText });
+    setIsProcessing(false);
   };
 
   return (
