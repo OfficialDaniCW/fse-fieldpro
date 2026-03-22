@@ -38,7 +38,6 @@ export default function Layout({ children, currentPageName }) {
     { name: "Manuals", label: "Manuals", icon: BookOpen, to: "/Manuals" },
     ...(isAdmin ? [
       { name: "Admin", label: "Admin", icon: Shield, to: "/Admin" },
-      { name: "SyncManager", label: "Sync", icon: RefreshCw, to: "/SyncManager" },
     ] : []),
     ...(isManager && !isAdmin ? [{ name: "Stats", label: "Stats", icon: BarChart2, to: "/Stats" }] : []),
     { name: "Profile", label: "Profile", icon: User, to: "/Profile" },
