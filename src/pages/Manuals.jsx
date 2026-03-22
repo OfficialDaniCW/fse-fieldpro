@@ -109,7 +109,7 @@ export default function Manuals() {
             </div>
             <div>
               <h1 className="text-base font-semibold text-white leading-tight">Manuals Library</h1>
-              <p className="text-xs text-red-200 font-normal">{manuals.length} manuals</p>
+              <p className="text-xs text-red-200 font-normal">{(manuals || []).length} manuals</p>
             </div>
           </div>
           {isAdmin && (
