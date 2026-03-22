@@ -117,6 +117,13 @@ export default function PartCard({ part, manuals = [], onOpenManual, allParts = 
       {/* Expanded content */}
       {expanded && (
         <div className="border-t border-gray-100 px-4 pt-4 pb-4 space-y-5">
+          {/* Part image */}
+          {part.image_url && (
+            <div className="rounded-lg overflow-hidden border border-gray-200 bg-gray-50 p-3">
+              <img src={part.image_url} alt={part.description} className="w-full h-48 object-cover rounded" />
+            </div>
+          )}
+
           {/* Specs grid */}
           <div className="grid grid-cols-2 gap-4">
             {part.pump_model && (
