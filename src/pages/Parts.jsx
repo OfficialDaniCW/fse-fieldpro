@@ -238,12 +238,9 @@ function TableView({ parts }) {
             <tr key={part.id} className={`border-b border-gray-100 ${idx % 2 === 0 ? "bg-white" : "bg-gray-50"}`}>
               <td className="px-4 py-3 font-mono text-xs font-semibold text-[#CC0000] whitespace-nowrap">{part.part_number}</td>
               <td className="px-4 py-3 font-medium text-gray-900 text-xs leading-snug">{part.description}</td>
-              <td className="px-4 py-3 text-xs text-gray-400 max-w-24">{part.variant_spec}</td>
+              <td className="px-4 py-3 font-mono text-xs text-gray-600 max-w-28 truncate" title={part.manufacturer_part_ref}>{part.manufacturer_part_ref || "—"}</td>
               <td className="px-4 py-3">
                 {part.brand && <span className="text-xs font-semibold text-red-700 border border-red-200 bg-red-50 px-2 py-0.5 rounded whitespace-nowrap">{part.brand}</span>}
-              </td>
-              <td className="px-4 py-3">
-                {part.pump_model && <span className="text-xs font-semibold text-blue-700 border border-blue-200 bg-blue-50 px-2 py-0.5 rounded whitespace-nowrap">{part.pump_model}</span>}
               </td>
               <td className="px-4 py-3">
                 {part.system_area && <span className="text-xs font-bold text-green-700 border border-green-300 bg-green-50 px-2 py-0.5 rounded whitespace-nowrap">{part.system_area}</span>}
