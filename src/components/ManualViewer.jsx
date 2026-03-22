@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { ArrowLeft, AlertTriangle, Info, FileText, Wrench, Download, Maximize2, X, ChevronDown, ChevronUp } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import ExplodedViewViewer from "./ExplodedViewViewer";
 
 const SAFETY_KEYWORDS = /\b(WARNING|CAUTION|DANGER|SAFETY|ATEX)\b/i;
 const STEP_REGEX = /^(\d+)[.)]\s+(.+)/;
