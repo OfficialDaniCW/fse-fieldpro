@@ -465,10 +465,14 @@ ENGINEER'S QUESTION: ${userText}`,
       return;
     }
 
-    // Nothing in local DB — log as not found, send to agent
-    logSearch(userText, "not_found", 0);
-    await base44.agents.addMessage(conversation, { role: "user", content: userText });
-    setIsProcessing(false);
+      // Nothing in local DB — log as not found, send to agent
+      logSearch(userText, "not_found", 0);
+      await base44.agents.addMessage(conversation, { role: "user", content: userText });
+      setIsProcessing(false);
+    } catch (error) {
+      console.error("Error in handleSend:", error);
+      setIsProcessing(false);
+    }
   };
 
   return (
