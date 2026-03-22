@@ -93,6 +93,20 @@ export default function AdminPage() {
       <PageHeader title="Admin Panel" subtitle="Manage parts & manuals" />
 
       <div className="max-w-4xl mx-auto p-4 pb-24">
+        {/* Quick links */}
+        <div className="flex gap-2 mb-4">
+          <Link to="/SyncManager" className="flex-1">
+            <button className="w-full flex items-center justify-center gap-2 py-2 px-3 bg-white border border-gray-200 rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-50">
+              <RefreshCw className="w-3.5 h-3.5" /> Offline Queue
+            </button>
+          </Link>
+          <Link to="/ImportParts" className="flex-1">
+            <button className="w-full flex items-center justify-center gap-2 py-2 px-3 bg-white border border-gray-200 rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-50">
+              <Upload className="w-3.5 h-3.5" /> Import CSV
+            </button>
+          </Link>
+        </div>
+
         <Tabs defaultValue="manuals">
           <TabsList className="w-full mb-4">
             <TabsTrigger value="manuals" className="flex-1">
