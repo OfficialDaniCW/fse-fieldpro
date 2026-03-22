@@ -43,6 +43,24 @@ export function markFailed(id, errorMessage) {
   saveQueue(queue);
 }
 
+export function markConflict(id, localData, serverData) {
+  const queue = getQueue().map(a =>
+    a.id === id
+      ? { ...a, conflict: { local: localData, server: serverData }, hasConflict: true }
+      : a
+  );
+  saveQueue(queue);
+}
+
+export function resolveConflict(id, resolution) {
+  const queue = getQueue().map(a =>
+    a.id === id
+      ? { ...a, conflict: null, hasConflict: false, resolution }
+      : a
+  );
+  saveQueue(queue);
+}
+
 export function clearQueue() {
   localStorage.removeItem(QUEUE_KEY);
 }
