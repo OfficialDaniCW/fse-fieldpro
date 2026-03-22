@@ -34,7 +34,7 @@ export default function Manuals() {
 
   // Auto-open a manual if ?manual=<id> is in the URL
   useEffect(() => {
-    if (manuals.length === 0) return;
+    if (!manuals || manuals.length === 0) return;
     const params = new URLSearchParams(window.location.search);
     const manualId = params.get("manual");
     if (manualId && !selectedManual) {
