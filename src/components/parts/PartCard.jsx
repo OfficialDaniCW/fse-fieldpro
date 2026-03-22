@@ -152,19 +152,43 @@ export default function PartCard({ part, manuals = [], onOpenManual }) {
             </div>
           )}
 
-          {/* Installation steps */}
+          {/* Installation steps — interactive checklist */}
           {steps.length > 0 && (
             <div>
-              <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-3">Installation</p>
-              <div className="space-y-3">
-                {steps.map((step, idx) => (
-                  <div key={idx} className="flex gap-3 items-start">
-                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[#CC0000] text-white text-xs font-bold flex items-center justify-center">
-                      {idx + 1}
-                    </span>
-                    <p className="text-sm text-gray-700 leading-relaxed pt-0.5">{step}</p>
-                  </div>
-                ))}
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-xs font-medium text-gray-400 uppercase tracking-wider">Installation Checklist</p>
+                {checkedSteps.length === steps.length && (
+                  <span className="text-xs font-semibold text-green-600 bg-green-50 border border-green-200 px-2 py-0.5 rounded-full">
+                    ✓ All steps done
+                  </span>
+                )}
+              </div>
+              <div className="space-y-2">
+                {steps.map((step, idx) => {
+                  const done = checkedSteps.includes(idx);
+                  return (
+                    <button
+                      key={idx}
+                      onClick={(e) => { e.stopPropagation(); toggleStep(idx); }}
+                      className={`w-full flex gap-3 items-start text-left p-3 rounded-lg border transition-colors ${
+                        done
+                          ? "bg-green-50 border-green-200"
+                          : "bg-gray-50 border-gray-200 hover:bg-gray-100"
+                      }`}
+                    >
+                      <span className="flex-shrink-0 mt-0.5">
+                        {done
+                          ? <CheckSquare className="w-5 h-5 text-green-600" />
+                          : <Square className="w-5 h-5 text-gray-400" />
+                        }
+                      </span>
+                      <p className={`text-sm leading-relaxed ${done ? "line-through text-gray-400" : "text-gray-700"}`}>
+                        <span className="font-semibold text-xs text-gray-400 mr-1.5">Step {idx + 1}</span>
+                        {step}
+                      </p>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}
