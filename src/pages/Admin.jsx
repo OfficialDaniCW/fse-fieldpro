@@ -148,25 +148,25 @@ export default function AdminPage() {
         </div>
 
         <Tabs defaultValue="manuals">
-          <TabsList className="w-full mb-4 grid grid-cols-4 gap-1">
-            <TabsTrigger value="manuals" className="flex flex-col items-center gap-1">
+          <TabsList className="w-full mb-4 grid grid-cols-2 sm:grid-cols-4 gap-1 h-auto">
+            <TabsTrigger value="manuals" className="flex flex-col items-center gap-1 py-2">
               <FileText className="w-4 h-4" />
-              <span className="text-xs hidden sm:inline">Manuals</span>
+              <span className="text-xs font-medium">Manuals</span>
               <span className="text-xs text-muted-foreground">({manuals.length})</span>
             </TabsTrigger>
-            <TabsTrigger value="parts" className="flex flex-col items-center gap-1">
+            <TabsTrigger value="parts" className="flex flex-col items-center gap-1 py-2">
               <Package className="w-4 h-4" />
-              <span className="text-xs hidden sm:inline">Parts</span>
+              <span className="text-xs font-medium">Parts</span>
               <span className="text-xs text-muted-foreground">({parts.length})</span>
             </TabsTrigger>
-            <TabsTrigger value="activity" className="flex flex-col items-center gap-1">
+            <TabsTrigger value="activity" className="flex flex-col items-center gap-1 py-2">
               <History className="w-4 h-4" />
-              <span className="text-xs hidden sm:inline">Activity</span>
+              <span className="text-xs font-medium">Activity</span>
               <span className="text-xs text-muted-foreground">Log</span>
             </TabsTrigger>
-            <TabsTrigger value="tsg-verify" className="flex flex-col items-center gap-1">
+            <TabsTrigger value="tsg-verify" className="flex flex-col items-center gap-1 py-2">
               <CheckCircle2 className="w-4 h-4" />
-              <span className="text-xs hidden sm:inline">TSG</span>
+              <span className="text-xs font-medium">TSG</span>
               <span className="text-xs text-muted-foreground">Verify</span>
             </TabsTrigger>
           </TabsList>
