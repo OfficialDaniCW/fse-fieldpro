@@ -9,24 +9,31 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'manual_id required' }, { status: 400 });
     }
 
-    // Set processing status to pending
+    // Set processing status to processing
     await base44.asServiceRole.entities.Manual.update(manual_id, {
-      processing_status: 'pending'
+      processing_status: 'processing'
     });
 
-    // Queue the manual for processing (non-blocking)
-    // In production, this would queue to a job processor
-    // For now, trigger bulkProcessManual directly
+    // BUG FIX 4: Trigger bulkProcessManual immediately and synchronously (not queued)
+    // This ensures the manual is processed right away
+    let result;
     try {
-      await base44.asServiceRole.functions.invoke('bulkProcessManual', { manual_id });
+      result = await base44.asServiceRole.functions.invoke('bulkProcessManual', { manual_id });
     } catch (e) {
-      console.log('Background processing queued:', manual_id);
+      console.log('Error during processing:', e.message);
+      // Update status to failed if processing fails
+      await base44.asServiceRole.entities.Manual.update(manual_id, {
+        processing_status: 'failed',
+        processing_error: `Processing error: ${e.message}`
+      });
+      throw e;
     }
 
     return Response.json({
       success: true,
       manual_id,
-      message: 'Manual queued for processing'
+      message: 'Manual processed successfully',
+      processingResult: result
     });
 
   } catch (error) {
