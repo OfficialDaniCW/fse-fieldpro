@@ -31,7 +31,6 @@ export default function AdminPage() {
     queryFn: () => base44.entities.Part.list("-created_date", 10000),
   });
 
-  // Auto-refetch on mount to ensure fresh data
   useEffect(() => {
     refetchParts();
   }, [refetchParts]);
