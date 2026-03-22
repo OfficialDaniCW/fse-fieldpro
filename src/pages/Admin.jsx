@@ -4,13 +4,14 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, Plus, Trash2, FileText, Package, Shield, Pencil, Upload, RefreshCw, FolderUp, History } from "lucide-react";
+import { Search, Plus, Trash2, FileText, Package, Shield, Pencil, Upload, RefreshCw, FolderUp, History, CheckCircle2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import PageHeader from "../components/PageHeader";
 import ManualForm from "../components/ManualForm";
 import PartForm from "../components/PartForm";
 import PartEditModal from "../components/parts/PartEditModal";
 import ActivityLogViewer from "../components/admin/ActivityLogViewer";
+import TSGPartsVerifier from "../components/admin/TSGPartsVerifier";
 import { useCurrentUser } from "../lib/useCurrentUser";
 import { toast } from "sonner";
 import { Toaster } from "sonner";
@@ -127,6 +128,10 @@ export default function AdminPage() {
               <History className="w-4 h-4 mr-1.5" />
               Activity Log
             </TabsTrigger>
+            <TabsTrigger value="tsg-verify" className="flex-1">
+              <CheckCircle2 className="w-4 h-4 mr-1.5" />
+              TSG Verify
+            </TabsTrigger>
           </TabsList>
 
           {/* Manuals Tab */}
@@ -219,6 +224,11 @@ export default function AdminPage() {
           {/* Activity Log Tab */}
           <TabsContent value="activity">
             <ActivityLogViewer />
+          </TabsContent>
+
+          {/* TSG Verification Tab */}
+          <TabsContent value="tsg-verify">
+            <TSGPartsVerifier />
           </TabsContent>
           </Tabs>
       </div>
