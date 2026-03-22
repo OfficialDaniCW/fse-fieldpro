@@ -12,23 +12,28 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
     }
 
-    const formData = await req.formData();
-    const zipFile = formData.get('file');
-
-    if (!zipFile) {
-      console.error('[ZIP] No file provided in formData');
+    const body = await req.json();
+    
+    if (!body.file_base64) {
+      console.error('[ZIP] No file provided');
       return Response.json({ error: 'No file provided' }, { status: 400 });
+    }
+
+    // Decode base64 to binary
+    const binaryString = atob(body.file_base64);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
     }
     
     console.log('[ZIP] File received:', {
-      name: zipFile.name,
-      size: zipFile.size,
-      type: zipFile.type
+      name: body.file_name,
+      size: bytes.length
     });
 
     const zip = new JSZip();
     console.log('[ZIP] Loading ZIP file...');
-    await zip.loadAsync(zipFile);
+    await zip.loadAsync(bytes.buffer);
     console.log('[ZIP] ZIP loaded successfully, files:', Object.keys(zip.files).length);
 
     // Find and parse manual_data.json
@@ -60,9 +65,13 @@ Deno.serve(async (req) => {
     
     for (const [filename, file] of imageFiles) {
       try {
-        const blob = await file.async('blob');
-        console.log('[ZIP] Uploading image:', filename, `(${blob.size} bytes)`);
+        const buffer = await file.async('arraybuffer');
+        console.log('[ZIP] Uploading image:', filename, `(${buffer.byteLength} bytes)`);
 
+        // Convert buffer to Blob for upload
+        const mimeType = filename.endsWith('.png') ? 'image/png' : 'image/jpeg';
+        const blob = new Blob([buffer], { type: mimeType });
+        
         const uploadRes = await base44.integrations.Core.UploadFile({
           file: blob
         });
@@ -91,9 +100,11 @@ Deno.serve(async (req) => {
     for (const [filename, file] of Object.entries(zip.files)) {
       if (filename.startsWith('source_pdf/') && filename.endsWith('.pdf')) {
         try {
-          const blob = await file.async('blob');
-          console.log('[ZIP] Uploading PDF:', filename, `(${blob.size} bytes)`);
+          const buffer = await file.async('arraybuffer');
+          console.log('[ZIP] Uploading PDF:', filename, `(${buffer.byteLength} bytes)`);
 
+          // Convert buffer to Blob for upload
+          const blob = new Blob([buffer], { type: 'application/pdf' });
           const uploadRes = await base44.integrations.Core.UploadFile({
             file: blob
           });

@@ -12,43 +12,39 @@ async function uploadZipFile(file) {
     fileType: file.type
   });
 
-  const formData = new FormData();
-  formData.append('file', file, file.name);
+  // Convert file to base64
+  const buffer = await file.arrayBuffer();
+  const bytes = new Uint8Array(buffer);
+  let binary = '';
+  for (let i = 0; i < bytes.byteLength; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  const base64 = btoa(binary);
   
   const startTime = performance.now();
-  const response = await fetch('/api/functions/processZipManual', {
-    method: 'POST',
-    body: formData
+  const response = await base44.functions.invoke('processZipManual', {
+    file_base64: base64,
+    file_name: file.name
   });
   const responseTime = performance.now() - startTime;
 
-  logger.logApiCall('POST', '/api/functions/processZipManual', response.status, responseTime, {
+  logger.logApiCall('processZipManual', 'invoke', 200, responseTime, {
     fileName: file.name
   });
 
-  if (!response.ok) {
-    const error = await response.json();
-    logger.error('ZIP_UPLOAD', new Error(error.error || 'Upload failed'), {
-      status: response.status,
+  if (!response.data.success) {
+    logger.error('ZIP_UPLOAD', new Error(response.data.error || 'Upload failed'), {
       fileName: file.name
     });
-    throw new Error(error.error || 'Upload failed');
-  }
-
-  const data = await response.json();
-  if (!data.success) {
-    logger.error('ZIP_UPLOAD', new Error(data.error || 'Upload failed'), {
-      fileName: file.name
-    });
-    throw new Error(data.error || 'Upload failed');
+    throw new Error(response.data.error || 'Upload failed');
   }
 
   logger.info('ZIP_UPLOAD', 'Upload completed successfully', {
-    manualId: data.manual_id,
-    imagesUploaded: data.images_uploaded
+    manualId: response.data.manual_id,
+    imagesUploaded: response.data.images_uploaded
   });
 
-  return data;
+  return response.data;
 }
 
 export default function ZipUpload() {
