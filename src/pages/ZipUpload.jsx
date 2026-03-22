@@ -8,23 +8,13 @@ async function uploadZipFile(file) {
   const formData = new FormData();
   formData.append('file', file);
   
-  const response = await fetch(
-    `/api/functions/processZipManual?app_id=${import.meta.env.VITE_APP_ID || ''}`,
-    {
-      method: 'POST',
-      body: formData,
-      headers: {
-        'Authorization': `Bearer ${await base44.auth.getToken?.()}`
-      }
-    }
-  );
+  const response = await base44.functions.invoke('processZipManual', {}, formData);
   
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.detail || `Upload failed with status ${response.status}`);
+  if (!response.data.success) {
+    throw new Error(response.data.error || 'Upload failed');
   }
   
-  return response.json();
+  return response.data;
 }
 
 export default function ZipUpload() {
