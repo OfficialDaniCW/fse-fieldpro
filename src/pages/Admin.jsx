@@ -148,22 +148,26 @@ export default function AdminPage() {
         </div>
 
         <Tabs defaultValue="manuals">
-          <TabsList className="w-full mb-4">
-            <TabsTrigger value="manuals" className="flex-1">
-              <FileText className="w-4 h-4 mr-1.5" />
-              Manuals ({manuals.length})
+          <TabsList className="w-full mb-4 grid grid-cols-4 gap-1">
+            <TabsTrigger value="manuals" className="flex flex-col items-center gap-1">
+              <FileText className="w-4 h-4" />
+              <span className="text-xs hidden sm:inline">Manuals</span>
+              <span className="text-xs text-muted-foreground">({manuals.length})</span>
             </TabsTrigger>
-            <TabsTrigger value="parts" className="flex-1">
-              <Package className="w-4 h-4 mr-1.5" />
-              Parts ({parts.length})
+            <TabsTrigger value="parts" className="flex flex-col items-center gap-1">
+              <Package className="w-4 h-4" />
+              <span className="text-xs hidden sm:inline">Parts</span>
+              <span className="text-xs text-muted-foreground">({parts.length})</span>
             </TabsTrigger>
-            <TabsTrigger value="activity" className="flex-1">
-              <History className="w-4 h-4 mr-1.5" />
-              Activity Log
+            <TabsTrigger value="activity" className="flex flex-col items-center gap-1">
+              <History className="w-4 h-4" />
+              <span className="text-xs hidden sm:inline">Activity</span>
+              <span className="text-xs text-muted-foreground">Log</span>
             </TabsTrigger>
-            <TabsTrigger value="tsg-verify" className="flex-1">
-              <CheckCircle2 className="w-4 h-4 mr-1.5" />
-              TSG Verify
+            <TabsTrigger value="tsg-verify" className="flex flex-col items-center gap-1">
+              <CheckCircle2 className="w-4 h-4" />
+              <span className="text-xs hidden sm:inline">TSG</span>
+              <span className="text-xs text-muted-foreground">Verify</span>
             </TabsTrigger>
           </TabsList>
 
