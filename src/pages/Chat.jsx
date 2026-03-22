@@ -259,6 +259,10 @@ export default function ChatPage() {
     }).join("\n\n---\n\n");
   };
 
+  const logSearch = (query, result_type, result_count = 0) => {
+    base44.entities.SearchLog.create({ query, result_type, result_count }).catch(() => {});
+  };
+
   // --- Send handler ---
   const handleSend = async () => {
     if (!input.trim() && !imageFile) return;
@@ -288,12 +292,14 @@ export default function ChatPage() {
       if (ocrResult) {
         const result = await searchParts(ocrResult.trim());
         if (result.parts.length > 0) {
+          logSearch(ocrResult.trim(), "image", result.parts.length);
           injectAssistantMessage(conversation, `I found the following from the image:\n\n${buildPartResponse(result)}`);
           setIsProcessing(false);
           return;
         }
         const matchedManuals = await searchManuals(ocrResult.trim());
         if (matchedManuals.length > 0) {
+          logSearch(ocrResult.trim(), "manual_found", matchedManuals.length);
           const context = buildManualContext(matchedManuals);
           const answer = await base44.integrations.Core.InvokeLLM({
             prompt: `You are a field service assistant. Use ONLY the following manual content to answer the engineer's question. Be concise and safety-first.\n\nMANUAL CONTENT:\n${context}\n\nQUESTION: ${userText || "What is this part or error code?"}\n\nIf the answer is not in the manual content, say so clearly.`,
@@ -303,14 +309,16 @@ export default function ChatPage() {
           return;
         }
       }
+      logSearch(userText || "image", "not_found", 0);
       injectAssistantMessage(conversation, NOT_FOUND_MSG);
       setIsProcessing(false);
       return;
     }
 
-    // Text path — search parts first (don't send to agent yet)
+    // Text path — search parts first
     const partResult = await searchParts(userText);
     if (partResult.parts.length > 0) {
+      logSearch(userText, "part_found", partResult.parts.length);
       await base44.agents.addMessage(conversation, { role: "user", content: userText });
       injectAssistantMessage(conversation, buildPartResponse(partResult));
       setIsProcessing(false);
@@ -320,6 +328,7 @@ export default function ChatPage() {
     // No part match — search manual text
     const matchedManuals = await searchManuals(userText);
     if (matchedManuals.length > 0) {
+      logSearch(userText, "manual_found", matchedManuals.length);
       await base44.agents.addMessage(conversation, { role: "user", content: userText });
       const context = buildManualContext(matchedManuals);
       const answer = await base44.integrations.Core.InvokeLLM({
@@ -330,7 +339,8 @@ export default function ChatPage() {
       return;
     }
 
-    // Nothing in local DB — send to agent to handle freely
+    // Nothing in local DB — log as not found, send to agent
+    logSearch(userText, "not_found", 0);
     await base44.agents.addMessage(conversation, { role: "user", content: userText });
     setIsProcessing(false);
   };
@@ -338,6 +348,9 @@ export default function ChatPage() {
   return (
     <div className="flex flex-col h-screen bg-gray-50">
       <PageHeader title="FSE FieldPro" subtitle="Technical support & diagnostics">
+        <button onClick={startNewConversation} className="flex items-center gap-1 text-white/80 hover:text-white text-xs px-2 py-1 rounded hover:bg-red-700">
+          <Plus className="w-3.5 h-3.5" /> New
+        </button>
         <Link to="/Manuals">
           <Button variant="ghost" size="sm" className="text-white hover:text-white hover:bg-red-700">
             <BookOpen className="w-4 h-4 mr-1.5" />
@@ -348,6 +361,13 @@ export default function ChatPage() {
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3" style={{ paddingBottom: "180px" }}>
+        {showHistoryBanner && messages.length > 0 && (
+          <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 text-xs text-amber-700">
+            <History className="w-3.5 h-3.5 flex-shrink-0" />
+            <span className="flex-1">Resumed previous session.</span>
+            <button onClick={startNewConversation} className="font-semibold underline">Start fresh</button>
+          </div>
+        )}
         {messages.length === 0 && (
           <div className="mt-8 space-y-4">
             <div className="text-center mb-6">
