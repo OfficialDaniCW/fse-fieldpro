@@ -14,6 +14,7 @@ const TEXT_FIELDS = [
   FIELD("Part Number *", "part_number", "e.g. 140852556 or SK700-A", true),
   FIELD("Description *", "description", "e.g. Vapour Recovery Hose Assembly", true),
   FIELD("Brand / Manufacturer", "brand", "e.g. Gilbarco"),
+  FIELD("Manufacturer Part Ref", "manufacturer_part_ref", "Optional — manufacturer's catalogue reference only"),
   FIELD("Compatible Pump Model", "pump_model", "e.g. Encore 700S"),
   FIELD("System Area", "system_area", "e.g. Hydraulic, Electrical, Mechanical"),
   FIELD("Component Type", "component_type", "e.g. Hose, Seal, Valve, PCB"),
@@ -22,7 +23,7 @@ const TEXT_FIELDS = [
 
 export default function PartForm({ onClose, onSuccess }) {
   const [formData, setFormData] = useState({
-    part_number: "", description: "", brand: "", pump_model: "",
+    part_number: "", description: "", brand: "", manufacturer_part_ref: "", pump_model: "",
     system_area: "", component_type: "", variant_spec: "",
     what_it_does: "", installation_step_1: "", installation_step_2: "",
     installation_step_3: "", safety_warning: "", image_url: "",
