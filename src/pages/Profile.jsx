@@ -1,6 +1,7 @@
 import React from "react";
-import { Info, ExternalLink } from "lucide-react";
+import { Info, ExternalLink, MessageCircle } from "lucide-react";
 import PageHeader from "../components/PageHeader";
+import { base44 } from "@/api/base44Client";
 
 export default function ProfilePage() {
   return (
