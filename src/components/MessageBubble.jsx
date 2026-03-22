@@ -1,4 +1,3 @@
-import React from "react";
 import ReactMarkdown from "react-markdown";
 import { CheckCircle2, Clock, AlertCircle } from "lucide-react";
 
