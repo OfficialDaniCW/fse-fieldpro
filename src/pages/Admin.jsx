@@ -95,6 +95,13 @@ export default function AdminPage() {
       <PageHeader title="Admin Panel" subtitle="Manage parts & manuals" />
 
       <div className="max-w-4xl mx-auto p-4 pb-24">
+        {/* Info banner */}
+        <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+          <p className="text-xs text-blue-900">
+            💡 <strong>Pro Tip:</strong> The <strong>manual_guide</strong> agent can help users find manuals by brand and component type. It automatically groups hydraulic, electrical, mechanical, and parts documentation.
+          </p>
+        </div>
+
         {/* Quick links */}
         <div className="flex gap-2 mb-4">
           <Link to="/SyncManager" className="flex-1">
