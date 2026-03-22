@@ -2,7 +2,7 @@ import React from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
-import { Package, FileText, Users, BarChart2 } from "lucide-react";
+import { Package, FileText, Users, BarChart2, Search, AlertTriangle } from "lucide-react";
 import PageHeader from "../components/PageHeader";
 import { useCurrentUser } from "../lib/useCurrentUser";
 
@@ -17,6 +17,11 @@ export default function StatsPage() {
   const { data: manuals = [] } = useQuery({
     queryKey: ["manuals"],
     queryFn: () => base44.entities.Manual.list("-created_date"),
+  });
+
+  const { data: searchLogs = [] } = useQuery({
+    queryKey: ["searchLogs"],
+    queryFn: () => base44.entities.SearchLog.list("-created_date", 500),
   });
 
   if (loading) return <div className="flex items-center justify-center h-screen"><div className="w-8 h-8 border-4 border-slate-200 border-t-[#CC0000] rounded-full animate-spin" /></div>;
@@ -62,11 +67,30 @@ export default function StatsPage() {
     .slice(0, 8)
     .map(([name, count]) => ({ name, count }));
 
+  // Search analytics
+  const notFoundQueries = searchLogs.filter(l => l.result_type === "not_found");
+  const notFoundCounts = notFoundQueries.reduce((acc, l) => {
+    const q = l.query?.toLowerCase().trim();
+    if (q) acc[q] = (acc[q] || 0) + 1;
+    return acc;
+  }, {});
+  const topMissed = Object.entries(notFoundCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10)
+    .map(([query, count]) => ({ query, count }));
+
+  const resultTypeData = [
+    { name: "Part Found", count: searchLogs.filter(l => l.result_type === "part_found").length, fill: "#16a34a" },
+    { name: "Manual Found", count: searchLogs.filter(l => l.result_type === "manual_found").length, fill: "#2563eb" },
+    { name: "Not Found", count: searchLogs.filter(l => l.result_type === "not_found").length, fill: "#CC0000" },
+    { name: "Image Scan", count: searchLogs.filter(l => l.result_type === "image").length, fill: "#7c3aed" },
+  ].filter(d => d.count > 0);
+
   const stats = [
     { label: "Total Parts", value: parts.length, icon: Package, color: "text-blue-600", bg: "bg-blue-50" },
     { label: "Manuals", value: manuals.length, icon: FileText, color: "text-[#CC0000]", bg: "bg-red-50" },
-    { label: "Manufacturers", value: Object.keys(mfrCounts).length, icon: Users, color: "text-green-600", bg: "bg-green-50" },
-    { label: "Brands", value: Object.keys(brandCounts).length, icon: BarChart2, color: "text-purple-600", bg: "bg-purple-50" },
+    { label: "Total Searches", value: searchLogs.length, icon: Search, color: "text-green-600", bg: "bg-green-50" },
+    { label: "Not Found", value: notFoundQueries.length, icon: AlertTriangle, color: "text-amber-600", bg: "bg-amber-50" },
   ];
 
   return (
@@ -118,6 +142,43 @@ export default function StatsPage() {
                 <Bar dataKey="count" fill="#1d4ed8" radius={[3, 3, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
+          </div>
+        )}
+
+        {/* Search result breakdown */}
+        {resultTypeData.length > 0 && (
+          <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <h3 className="text-sm font-semibold text-gray-700 mb-4">Search Results Breakdown</h3>
+            <div className="space-y-2">
+              {resultTypeData.map(({ name, count, fill }) => (
+                <div key={name} className="flex items-center gap-3">
+                  <span className="text-sm text-gray-700 w-28 truncate">{name}</span>
+                  <div className="flex-1 bg-gray-100 rounded-full h-2">
+                    <div className="h-2 rounded-full" style={{ width: `${(count / searchLogs.length) * 100}%`, backgroundColor: fill }} />
+                  </div>
+                  <span className="text-sm font-medium text-gray-600 w-8 text-right">{count}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Top missed queries */}
+        {topMissed.length > 0 && (
+          <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <AlertTriangle className="w-4 h-4 text-amber-500" />
+              <h3 className="text-sm font-semibold text-gray-700">Top Missed Searches</h3>
+            </div>
+            <p className="text-xs text-gray-400 mb-3">Queries with no result — potential gaps in the database.</p>
+            <div className="space-y-1.5">
+              {topMissed.map(({ query, count }) => (
+                <div key={query} className="flex items-center justify-between py-1 border-b border-gray-50 last:border-0">
+                  <span className="text-sm text-gray-700 font-mono truncate flex-1">{query}</span>
+                  <span className="text-xs font-semibold text-amber-600 ml-2 bg-amber-50 px-2 py-0.5 rounded-full">{count}×</span>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
