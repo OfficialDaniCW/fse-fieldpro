@@ -30,6 +30,7 @@ export default function PartCard({ part, manuals = [], onOpenManual, allParts = 
   const [expanded, setExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
   const [favorited, setFavorited] = useState(() => isFavorite(part.id));
+  const [activeTab, setActiveTab] = useState("details"); // "details" or "reference"
 
   useEffect(() => {
     const handler = () => setFavorited(isFavorite(part.id));
