@@ -271,10 +271,10 @@ export default function ChatPage() {
 
   // --- Semantic manual search ---
   const searchManuals = async (query) => {
-    let allManuals = queryClient.getQueryData(["manuals"]);
+    let allManuals = cacheRef.current.manuals;
     if (!allManuals || allManuals.length === 0) {
       allManuals = await base44.entities.Manual.list("-created_date");
-      queryClient.setQueryData(["manuals"], allManuals);
+      cacheRef.current.manuals = allManuals;
     }
 
     const withContent = allManuals.filter(m => m.manual_text || m.error_codes || m.troubleshooting_steps || m.summary);
