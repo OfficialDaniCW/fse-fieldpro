@@ -56,11 +56,11 @@ export default function PartsPage() {
     if (searchTerm.trim()) {
       const fuse = new Fuse(results, {
         keys: [
-          { name: "description", weight: 0.4 },
-          { name: "part_number", weight: 0.3 },
-          { name: "manufacturer_part_ref", weight: 0.25 },
-          { name: "pump_model", weight: 0.2 },
-          { name: "brand", weight: 0.15 }
+          { key: "description", weight: 0.4 },
+          { key: "part_number", weight: 0.3 },
+          { key: "manufacturer_part_ref", weight: 0.25 },
+          { key: "pump_model", weight: 0.2 },
+          { key: "brand", weight: 0.15 }
         ],
         threshold: 0.3,
         includeScore: true
