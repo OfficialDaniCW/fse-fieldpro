@@ -2,7 +2,6 @@ import { useState, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Search, SlidersHorizontal, ChevronLeft, ChevronRight, LayoutGrid, List, WifiOff } from "lucide-react";
-import Fuse from "fuse.js/dist/fuse.basic.esm";
 import PartCard from "../components/parts/PartCard";
 import SimpleFilterPanel from "../components/parts/SimpleFilterPanel";
 import { useNavigate } from "react-router-dom";
@@ -52,20 +51,16 @@ export default function PartsPage() {
       return matchBrand && matchModel && matchSystem && matchComp;
     });
 
-    // Apply fuzzy search if search term exists
+    // Apply simple substring search if search term exists
     if (searchTerm.trim()) {
-      const fuse = new Fuse(results, {
-        keys: [
-          { key: "description", weight: 0.4 },
-          { key: "part_number", weight: 0.3 },
-          { key: "manufacturer_part_ref", weight: 0.25 },
-          { key: "pump_model", weight: 0.2 },
-          { key: "brand", weight: 0.15 }
-        ],
-        threshold: 0.3,
-        includeScore: true
-      });
-      results = fuse.search(searchTerm).map(r => r.item);
+      const term = searchTerm.toLowerCase();
+      results = results.filter(p => 
+        p.description?.toLowerCase().includes(term) ||
+        p.part_number?.toLowerCase().includes(term) ||
+        p.manufacturer_part_ref?.toLowerCase().includes(term) ||
+        p.pump_model?.toLowerCase().includes(term) ||
+        p.brand?.toLowerCase().includes(term)
+      );
     }
 
     return results;
