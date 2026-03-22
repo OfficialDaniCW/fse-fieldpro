@@ -10,14 +10,19 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
     }
 
-    const formData = await req.formData();
-    const zipFile = formData.get('file');
-
-    if (!zipFile) {
+    const body = await req.json();
+    
+    if (!body.file_base64) {
       return Response.json({ error: 'No file provided' }, { status: 400 });
     }
 
-    const zipBuffer = await zipFile.arrayBuffer();
+    // Decode base64 to binary string, then to ArrayBuffer
+    const binaryString = atob(body.file_base64);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    const zipBuffer = bytes.buffer;
     const zip = new JSZip();
     await zip.loadAsync(zipBuffer);
 
