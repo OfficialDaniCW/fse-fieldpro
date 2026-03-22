@@ -179,11 +179,6 @@ export default function AdminPage() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <Input placeholder="Search parts..." value={searchParts} onChange={e => setSearchParts(e.target.value)} className="pl-9" />
               </div>
-              <Link to="/ImportParts">
-                <Button variant="outline" className="shrink-0">
-                  <Upload className="w-4 h-4 mr-1" /> Import CSV
-                </Button>
-              </Link>
               <Button onClick={() => setShowPartForm(true)} className="bg-[#CC0000] hover:bg-[#aa0000] shrink-0">
                 <Plus className="w-4 h-4 mr-1" /> Add
               </Button>
