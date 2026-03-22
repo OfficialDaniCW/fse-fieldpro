@@ -77,6 +77,11 @@ const AuthenticatedApp = () => {
           <ImportParts />
         </LayoutWrapper>
       } />
+      <Route path="/BulkUpload" element={
+        <LayoutWrapper currentPageName="BulkUpload">
+          <BulkUpload />
+        </LayoutWrapper>
+      } />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
