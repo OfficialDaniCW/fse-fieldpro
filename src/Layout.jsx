@@ -35,6 +35,10 @@ export default function Layout({ children, currentPageName }) {
     };
   }, []);
 
+  useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: ["manuals"] });
+  }, [queryClient]);
+
   const tabs = [
     { name: "Chat", label: "Assistant", icon: MessageSquare, to: "/" },
     { name: "Parts", label: "Parts", icon: Search, to: "/Parts" },
