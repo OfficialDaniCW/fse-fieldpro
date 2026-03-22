@@ -381,71 +381,70 @@ ${candidates.map(c => `ID:${c.idx} | ${c.manufacturer} ${c.model} ${c.version} |
     setIsProcessing(true);
     if (userText) addToRecentSearches(userText);
 
-    try {
-      const conversation = await base44.agents.getConversation(conversationId);
-      if (!conversation) {
-        setIsProcessing(false);
-        return;
-      }
+    const conversation = await base44.agents.getConversation(conversationId);
+    if (!conversation) {
+      setIsProcessing(false);
+      return;
+    }
 
-      // Image path — OCR then search parts, then manuals
-      if (imageFile) {
-        const { file_url } = await base44.integrations.Core.UploadFile({ file: imageFile });
-        await base44.agents.addMessage(conversation, {
-          role: "user",
-          content: userText || "What part is this?",
-          file_urls: [file_url]
-        });
+    // Image path — OCR then search parts, then manuals
+    if (imageFile) {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file: imageFile });
+      await base44.agents.addMessage(conversation, {
+        role: "user",
+        content: userText || "What part is this?",
+        file_urls: [file_url]
+      });
 
-        const ocrResult = await base44.integrations.Core.InvokeLLM({
-          prompt: "Extract all visible text, numbers, part numbers, codes and labels from this image. Return only the extracted text, nothing else.",
-          file_urls: [file_url],
-        });
+      const ocrResult = await base44.integrations.Core.InvokeLLM({
+        prompt: "Extract all visible text, numbers, part numbers, codes and labels from this image. Return only the extracted text, nothing else.",
+        file_urls: [file_url],
+      });
 
-        if (ocrResult) {
-          const result = await searchParts(ocrResult.trim());
-          if (result.parts.length > 0) {
-            logSearch(ocrResult.trim(), "image", result.parts.length);
-            injectAssistantMessage(conversation, `I found the following from the image:\n\n${buildPartResponse(result)}`);
-            setIsProcessing(false);
-            return;
-          }
-          const matchedManuals = await searchManuals(ocrResult.trim());
-          if (matchedManuals.length > 0) {
-            logSearch(ocrResult.trim(), "manual_found", matchedManuals.length);
-            const context = buildManualContext(matchedManuals, ocrResult.trim());
-            const answer = await base44.integrations.Core.InvokeLLM({
-              prompt: `You are a senior field service engineer assistant. The engineer has sent an image. Use ONLY the manual content below to answer their question. Be concise, safety-first, and use numbered steps where applicable. Cite the manual at the end.\n\nMANUAL CONTENT:\n${context}\n\nQUESTION: ${userText || "What is this part or error code?"}\n\nIf the answer is not in the manual content, say so clearly.`,
-            });
-            injectAssistantMessage(conversation, answer);
-            setIsProcessing(false);
-            return;
-          }
+      if (ocrResult) {
+        const result = await searchParts(ocrResult.trim());
+        if (result.parts.length > 0) {
+          logSearch(ocrResult.trim(), "image", result.parts.length);
+          injectAssistantMessage(conversation, `I found the following from the image:\n\n${buildPartResponse(result)}`);
+          setIsProcessing(false);
+          return;
         }
-        logSearch(userText || "image", "not_found", 0);
-        injectAssistantMessage(conversation, NOT_FOUND_MSG);
-        setIsProcessing(false);
-        return;
+        const matchedManuals = await searchManuals(ocrResult.trim());
+        if (matchedManuals.length > 0) {
+          logSearch(ocrResult.trim(), "manual_found", matchedManuals.length);
+          const context = buildManualContext(matchedManuals, ocrResult.trim());
+          const answer = await base44.integrations.Core.InvokeLLM({
+            prompt: `You are a senior field service engineer assistant. The engineer has sent an image. Use ONLY the manual content below to answer their question. Be concise, safety-first, and use numbered steps where applicable. Cite the manual at the end.\n\nMANUAL CONTENT:\n${context}\n\nQUESTION: ${userText || "What is this part or error code?"}\n\nIf the answer is not in the manual content, say so clearly.`,
+          });
+          injectAssistantMessage(conversation, answer);
+          setIsProcessing(false);
+          return;
+        }
       }
+      logSearch(userText || "image", "not_found", 0);
+      injectAssistantMessage(conversation, NOT_FOUND_MSG);
+      setIsProcessing(false);
+      return;
+    }
 
-      // Text path — search parts first
-      const partResult = await searchParts(userText);
-      if (partResult.parts.length > 0) {
-        logSearch(userText, "part_found", partResult.parts.length);
-        await base44.agents.addMessage(conversation, { role: "user", content: userText });
-        injectAssistantMessage(conversation, buildPartResponse(partResult));
-        setIsProcessing(false);
-        return;
-      }
+    // Text path — search parts first
+    const partResult = await searchParts(userText);
+    if (partResult.parts.length > 0) {
+      logSearch(userText, "part_found", partResult.parts.length);
+      await base44.agents.addMessage(conversation, { role: "user", content: userText });
+      injectAssistantMessage(conversation, buildPartResponse(partResult));
+      setIsProcessing(false);
+      return;
+    }
 
-      // No part match — search manual text (semantic via LLM re-ranking)
-      const matchedManuals = await searchManuals(userText);
-      if (matchedManuals.length > 0) {
-        logSearch(userText, "manual_found", matchedManuals.length);
-        await base44.agents.addMessage(conversation, { role: "user", content: userText });
-        const context = buildManualContext(matchedManuals, userText);
-        const answer = await base44.integrations.Core.InvokeLLM({
-          prompt: `You are a senior field service engineer assistant. Use ONLY the manual content below to answer the engineer's question.
+    // No part match — search manual text (semantic via LLM re-ranking)
+    const matchedManuals = await searchManuals(userText);
+    if (matchedManuals.length > 0) {
+      logSearch(userText, "manual_found", matchedManuals.length);
+      await base44.agents.addMessage(conversation, { role: "user", content: userText });
+      const context = buildManualContext(matchedManuals, userText);
+      const answer = await base44.integrations.Core.InvokeLLM({
+        prompt: `You are a senior field service engineer assistant. Use ONLY the manual content below to answer the engineer's question.
 Rules:
 - Be concise and direct
 - Prioritise safety — always surface warnings and cautions
@@ -458,21 +457,17 @@ MANUAL CONTENT:
 ${context}
 
 ENGINEER'S QUESTION: ${userText}`,
-          model: "gemini_3_flash",
-        });
-        injectAssistantMessage(conversation, answer);
-        setIsProcessing(false);
-        return;
-      }
-
-      // Nothing in local DB — log as not found, send to agent
-      logSearch(userText, "not_found", 0);
-      await base44.agents.addMessage(conversation, { role: "user", content: userText });
+        model: "gemini_3_flash",
+      });
+      injectAssistantMessage(conversation, answer);
       setIsProcessing(false);
-    } catch (error) {
-      console.error("Error in handleSend:", error);
-      setIsProcessing(false);
+      return;
     }
+
+    // Nothing in local DB — log as not found, send to agent
+    logSearch(userText, "not_found", 0);
+    await base44.agents.addMessage(conversation, { role: "user", content: userText });
+    setIsProcessing(false);
   };
 
   return (
