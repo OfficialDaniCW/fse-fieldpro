@@ -4,7 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Mic, Send, Image as ImageIcon, Loader2, BookOpen, History, Plus } from "lucide-react";
+import { Mic, Send, Image as ImageIcon, Loader2, BookOpen, History } from "lucide-react";
 import MessageBubble from "../components/MessageBubble";
 import PageHeader from "../components/PageHeader";
 import PartsUsedTray from "../components/PartsUsedTray";
