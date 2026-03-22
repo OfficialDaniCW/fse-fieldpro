@@ -178,19 +178,35 @@ export default function ChatPage() {
     const exact = allParts.find(p => p.part_number?.toLowerCase() === q);
     if (exact) return { type: "exact", parts: [exact] };
 
-    // 2. Looks like a part number (alphanumeric, 4+ chars, no spaces) — search part_number field
+    // 2. Looks like a part number — search part_number field only
     if (PART_NUMBER_REGEX.test(q) && !q.includes(" ")) {
       const matches = allParts.filter(p => p.part_number?.toLowerCase().includes(q));
       if (matches.length > 0) return { type: "part_number", parts: matches.slice(0, 3) };
     }
 
-    // 3. Free-text description / brand search
+    // 3. Fuzzy free-text search with weighted field scoring
     const words = q.split(/\s+/).filter(w => w.length > 1);
     const scored = allParts
       .map(p => {
-        const haystack = [p.part_number, p.description, p.brand, p.pump_model, p.system_area, p.component_type]
-          .filter(Boolean).join(" ").toLowerCase();
-        const score = words.filter(w => haystack.includes(w)).length;
+        let score = 0;
+        const fields = {
+          part_number:    { text: p.part_number, weight: 5 },
+          description:    { text: p.description, weight: 4 },
+          brand:          { text: p.brand, weight: 3 },
+          pump_model:     { text: p.pump_model, weight: 3 },
+          component_type: { text: p.component_type, weight: 2 },
+          system_area:    { text: p.system_area, weight: 2 },
+          what_it_does:   { text: p.what_it_does, weight: 1 },
+        };
+        for (const [, { text, weight }] of Object.entries(fields)) {
+          if (!text) continue;
+          const t = text.toLowerCase();
+          for (const w of words) {
+            if (t === w) score += weight * 3;          // exact word match
+            else if (t.startsWith(w)) score += weight * 2; // prefix match
+            else if (t.includes(w)) score += weight;   // substring match
+          }
+        }
         return { part: p, score };
       })
       .filter(x => x.score > 0)

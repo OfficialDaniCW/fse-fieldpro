@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, Plus, Trash2, FileText, Package, Shield, Pencil, Upload } from "lucide-react";
+import { Search, Plus, Trash2, FileText, Package, Shield, Pencil, Upload, RefreshCw } from "lucide-react";
 import { Link } from "react-router-dom";
 import PageHeader from "../components/PageHeader";
 import ManualForm from "../components/ManualForm";
@@ -70,6 +70,24 @@ export default function AdminPage() {
     toast.success("Manual deleted");
   };
 
+  const [reExtractingId, setReExtractingId] = useState(null);
+
+  const reExtractManual = async (manual) => {
+    if (!manual.pdf_file) return;
+    setReExtractingId(manual.id);
+    try {
+      const extracted = await base44.functions.invoke("extractPdfText", { pdf_url: manual.pdf_file });
+      const manual_text = extracted.data?.manual_text || null;
+      const summary = extracted.data?.summary || null;
+      await base44.entities.Manual.update(manual.id, { manual_text, summary });
+      queryClient.invalidateQueries({ queryKey: ["manuals"] });
+      toast.success("Text re-extracted successfully.");
+    } catch (err) {
+      toast.error("Re-extraction failed: " + err.message);
+    }
+    setReExtractingId(null);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <PageHeader title="Admin Panel" subtitle="Manage parts & manuals" />
@@ -113,11 +131,22 @@ export default function AdminPage() {
                   </div>
                   <div className="flex gap-1 shrink-0">
                     {m.pdf_file && (
-                      <a href={m.pdf_file} target="_blank" rel="noopener noreferrer">
-                        <Button variant="ghost" size="sm" className="text-gray-500 h-8 w-8 p-0">
-                          <FileText className="w-4 h-4" />
+                      <>
+                        <a href={m.pdf_file} target="_blank" rel="noopener noreferrer">
+                          <Button variant="ghost" size="sm" className="text-gray-500 h-8 w-8 p-0" title="View PDF">
+                            <FileText className="w-4 h-4" />
+                          </Button>
+                        </a>
+                        <Button
+                          variant="ghost" size="sm"
+                          onClick={() => reExtractManual(m)}
+                          disabled={reExtractingId === m.id}
+                          className="text-blue-400 h-8 w-8 p-0 hover:text-blue-600"
+                          title="Re-extract text from PDF"
+                        >
+                          <RefreshCw className={`w-4 h-4 ${reExtractingId === m.id ? "animate-spin" : ""}`} />
                         </Button>
-                      </a>
+                      </>
                     )}
                     <Button variant="ghost" size="sm" onClick={() => deleteManual(m.id)} className="text-red-400 h-8 w-8 p-0 hover:text-red-600">
                       <Trash2 className="w-4 h-4" />
