@@ -9,6 +9,7 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import Favorites from './pages/Favorites';
 import SyncManager from './pages/SyncManager';
+import ImportParts from './pages/ImportParts';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -68,6 +69,11 @@ const AuthenticatedApp = () => {
       <Route path="/SyncManager" element={
         <LayoutWrapper currentPageName="SyncManager">
           <SyncManager />
+        </LayoutWrapper>
+      } />
+      <Route path="/ImportParts" element={
+        <LayoutWrapper currentPageName="ImportParts">
+          <ImportParts />
         </LayoutWrapper>
       } />
       <Route path="*" element={<PageNotFound />} />
