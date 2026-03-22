@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Search, SlidersHorizontal, ChevronLeft, ChevronRight, LayoutGrid, List, WifiOff } from "lucide-react";
-import Fuse from "fuse.js";
+import Fuse from "fuse.js/dist/fuse.basic.esm";
 import PartCard from "../components/parts/PartCard";
 import SimpleFilterPanel from "../components/parts/SimpleFilterPanel";
 import { useNavigate } from "react-router-dom";
