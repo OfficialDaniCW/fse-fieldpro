@@ -120,15 +120,19 @@ ${safetyText}
 MAINTENANCE:
 ${maintenanceText}`;
 
-    // Step 6: Assign to folder based on manufacturer + model
+    // Step 6: Assign to folder based on manufacturer
     let folder_id = null;
     try {
       const mfr = extractedData.manufacturer || manual.manufacturer;
-      const folders = await base44.asServiceRole.entities.ManualFolder.filter({
-        brand: mfr
-      });
-      if (folders?.length > 0) {
-        folder_id = folders[0].id;
+      if (mfr) {
+        // Find the brand folder (folder_type === 'brand')
+        const brandFolders = await base44.asServiceRole.entities.ManualFolder.filter({
+          brand: mfr,
+          folder_type: 'brand'
+        });
+        if (brandFolders?.length > 0) {
+          folder_id = brandFolders[0].id;
+        }
       }
     } catch (e) {
       console.log('Folder assignment skipped:', e.message);
