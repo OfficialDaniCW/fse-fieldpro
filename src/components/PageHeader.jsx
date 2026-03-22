@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { ConnectionBannerContext } from "../lib/ConnectionBannerContext";
 
 export default function PageHeader({ title, subtitle, children }) {
