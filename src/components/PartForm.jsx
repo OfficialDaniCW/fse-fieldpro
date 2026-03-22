@@ -32,6 +32,22 @@ export default function PartForm({ onClose, onSuccess }) {
 
   const set = (key, val) => setFormData(f => ({ ...f, [key]: val }));
 
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      set("image_url", file_url);
+      toast.success("Image uploaded successfully!");
+    } catch (error) {
+      toast.error("Failed to upload image");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
