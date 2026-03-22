@@ -1,4 +1,3 @@
-import React from "react";
 import { Info, ExternalLink, MessageCircle } from "lucide-react";
 import PageHeader from "../components/PageHeader";
 import { base44 } from "@/api/base44Client";
