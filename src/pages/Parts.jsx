@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Search, SlidersHorizontal, ChevronLeft, ChevronRight, LayoutGrid, List } from "lucide-react";
 import PartCard from "../components/parts/PartCard";
 import FilterPanel from "../components/parts/FilterPanel";
+import { useNavigate } from "react-router-dom";
 
 const PAGE_SIZE = 15;
 
