@@ -9,6 +9,7 @@ export default function ZipUpload() {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
+  const [progress, setProgress] = useState({ stage: '', percent: 0 });
 
   const handleDragOver = (e) => {
     e.preventDefault();
