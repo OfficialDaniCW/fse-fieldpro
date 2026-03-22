@@ -26,10 +26,16 @@ export default function AdminPage() {
   const [editingPart, setEditingPart] = useState(null);
   const [reExtractingId, setReExtractingId] = useState(null);
 
-  const { data: parts = [] } = useQuery({
+  const { data: parts = [], refetch: refetchParts } = useQuery({
     queryKey: ["parts"],
     queryFn: () => base44.entities.Part.list("-created_date", 10000),
   });
+
+  // Auto-refetch on mount to ensure fresh data
+  import { useEffect } from "react";
+  useEffect(() => {
+    refetchParts();
+  }, [refetchParts]);
 
   const { data: manuals = [] } = useQuery({
     queryKey: ["manuals"],
