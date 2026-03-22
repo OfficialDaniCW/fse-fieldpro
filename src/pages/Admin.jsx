@@ -4,12 +4,13 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, Plus, Trash2, FileText, Package, Shield, Pencil, Upload, RefreshCw, FolderUp } from "lucide-react";
+import { Search, Plus, Trash2, FileText, Package, Shield, Pencil, Upload, RefreshCw, FolderUp, History } from "lucide-react";
 import { Link } from "react-router-dom";
 import PageHeader from "../components/PageHeader";
 import ManualForm from "../components/ManualForm";
 import PartForm from "../components/PartForm";
 import PartEditModal from "../components/parts/PartEditModal";
+import ActivityLogViewer from "../components/admin/ActivityLogViewer";
 import { useCurrentUser } from "../lib/useCurrentUser";
 import { toast } from "sonner";
 import { Toaster } from "sonner";
@@ -122,6 +123,10 @@ export default function AdminPage() {
               <Package className="w-4 h-4 mr-1.5" />
               Parts ({parts.length})
             </TabsTrigger>
+            <TabsTrigger value="activity" className="flex-1">
+              <History className="w-4 h-4 mr-1.5" />
+              Activity Log
+            </TabsTrigger>
           </TabsList>
 
           {/* Manuals Tab */}
@@ -210,7 +215,12 @@ export default function AdminPage() {
               {filteredParts.length === 0 && <p className="text-center text-gray-400 py-8">No parts found</p>}
             </div>
           </TabsContent>
-        </Tabs>
+
+          {/* Activity Log Tab */}
+          <TabsContent value="activity">
+            <ActivityLogViewer />
+          </TabsContent>
+          </Tabs>
       </div>
 
       {showManualForm && (
