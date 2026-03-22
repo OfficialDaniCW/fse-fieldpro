@@ -47,11 +47,11 @@ export default function PartCard({ part }) {
   };
 
   return (
-    <div className="bg-white border border-gray-200 overflow-hidden rounded-none border-l-0 border-r-0 -mx-4 px-4">
+    <div className="bg-white border border-gray-200 overflow-hidden rounded-xl shadow-sm">
       {/* Card header */}
       <button
         onClick={() => setExpanded(e => !e)}
-        className="w-full text-left pt-4 pb-3 flex items-start justify-between gap-3"
+        className="w-full text-left px-4 pt-4 pb-3 flex items-start justify-between gap-3"
       >
         <div className="flex-1 min-w-0 space-y-2">
           {/* Part number */}
