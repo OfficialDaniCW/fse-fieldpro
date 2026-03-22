@@ -4,6 +4,29 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Upload, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 
+async function uploadZipFile(file) {
+  const formData = new FormData();
+  formData.append('file', file);
+  
+  const response = await fetch(
+    `/api/functions/processZipManual?app_id=${import.meta.env.VITE_APP_ID || ''}`,
+    {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'Authorization': `Bearer ${await base44.auth.getToken?.()}`
+      }
+    }
+  );
+  
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.detail || `Upload failed with status ${response.status}`);
+  }
+  
+  return response.json();
+}
+
 export default function ZipUpload() {
   const [isDragging, setIsDragging] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
