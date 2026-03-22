@@ -24,6 +24,7 @@ export default function AdminPage() {
   const [showManualForm, setShowManualForm] = useState(false);
   const [showPartForm, setShowPartForm] = useState(false);
   const [editingPart, setEditingPart] = useState(null);
+  const [reExtractingId, setReExtractingId] = useState(null);
 
   const { data: parts = [] } = useQuery({
     queryKey: ["parts"],
@@ -34,8 +35,6 @@ export default function AdminPage() {
     queryKey: ["manuals"],
     queryFn: () => base44.entities.Manual.list("-created_date"),
   });
-
-
 
   if (loading) return <div className="flex items-center justify-center h-screen"><div className="w-8 h-8 border-4 border-slate-200 border-t-[#CC0000] rounded-full animate-spin" /></div>;
 
@@ -56,8 +55,8 @@ export default function AdminPage() {
 
   const filteredManuals = manuals.filter(m =>
     m.title?.toLowerCase().includes(searchManuals.toLowerCase()) ||
-    m.equipment_manufacturer?.toLowerCase().includes(searchManuals.toLowerCase()) ||
-    m.equipment_model?.toLowerCase().includes(searchManuals.toLowerCase())
+    m.manufacturer?.toLowerCase().includes(searchManuals.toLowerCase()) ||
+    m.model?.toLowerCase().includes(searchManuals.toLowerCase())
   );
 
   const deletePart = async (id) => {
@@ -73,8 +72,6 @@ export default function AdminPage() {
     queryClient.invalidateQueries({ queryKey: ["manuals"] });
     toast.success("Manual deleted");
   };
-
-  const [reExtractingId, setReExtractingId] = useState(null);
 
   const reExtractManual = async (manual) => {
     if (!manual.pdf_file) return;
@@ -190,7 +187,7 @@ export default function AdminPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-sm text-gray-900 truncate">{m.title}</p>
-                    <p className="text-xs text-gray-500">{m.equipment_manufacturer} · {m.equipment_model}</p>
+                    <p className="text-xs text-gray-500">{m.manufacturer} · {m.model}</p>
                     {m.manual_text && <p className="text-xs text-green-600 mt-0.5">✓ Text extracted</p>}
                     {!m.manual_text && <p className="text-xs text-amber-500 mt-0.5">⚠ No text extracted</p>}
                   </div>
