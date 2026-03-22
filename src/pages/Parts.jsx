@@ -53,11 +53,12 @@ export default function PartsPage() {
       const fuse = new Fuse(results, {
         keys: [
           { name: "description", weight: 0.4 },
-          { name: "pump_model", weight: 0.3 },
-          { name: "brand", weight: 0.2 },
-          { name: "part_number", weight: 0.1 }
+          { name: "part_number", weight: 0.3 },
+          { name: "manufacturer_part_ref", weight: 0.25 },
+          { name: "pump_model", weight: 0.2 },
+          { name: "brand", weight: 0.15 }
         ],
-        threshold: 0.4,
+        threshold: 0.3,
         includeScore: true
       });
       results = fuse.search(searchTerm).map(r => r.item);
