@@ -170,6 +170,17 @@ export default function PartCard({ part, manuals = [], onOpenManual }) {
             </div>
           )}
 
+          {/* Manual link */}
+          {matchedManual && onOpenManual && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onOpenManual(matchedManual.id); }}
+              className="w-full flex items-center justify-center gap-2 h-11 border-2 border-blue-200 bg-blue-50 rounded-lg text-sm font-semibold text-blue-700 hover:bg-blue-100 transition-colors"
+            >
+              <BookOpen className="w-4 h-4" />
+              View Manual — {matchedManual.title}
+            </button>
+          )}
+
           {/* Copy button */}
           <button
             onClick={handleCopy}
