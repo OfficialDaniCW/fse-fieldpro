@@ -56,6 +56,18 @@ export default function Layout({ children, currentPageName }) {
         {children}
       </main>
 
+      {/* Connection status pill — fixed top-right */}
+      <div className={`fixed top-2 right-3 z-[200] flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold shadow-sm transition-all duration-500 ${
+        isOffline
+          ? "bg-amber-100 text-amber-700 border border-amber-300"
+          : "bg-green-100 text-green-700 border border-green-300"
+      }`}>
+        <span className={`w-2 h-2 rounded-full ${isOffline ? "bg-amber-500" : "bg-green-500 animate-pulse"}`} />
+        {isOffline
+          ? pendingCount > 0 ? `Offline · ${pendingCount} queued` : "Offline · cached"
+          : "Online"}
+      </div>
+
       {/* Bottom Navigation */}
       <nav className="bg-white border-t border-gray-200 fixed bottom-0 left-0 right-0 z-50">
         <div className="max-w-4xl mx-auto flex">
