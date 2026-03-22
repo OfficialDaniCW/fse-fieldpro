@@ -8,7 +8,7 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Admin access required' }, { status: 403 });
     }
 
-    const { manual_id, extract_parts } = await req.json();
+    const { manual_id, extract_parts, extract_diagrams } = await req.json();
 
     if (!manual_id) {
       return Response.json({ error: 'manual_id required' }, { status: 400 });
@@ -66,16 +66,47 @@ ${manual_text.slice(0, 10000)}`,
       });
     }
 
-    // Step 4: Update manual record with extracted content
+    // Step 4: Extract diagrams if enabled (only for complex equipment)
+    let diagram_url = null;
+    if (extract_diagrams && manual.pdf_file) {
+      try {
+        const diagramResult = await base44.integrations.Core.InvokeLLM({
+          model: 'gemini_3_pro',
+          prompt: `This is a technical manual for ${manual.equipment_manufacturer} ${manual.equipment_model}. 
+    Analyze the PDF and identify if there is an exploded view diagram, assembly diagram, or parts diagram that shows the internal structure and components.
+    Return: 1) "has_diagram": true/false, 2) "page_numbers": estimated page numbers where diagrams appear, 3) "description": brief description of what the diagram shows.`,
+          file_urls: [manual.pdf_file],
+          response_json_schema: {
+            type: "object",
+            properties: {
+              has_diagram: { type: "boolean" },
+              page_numbers: { type: "string" },
+              description: { type: "string" }
+            }
+          }
+        });
+
+        if (diagramResult?.has_diagram) {
+          // Note: In production, you'd extract the actual image from the PDF
+          // For now, we mark it as detected so admin can manually extract if needed
+          diagram_url = "pending_extraction";
+        }
+      } catch (e) {
+        console.log("Diagram extraction skipped:", e.message);
+      }
+    }
+
+    // Step 5: Update manual record with extracted content
     await base44.entities.Manual.update(manual_id, {
       manual_text: manual_text || null,
       error_codes,
       troubleshooting_steps,
       summary,
+      exploded_view_image_url: diagram_url,
       extracted_parts_status: extract_parts ? 'processing' : 'none'
     });
 
-    // Step 5: Optionally extract parts from manual
+    // Step 6: Optionally extract parts from manual
     let parts_extracted = 0;
     if (extract_parts && manual_text) {
       const partsResult = await base44.integrations.Core.InvokeLLM({
