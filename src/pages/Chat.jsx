@@ -381,7 +381,12 @@ ${candidates.map(c => `ID:${c.idx} | ${c.manufacturer} ${c.model} ${c.version} |
     setIsProcessing(true);
     if (userText) addToRecentSearches(userText);
 
-    const conversation = await base44.agents.getConversation(conversationId);
+    try {
+      const conversation = await base44.agents.getConversation(conversationId);
+      if (!conversation) {
+        setIsProcessing(false);
+        return;
+      }
 
     // Image path — OCR then search parts, then manuals
     if (imageFile) {
