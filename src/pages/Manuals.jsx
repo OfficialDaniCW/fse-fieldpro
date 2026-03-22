@@ -78,6 +78,11 @@ export default function Manuals() {
     return filtered.filter(m => m.folder_id === currentFolderId);
   };
 
+  // Get live count of manuals for a folder (not from stored field)
+  const getManualCountForFolder = (folderId) => {
+    return (manuals || []).filter(m => m.folder_id === folderId).length;
+  };
+
   const handleFolderClick = (folderId) => {
     setBreadcrumb([...breadcrumb, folderId]);
   };
@@ -203,23 +208,23 @@ export default function Manuals() {
                   <h2 className="text-sm font-semibold text-gray-600 mb-2">Folders</h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {getCurrentFolderContents().map(folder => {
-                             const manualCount = (filtered || []).filter(m => m.folder_id === folder.id).length;
-                            return (
-                        <button
-                          key={folder.id}
-                          onClick={() => handleFolderClick(folder.id)}
-                          className="p-4 bg-white rounded-xl border border-gray-200 hover:border-[#CC0000] hover:shadow-md transition-all text-left"
-                        >
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <h3 className="font-bold text-gray-900">{folder.name}</h3>
-                              <p className="text-xs text-gray-500 mt-1">{manualCount} manuals</p>
+                              const manualCount = getManualCountForFolder(folder.id);
+                              return (
+                         <button
+                            key={folder.id}
+                            onClick={() => handleFolderClick(folder.id)}
+                            className="p-4 bg-white rounded-xl border border-gray-200 hover:border-[#CC0000] hover:shadow-md transition-all text-left"
+                          >
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <h3 className="font-bold text-gray-900">{folder.name}</h3>
+                                <p className="text-xs text-gray-500 mt-1">{manualCount} manuals</p>
+                              </div>
+                              <FolderOpen className="w-5 h-5 text-[#CC0000] flex-shrink-0" />
                             </div>
-                            <FolderOpen className="w-5 h-5 text-[#CC0000] flex-shrink-0" />
-                          </div>
-                        </button>
-                      );
-                    })}
+                          </button>
+                        );
+                      })}
                   </div>
                 </div>
               )}
