@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { BookOpen, Search, Plus, List, FolderOpen, Eye, FileText, WifiOff } from "lucide-react";
+import { BookOpen, Search, Plus, List, FolderOpen, Eye, FileText, WifiOff, Upload } from "lucide-react";
+import { Link } from "react-router-dom";
 import ManualWikiViewer from "@/components/ManualWikiViewer";
 import ManualForm from "@/components/ManualForm";
 import { useCurrentUser } from "@/lib/useCurrentUser";
@@ -123,12 +124,20 @@ export default function Manuals() {
             </div>
           </div>
           {isAdmin && (
-            <button
-              onClick={() => setShowForm(true)}
-              className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 active:bg-white/40 transition-colors"
-            >
-              <Plus className="w-5 h-5 text-white" />
-            </button>
+            <div className="flex gap-2">
+              <Link to="/ZipUpload">
+                <button className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 active:bg-white/40 transition-colors" title="Upload ZIP">
+                  <Upload className="w-5 h-5 text-white" />
+                </button>
+              </Link>
+              <button
+                onClick={() => setShowForm(true)}
+                className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 active:bg-white/40 transition-colors"
+                title="Add manual"
+              >
+                <Plus className="w-5 h-5 text-white" />
+              </button>
+            </div>
           )}
         </div>
 
