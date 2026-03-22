@@ -38,9 +38,7 @@ export default function Layout({ children, currentPageName }) {
   const tabs = [
     { name: "Chat", label: "Assistant", icon: MessageSquare, to: "/" },
     { name: "Parts", label: "Parts", icon: Search, to: "/Parts" },
-    { name: "Favorites", label: "Favourites", icon: Star, to: "/Favorites" },
     { name: "Manuals", label: "Manuals", icon: BookOpen, to: "/Manuals" },
-    { name: "OfflineMode", label: "Offline", icon: WifiOff, to: "/OfflineMode" },
     ...(isAdmin ? [{ name: "Admin", label: "Admin", icon: Shield, to: "/Admin" }] : []),
     ...(isManager && !isAdmin ? [{ name: "Stats", label: "Stats", icon: BarChart2, to: "/Stats" }] : []),
     { name: "Profile", label: "Profile", icon: User, to: "/Profile" },
