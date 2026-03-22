@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { MessageSquare, Search, BookOpen, User, WifiOff, Star, Shield, BarChart2 } from "lucide-react";
+import { MessageSquare, Search, BookOpen, User, WifiOff, Star, Shield, BarChart2, RefreshCw } from "lucide-react";
 import useSyncManager from "./lib/useSyncManager";
 import { useQueryClient } from "@tanstack/react-query";
 import { getQueue } from "./lib/pendingQueue";
@@ -36,7 +36,10 @@ export default function Layout({ children, currentPageName }) {
     { name: "Parts", label: "Parts", icon: Search, to: "/Parts" },
     { name: "Favorites", label: "Favourites", icon: Star, to: "/Favorites" },
     { name: "Manuals", label: "Manuals", icon: BookOpen, to: "/Manuals" },
-    ...(isAdmin ? [{ name: "Admin", label: "Admin", icon: Shield, to: "/Admin" }] : []),
+    ...(isAdmin ? [
+      { name: "Admin", label: "Admin", icon: Shield, to: "/Admin" },
+      { name: "SyncManager", label: "Sync", icon: RefreshCw, to: "/SyncManager" },
+    ] : []),
     ...(isManager && !isAdmin ? [{ name: "Stats", label: "Stats", icon: BarChart2, to: "/Stats" }] : []),
     { name: "Profile", label: "Profile", icon: User, to: "/Profile" },
   ];
