@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { MessageSquare, Search, BookOpen, User, Star, Shield, BarChart2, WifiOff } from "lucide-react";
-import { useQueryClient } from "@tanstack/react-query";
 import { getQueue } from "./lib/pendingQueue";
 import { useAuth } from "./lib/AuthContext";
 import { ConnectionBannerContext } from "./lib/ConnectionBannerContext";
@@ -10,7 +9,6 @@ export default function Layout({ children, currentPageName }) {
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
   const [pendingCount, setPendingCount] = useState(() => getQueue().length);
   const [showOnlineBanner, setShowOnlineBanner] = useState(false);
-  const queryClient = useQueryClient();
   const { user } = useAuth();
   
   const isAdmin = user?.role === "admin";
