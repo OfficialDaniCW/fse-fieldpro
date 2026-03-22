@@ -5,6 +5,7 @@ import useSyncManager from "./lib/useSyncManager";
 import { useQueryClient } from "@tanstack/react-query";
 import { getQueue } from "./lib/pendingQueue";
 import { useCurrentUser } from "./lib/useCurrentUser";
+import { ConnectionBannerContext } from "./lib/ConnectionBannerContext";
 
 export default function Layout({ children, currentPageName }) {
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
