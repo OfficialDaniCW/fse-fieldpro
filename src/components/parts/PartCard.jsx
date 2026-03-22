@@ -309,6 +309,48 @@ export default function PartCard({ part, manuals = [], onOpenManual, allParts = 
              </>
            )}
 
+           {/* MANUALS TAB */}
+           {activeTab === "manuals" && (
+             <>
+               {part.manual_links && part.manual_links.length > 0 ? (
+                 <div className="space-y-3">
+                   {part.manual_links.map((link, idx) => (
+                     <a
+                       key={idx}
+                       href={link.pdf_url}
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       className="flex items-center justify-between p-4 border border-purple-200 rounded-lg bg-purple-50 hover:bg-purple-100 transition-colors"
+                     >
+                       <div className="flex items-center gap-3">
+                         <BookOpen className="w-5 h-5 text-purple-600 flex-shrink-0" />
+                         <div>
+                           <p className="text-sm font-semibold text-purple-900">{link.manual_title}</p>
+                           {link.page_number && <p className="text-xs text-purple-700">Page {link.page_number}</p>}
+                         </div>
+                       </div>
+                       <ExternalLink className="w-4 h-4 text-purple-600 flex-shrink-0" />
+                     </a>
+                   ))}
+                 </div>
+               ) : (
+                 <div className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-6 text-center">
+                   <p className="text-sm text-gray-500">No manual references yet</p>
+                 </div>
+               )}
+
+               {matchedManual && onOpenManual && (
+                 <button
+                   onClick={(e) => { e.stopPropagation(); onOpenManual(matchedManual.id); }}
+                   className="w-full flex items-center justify-center gap-2 h-11 border-2 border-blue-200 bg-blue-50 rounded-lg text-sm font-semibold text-blue-700 hover:bg-blue-100 transition-colors mt-3"
+                 >
+                   <BookOpen className="w-4 h-4" />
+                   View Manual — {matchedManual.title}
+                 </button>
+               )}
+             </>
+           )}
+
            {/* REFERENCE TAB */}
            {activeTab === "reference" && (
              <>
