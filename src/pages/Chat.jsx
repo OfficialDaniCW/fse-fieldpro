@@ -15,7 +15,7 @@ const MAX_RECENT = 5;
 
 export default function ChatPage() {
   const [conversationId, setConversationId] = useState(null);
-  const cacheRef = React.useRef({});
+  const cacheRef = useRef({});
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [isListening, setIsListening] = useState(false);
