@@ -89,19 +89,21 @@ export default function ZipUpload() {
             id="zip-input"
             disabled={isLoading}
           />
-          <label htmlFor="zip-input" asChild>
-            <Button disabled={isLoading} variant="outline">
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Processing...
-                </>
-              ) : (
-                <>
-                  <Upload className="w-4 h-4 mr-2" />
-                  Select ZIP File
-                </>
-              )}
+          <label htmlFor="zip-input">
+            <Button asChild disabled={isLoading} variant="outline">
+              <span>
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <Upload className="w-4 h-4 mr-2" />
+                    Select ZIP File
+                  </>
+                )}
+              </span>
             </Button>
           </label>
         </div>
