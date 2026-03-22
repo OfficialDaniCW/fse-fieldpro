@@ -80,28 +80,28 @@ export default function FilterPanel({ options, filters, onSelect, onClose }) {
       label: "Manufacturer / Brand",
       hint: "Who built it",
       icon: Tag,
-      opts: BRAND_OPTIONS,
+      opts: options.brand && options.brand.length > 0 ? options.brand : DEFAULT_BRAND_OPTIONS,
     },
     {
       key: "pump_model",
       label: "Pump Model",
       hint: "Which dispenser",
       icon: Layers,
-      opts: options.pump_model || [],
+      opts: options.pump_model && options.pump_model.length > 0 ? options.pump_model : [],
     },
     {
       key: "system_area",
       label: "System / Area",
       hint: "Where on the pump",
       icon: Settings,
-      opts: SYSTEM_AREA_OPTIONS,
+      opts: options.system_area && options.system_area.length > 0 ? options.system_area : SYSTEM_AREA_OPTIONS,
     },
     {
       key: "component_type",
       label: "Component Type",
       hint: "What the part is",
       icon: Wrench,
-      opts: options.component_type || [],
+      opts: options.component_type && options.component_type.length > 0 ? options.component_type : [],
     },
   ];
 
