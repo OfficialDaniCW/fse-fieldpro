@@ -49,12 +49,7 @@ export default function PartCard({ part, manuals = [], onOpenManual }) {
     part.installation_step_3,
   ].filter(Boolean);
 
-  const [checkedSteps, setCheckedSteps] = useState([]);
-  const toggleStep = (idx) => {
-    setCheckedSteps(prev =>
-      prev.includes(idx) ? prev.filter(i => i !== idx) : [...prev, idx]
-    );
-  };
+
 
   const handleCopy = (e) => {
     e.stopPropagation();
