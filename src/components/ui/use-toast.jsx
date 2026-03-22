@@ -161,4 +161,4 @@ function useToast() {
   };
 }
 
-export { useToast, toast, ToastContext };
+export { useToast, toast };
