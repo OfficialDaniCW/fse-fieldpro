@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
-import { ArrowLeft, AlertTriangle, AlertCircle, FileText, Loader2, ExternalLink } from "lucide-react";
+import { ArrowLeft, AlertTriangle, AlertCircle, FileText, Loader2, ExternalLink, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { base44 } from "@/api/base44Client";
 
 function parseLine(line, idx) {
   const trimmed = line.trim();
@@ -146,28 +147,56 @@ function TableOfContents({ toc_string }) {
 }
 
 export default function ManualWikiViewer({ manual, onBack }) {
-  const [refreshCount, setRefreshCount] = useState(0);
   const [displayManual, setDisplayManual] = useState(manual);
+  const [isLoading, setIsLoading] = useState(false);
 
   const isProcessing = displayManual.processing_status === 'processing' || displayManual.processing_status === 'pending';
   const isFailed = displayManual.processing_status === 'failed';
   const isComplete = displayManual.processing_status === 'complete' && displayManual.manual_text;
 
-  // Auto-refresh every 5 seconds if processing
+  // Fetch fresh manual data on mount
+  useEffect(() => {
+    const fetchManual = async () => {
+      try {
+        const manuals = await base44.entities.Manual.list();
+        const found = manuals.find(m => m.id === manual.id);
+        if (found) setDisplayManual(found);
+      } catch (err) {
+        console.error('Failed to fetch manual:', err);
+      }
+    };
+
+    fetchManual();
+  }, [manual.id]);
+
+  // Poll every 5 seconds if processing
   useEffect(() => {
     if (!isProcessing) return;
 
-    const interval = setInterval(() => {
-      setRefreshCount(c => c + 1);
+    const interval = setInterval(async () => {
+      try {
+        const manuals = await base44.entities.Manual.list();
+        const found = manuals.find(m => m.id === manual.id);
+        if (found) setDisplayManual(found);
+      } catch (err) {
+        console.error('Poll error:', err);
+      }
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [isProcessing]);
+  }, [isProcessing, manual.id]);
 
-  // Update display when manual prop changes
-  useEffect(() => {
-    setDisplayManual(manual);
-  }, [manual, refreshCount]);
+  // Manual refresh button
+  const handleRefresh = async () => {
+    setIsLoading(true);
+    try {
+      const manuals = await base44.entities.Manual.list();
+      const found = manuals.find(m => m.id === manual.id);
+      if (found) setDisplayManual(found);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // Parse sections
   const sections = useMemo(() => {
@@ -250,6 +279,14 @@ export default function ManualWikiViewer({ manual, onBack }) {
             <Loader2 className="w-12 h-12 text-blue-500 animate-spin mb-4" />
             <p className="text-gray-800 font-medium">Extracting content from PDF...</p>
             <p className="text-sm text-gray-600 mt-2">Auto-refreshing every 5 seconds</p>
+            <button
+              onClick={handleRefresh}
+              disabled={isLoading}
+              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold text-sm hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+            >
+              <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+              Refresh Now
+            </button>
           </div>
         </div>
       )}
