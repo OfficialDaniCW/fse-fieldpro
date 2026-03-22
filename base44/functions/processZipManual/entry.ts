@@ -46,10 +46,17 @@ Deno.serve(async (req) => {
       if (filename.startsWith('images/') && filename.match(/\.(png|jpg|jpeg)$/i)) {
         const buffer = await file.async('arraybuffer');
         const mimeType = filename.endsWith('.png') ? 'image/png' : 'image/jpeg';
-        const blob = new Blob([buffer], { type: mimeType });
+
+        // Convert buffer to base64 for upload
+        const bytes = new Uint8Array(buffer);
+        let binary = '';
+        for (let i = 0; i < bytes.byteLength; i++) {
+          binary += String.fromCharCode(bytes[i]);
+        }
+        const base64 = btoa(binary);
 
         const uploadRes = await base44.integrations.Core.UploadFile({
-          file: blob
+          file: base64
         });
 
         const cleanFilename = filename.split('/').pop();
@@ -71,10 +78,17 @@ Deno.serve(async (req) => {
     for (const [filename, file] of Object.entries(zip.files)) {
       if (filename.startsWith('source_pdf/') && filename.endsWith('.pdf')) {
         const buffer = await file.async('arraybuffer');
-        const blob = new Blob([buffer], { type: 'application/pdf' });
+
+        // Convert buffer to base64 for upload
+        const bytes = new Uint8Array(buffer);
+        let binary = '';
+        for (let i = 0; i < bytes.byteLength; i++) {
+          binary += String.fromCharCode(bytes[i]);
+        }
+        const base64 = btoa(binary);
 
         const uploadRes = await base44.integrations.Core.UploadFile({
-          file: blob
+          file: base64
         });
         pdfUrl = uploadRes.file_url;
         break;
