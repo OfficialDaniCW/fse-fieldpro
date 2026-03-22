@@ -180,6 +180,11 @@ export default function PartsPage() {
       <div className="max-w-4xl mx-auto">
         {isLoading ? (
           <div className="text-center text-gray-400 py-16 text-sm">Loading parts...</div>
+        ) : parts.length === 0 ? (
+          <div className="text-center text-gray-400 py-16 text-sm">
+            No parts available
+            {error && <div className="text-xs text-red-500 mt-2">{error.message}</div>}
+          </div>
         ) : paginated.length === 0 ? (
           <div className="text-center text-gray-400 py-16 text-sm">No parts match your search</div>
         ) : viewMode === "cards" ? (
