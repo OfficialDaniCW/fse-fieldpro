@@ -14,9 +14,9 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'manual_id required' }, { status: 400 });
     }
 
-    // Fetch the manual record
-    const manuals = await base44.entities.Manual.filter({ id: manual_id });
-    const manual = manuals?.[0];
+    // Fetch the manual record by listing and finding
+    const allManuals = await base44.entities.Manual.list();
+    const manual = allManuals.find(m => m.id === manual_id);
     if (!manual) {
       return Response.json({ error: 'Manual not found' }, { status: 404 });
     }
