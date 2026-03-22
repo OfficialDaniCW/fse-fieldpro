@@ -189,7 +189,7 @@ export default function StatsPage() {
             <div className="space-y-2">
               {mfrData.map(({ name, count }) => (
                 <div key={name} className="flex items-center gap-3">
-                  <span className="text-sm text-gray-700 w-32 truncate">{name}</span>
+                  <span className="text-sm text-gray-700 w-32 flex-shrink-0 truncate">{name}</span>
                   <div className="flex-1 bg-gray-100 rounded-full h-2">
                     <div
                       className="bg-[#CC0000] h-2 rounded-full"
