@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ChevronDown, ChevronUp, Copy, Check, AlertTriangle, Star, BookOpen, RefreshCw } from "lucide-react";
+import { ChevronDown, ChevronUp, Copy, Check, AlertTriangle, Star, BookOpen, RefreshCw, ExternalLink } from "lucide-react";
 import { isFavorite, toggleFavorite } from "../../lib/favorites";
 
 const Tag = ({ label, color }) => {
@@ -201,15 +201,37 @@ export default function PartCard({ part, manuals = [], onOpenManual, allParts = 
           )}
 
           {/* Compatible parts */}
-          {compatiblePartsList.length > 0 && (
-            <div className="bg-green-50 border border-green-200 rounded-lg px-4 py-3">
-              <p className="text-xs font-semibold text-green-700 uppercase tracking-wide mb-3">Compatible Alternatives</p>
+           {compatiblePartsList.length > 0 && (
+             <div className="bg-green-50 border border-green-200 rounded-lg px-4 py-3">
+               <p className="text-xs font-semibold text-green-700 uppercase tracking-wide mb-3">Compatible Alternatives</p>
+               <div className="space-y-2">
+                 {compatiblePartsList.map(cp => (
+                   <div key={cp.id} className="text-sm text-green-900">
+                     <span className="font-mono font-bold">{cp.part_number}</span> — {cp.description}
+                     {cp.variant_spec && <p className="text-xs text-green-700">{cp.variant_spec}</p>}
+                   </div>
+                 ))}
+               </div>
+             </div>
+           )}
+
+          {/* Manual links */}
+          {part.manual_links && part.manual_links.length > 0 && (
+            <div className="bg-purple-50 border border-purple-200 rounded-lg px-4 py-3">
+              <p className="text-xs font-semibold text-purple-700 uppercase tracking-wide mb-3">Available in Manuals</p>
               <div className="space-y-2">
-                {compatiblePartsList.map(cp => (
-                  <div key={cp.id} className="text-sm text-green-900">
-                    <span className="font-mono font-bold">{cp.part_number}</span> — {cp.description}
-                    {cp.variant_spec && <p className="text-xs text-green-700">{cp.variant_spec}</p>}
-                  </div>
+                {part.manual_links.map((link, idx) => (
+                  <a
+                    key={idx}
+                    href={link.pdf_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-sm text-purple-700 hover:text-purple-900 hover:underline"
+                  >
+                    <BookOpen className="w-4 h-4 flex-shrink-0" />
+                    <span>{link.manual_title}</span>
+                    <ExternalLink className="w-3 h-3 flex-shrink-0 opacity-60" />
+                  </a>
                 ))}
               </div>
             </div>
