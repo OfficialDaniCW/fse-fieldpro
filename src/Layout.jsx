@@ -47,7 +47,7 @@ export default function Layout({ children, currentPageName }) {
   return (
     <div className="min-h-screen flex flex-col">
 
-      <main className={`flex-1 ${isOffline ? "pt-7" : ""}`}>
+      <main className="flex-1">
         {children}
       </main>
 
