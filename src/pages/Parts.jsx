@@ -151,6 +151,7 @@ export default function PartsPage() {
                 key={part.id}
                 part={part}
                 manuals={manuals}
+                allParts={parts}
                 onOpenManual={(manualId) => navigate(`/Manuals?manual=${manualId}`)}
               />
             ))}

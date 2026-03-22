@@ -49,7 +49,7 @@ export default function FavoritesPage() {
         ) : (
           <div className="px-4 py-3 space-y-3">
             {favoriteParts.map(part => (
-              <PartCard key={part.id} part={part} />
+              <PartCard key={part.id} part={part} allParts={parts} />
             ))}
           </div>
         )}
