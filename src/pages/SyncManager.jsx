@@ -1,9 +1,11 @@
 import React, { useState, useCallback } from "react";
 import { RefreshCw, Trash2, AlertTriangle, CheckCircle2, Clock, WifiOff, Loader2, Info } from "lucide-react";
-import { getQueue, dequeue, clearQueue } from "../lib/pendingQueue";
-import { replayAction } from "../lib/useSyncManager";
+import { getQueue, dequeue, clearQueue, resolveConflict } from "../lib/pendingQueue";
+import { replayAction, checkForConflict } from "../lib/useSyncManager";
 import { useCurrentUser } from "../lib/useCurrentUser";
+import { base44 } from "@/api/base44Client";
 import PageHeader from "../components/PageHeader";
+import ConflictResolver from "../components/ConflictResolver";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 
@@ -16,6 +18,7 @@ export default function SyncManagerPage() {
   const { isAdmin, loading } = useCurrentUser();
   const [queue, setQueue] = useState(() => getQueue());
   const [retrying, setRetrying] = useState({});
+  const [resolving, setResolving] = useState({});
   const [isOnline] = useState(navigator.onLine);
 
   const refresh = useCallback(() => setQueue(getQueue()), []);
@@ -44,6 +47,28 @@ export default function SyncManagerPage() {
     clearQueue();
     toast("All queued actions cleared.");
     refresh();
+  };
+
+  const handleResolveConflict = async (action, resolution) => {
+    setResolving(r => ({ ...r, [action.id]: true }));
+    try {
+      if (resolution === "local") {
+        // Use local version - force update with local data
+        await replayAction(action);
+        dequeue(action.id);
+        toast.success("Conflict resolved: your changes applied.");
+      } else if (resolution === "server") {
+        // Discard local changes, accept server version
+        resolveConflict(action.id, "server");
+        dequeue(action.id);
+        toast.success("Conflict resolved: server version kept.");
+      }
+    } catch (err) {
+      toast.error("Resolution failed: " + (err?.message || "Unknown error"));
+    } finally {
+      setResolving(r => ({ ...r, [action.id]: false }));
+      refresh();
+    }
   };
 
   if (loading) {
