@@ -6,6 +6,11 @@
 let swRegistration = null;
 
 export async function registerServiceWorker() {
+  // Service worker registration disabled due to platform redirect issues
+  console.log('[SW] Service worker registration disabled');
+  return null;
+  
+  /* Disabled registration
   if (!('serviceWorker' in navigator)) {
     console.log('[SW] Service Workers not supported in this browser');
     return null;
@@ -15,9 +20,9 @@ export async function registerServiceWorker() {
     swRegistration = await navigator.serviceWorker.register('/sw.js', {
       scope: '/',
       updateViaCache: 'none', // Always check for SW updates
-    });
+    });*/
 
-    console.log('[SW] Registered successfully:', swRegistration);
+    /*console.log('[SW] Registered successfully:', swRegistration);
 
     // Listen for updates
     swRegistration.addEventListener('updatefound', () => {
@@ -41,7 +46,7 @@ export async function registerServiceWorker() {
   } catch (error) {
     console.error('[SW] Registration failed:', error);
     return null;
-  }
+  }*/
 }
 
 export function skipWaitingServiceWorker() {
