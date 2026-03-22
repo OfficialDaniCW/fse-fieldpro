@@ -145,7 +145,7 @@ ${maintenanceText}`;
       }
     }
 
-    // Step 8 & 9: Link to parts
+    // Step 8 & 9: Link to parts and capture manufacturer references
     let parts_linked = 0;
     try {
       const mfr = extractedData.manufacturer || manual.manufacturer;
@@ -154,21 +154,18 @@ ${maintenanceText}`;
       });
       
       for (const part of allParts) {
-        if (extractedData.parts_referenced?.some(p => 
+        const matchedRef = extractedData.parts_referenced?.find(p => 
           part.part_number?.toUpperCase() === p.toUpperCase() ||
           part.description?.toUpperCase().includes(p.toUpperCase())
-        )) {
+        );
+        
+        if (matchedRef) {
           const updatePayload = {
             source_manual_id: manual_id
           };
           
-          // Capture manufacturer reference if found
-          const matchedRef = extractedData.parts_referenced?.find(p => 
-            part.part_number?.toUpperCase() === p.toUpperCase() ||
-            part.description?.toUpperCase().includes(p.toUpperCase())
-          );
-          
-          if (matchedRef && matchedRef !== part.part_number && !part.manufacturer_part_ref) {
+          // Only store manufacturer_part_ref if it's different from part_number and not already set
+          if (matchedRef !== part.part_number && !part.manufacturer_part_ref) {
             updatePayload.manufacturer_part_ref = matchedRef;
           }
           
