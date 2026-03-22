@@ -94,6 +94,14 @@ export default function ManualViewer({ manual, onBack }) {
       </div>
 
       <div className="max-w-4xl mx-auto p-4 space-y-5">
+        {/* Summary card */}
+        {manual.summary && (
+          <div className="bg-blue-50 border border-blue-200 rounded-xl px-5 py-4 flex gap-3">
+            <Info className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
+            <p className="text-sm text-blue-900 leading-relaxed">{manual.summary}</p>
+          </div>
+        )}
+
         <ContentSection
           label="Error Codes"
           icon={AlertTriangle}

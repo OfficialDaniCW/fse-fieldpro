@@ -405,7 +405,7 @@ export default function ChatPage() {
 
           <Button
             onClick={handleSend}
-            disabled={(!input.trim() && !imageFile) || !conversationId}
+            disabled={(!input.trim() && !imageFile) || !conversationId || isProcessing}
             className="flex-shrink-0 bg-[#CC0000] hover:bg-[#aa0000] h-11 px-4 disabled:opacity-50"
           >
             <Send className="w-4 h-4" />
