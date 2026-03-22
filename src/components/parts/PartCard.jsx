@@ -355,6 +355,16 @@ export default function PartCard({ part, manuals = [], onOpenManual, allParts = 
            {/* REFERENCE TAB */}
            {activeTab === "reference" && (
              <>
+               {/* Replacement Chain */}
+               <ReplacementChain 
+                 part={part} 
+                 allParts={allParts}
+                 onPartClick={(clickedPart) => {
+                   // Navigate to clicked part - in real app would scroll/navigate
+                   console.log('Navigate to part:', clickedPart.part_number);
+                 }}
+               />
+
                {/* TSG Part Number - Large and Prominent */}
                <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-4">
                  <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-3">TSG Part Number</p>
