@@ -54,8 +54,8 @@ export default function Layout({ children, currentPageName }) {
       {/* Connection status bar — fixed top, full width */}
       <div className={`fixed top-0 left-0 right-0 z-[200] flex items-center justify-center gap-1.5 px-3 py-1 text-xs font-semibold shadow-sm transition-all duration-500 ${
         isOffline
-          ? "bg-amber-100 text-amber-700 border border-amber-300"
-          : "bg-green-100 text-green-700 border border-green-300"
+          ? "bg-amber-100 text-amber-700 border-b border-amber-300"
+          : "bg-green-100 text-green-700 border-b border-green-300"
       }`}>
         <span className={`w-2 h-2 rounded-full ${isOffline ? "bg-amber-500" : "bg-green-500 animate-pulse"}`} />
         {isOffline
