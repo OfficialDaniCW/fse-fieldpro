@@ -85,9 +85,26 @@ export default function AdminPage() {
       queryClient.invalidateQueries({ queryKey: ["manuals"] });
       toast.success("Text re-extracted successfully.");
     } catch (err) {
-      toast.error("Re-extraction failed: " + err.message);
+      console.error("Re-extraction error:", err);
+      toast.error("Re-extraction failed: " + (err.message || "Unknown error"));
     }
     setReExtractingId(null);
+  };
+
+  const handleDeleteManualError = async (id) => {
+    try {
+      await deleteManual(id);
+    } catch (err) {
+      toast.error("Delete failed: " + (err.message || "Unknown error"));
+    }
+  };
+
+  const handleDeletePartError = async (id) => {
+    try {
+      await deletePart(id);
+    } catch (err) {
+      toast.error("Delete failed: " + (err.message || "Unknown error"));
+    }
   };
 
   return (
@@ -96,10 +113,18 @@ export default function AdminPage() {
 
       <div className="max-w-4xl mx-auto p-4 pb-24">
         {/* Info banner */}
-        <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+        <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg space-y-2">
           <p className="text-xs text-blue-900">
             💡 <strong>Pro Tip:</strong> The <strong>manual_guide</strong> agent can help users find manuals by brand and component type. It automatically groups hydraulic, electrical, mechanical, and parts documentation.
           </p>
+          <a
+            href={base44.agents.getWhatsAppConnectURL('manual_guide')}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block text-xs font-semibold text-blue-700 hover:underline"
+          >
+            → WhatsApp Link for Manual Guide
+          </a>
         </div>
 
         {/* Quick links */}
@@ -184,7 +209,7 @@ export default function AdminPage() {
                         </Button>
                       </>
                     )}
-                    <Button variant="ghost" size="sm" onClick={() => deleteManual(m.id)} className="text-red-400 h-8 w-8 p-0 hover:text-red-600">
+                    <Button variant="ghost" size="sm" onClick={() => handleDeleteManualError(m.id)} className="text-red-400 h-8 w-8 p-0 hover:text-red-600">
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   </div>
@@ -219,7 +244,7 @@ export default function AdminPage() {
                   <Button variant="ghost" size="sm" onClick={() => setEditingPart(p)} className="text-gray-400 h-8 w-8 p-0 hover:text-gray-700 shrink-0">
                     <Pencil className="w-4 h-4" />
                   </Button>
-                  <Button variant="ghost" size="sm" onClick={() => deletePart(p.id)} className="text-red-400 h-8 w-8 p-0 hover:text-red-600 shrink-0">
+                  <Button variant="ghost" size="sm" onClick={() => handleDeletePartError(p.id)} className="text-red-400 h-8 w-8 p-0 hover:text-red-600 shrink-0">
                     <Trash2 className="w-4 h-4" />
                   </Button>
                 </div>
