@@ -25,20 +25,81 @@ export default function SyncManagerPage() {
   const [pushingAll, setPushingAll] = useState(false);
   const [uploadProgress, setUploadProgress] = useState({});
 
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
+
   const refresh = useCallback(() => setQueue(getQueue()), []);
 
   const handleRetry = async (action) => {
     setRetrying(r => ({ ...r, [action.id]: true }));
+    setUploadProgress(p => ({ ...p, [action.id]: 0 }));
     try {
+      // Simulate progress updates
+      setUploadProgress(p => ({ ...p, [action.id]: 30 }));
       await replayAction(action);
+      setUploadProgress(p => ({ ...p, [action.id]: 100 }));
       dequeue(action.id);
       toast.success("Action synced successfully.");
     } catch (err) {
       toast.error("Retry failed: " + (err?.message || "Unknown error"));
     } finally {
       setRetrying(r => ({ ...r, [action.id]: false }));
+      setTimeout(() => setUploadProgress(p => ({ ...p, [action.id]: undefined })), 500);
       refresh();
     }
+  };
+
+  const handlePushAll = async () => {
+    if (queue.length === 0) return;
+    setPushingAll(true);
+    const conflictingActions = queue.filter(a => a.hasConflict);
+    const syncActions = queue.filter(a => !a.hasConflict);
+    
+    if (conflictingActions.length > 0) {
+      toast.error(`Please resolve ${conflictingActions.length} conflict(s) first.`);
+      setPushingAll(false);
+      return;
+    }
+
+    let successCount = 0;
+    let failureCount = 0;
+
+    for (let i = 0; i < syncActions.length; i++) {
+      const action = syncActions[i];
+      setRetrying(r => ({ ...r, [action.id]: true }));
+      setUploadProgress(p => ({ ...p, [action.id]: 0 }));
+      
+      try {
+        setUploadProgress(p => ({ ...p, [action.id]: 50 }));
+        await replayAction(action);
+        setUploadProgress(p => ({ ...p, [action.id]: 100 }));
+        dequeue(action.id);
+        successCount++;
+      } catch (err) {
+        failureCount++;
+      } finally {
+        setRetrying(r => ({ ...r, [action.id]: false }));
+        setTimeout(() => setUploadProgress(p => ({ ...p, [action.id]: undefined })), 300);
+      }
+    }
+
+    if (successCount > 0) {
+      toast.success(`${successCount} action${successCount !== 1 ? "s" : ""} synced successfully.`);
+    }
+    if (failureCount > 0) {
+      toast.error(`${failureCount} action${failureCount !== 1 ? "s" : ""} failed to sync.`);
+    }
+
+    setPushingAll(false);
+    refresh();
   };
 
   const handleRemove = (id) => {
