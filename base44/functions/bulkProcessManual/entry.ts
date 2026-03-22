@@ -122,6 +122,7 @@ ${manual_text.slice(0, 14000)}`,
               ...part,
               brand: manual.equipment_manufacturer,
               pump_model: manual.equipment_model,
+              source_manual_id: manual_id
             });
             parts_extracted++;
           }
