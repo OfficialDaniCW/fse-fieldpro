@@ -5,10 +5,19 @@ import { Card } from '@/components/ui/card';
 import { Upload, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 
 async function uploadZipFile(file) {
-  const formData = new FormData();
-  formData.append('file', file);
+  // Convert File to base64 for transmission
+  const buffer = await file.arrayBuffer();
+  const bytes = new Uint8Array(buffer);
+  let binary = '';
+  for (let i = 0; i < bytes.byteLength; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  const base64 = btoa(binary);
   
-  const response = await base44.functions.invoke('processZipManual', {}, formData);
+  const response = await base44.functions.invoke('processZipManual', {
+    file_base64: base64,
+    file_name: file.name
+  });
   
   if (!response.data.success) {
     throw new Error(response.data.error || 'Upload failed');
