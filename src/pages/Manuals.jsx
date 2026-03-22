@@ -27,6 +27,11 @@ export default function Manuals() {
     queryFn: () => base44.entities.ManualFolder.list(),
   });
 
+  // Force refresh when component mounts to pick up any folder_id changes
+  useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: ["manuals"] });
+  }, []);
+
   const cacheMetadata = useCacheMetadata();
   const cacheAge = cacheMetadata?.manuals_cached_at 
     ? Math.round((Date.now() - cacheMetadata.manuals_cached_at) / 1000 / 60) 
