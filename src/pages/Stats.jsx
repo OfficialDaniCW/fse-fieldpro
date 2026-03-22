@@ -152,7 +152,7 @@ export default function StatsPage() {
             <div className="space-y-2">
               {resultTypeData.map(({ name, count, fill }) => (
                 <div key={name} className="flex items-center gap-3">
-                  <span className="text-sm text-gray-700 w-28 truncate">{name}</span>
+                  <span className="text-sm text-gray-700 w-32 flex-shrink-0">{name}</span>
                   <div className="flex-1 bg-gray-100 rounded-full h-2">
                     <div className="h-2 rounded-full" style={{ width: `${(count / searchLogs.length) * 100}%`, backgroundColor: fill }} />
                   </div>
