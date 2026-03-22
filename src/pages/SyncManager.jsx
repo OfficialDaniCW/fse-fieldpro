@@ -156,6 +156,10 @@ export default function SyncManagerPage() {
     );
   }
 
+  const conflictCount = queue.filter(a => a.hasConflict).length;
+  const syncableCount = queue.filter(a => !a.hasConflict).length;
+  const errorCount = queue.filter(a => a.lastError).length;
+
   return (
     <div className="min-h-screen bg-gray-50 pb-24">
       <PageHeader title="Sync Manager" subtitle="Offline Queue Dashboard" />
@@ -170,12 +174,38 @@ export default function SyncManagerPage() {
 
       <div className="max-w-2xl mx-auto px-4 py-4 space-y-4">
 
+        {/* Summary cards */}
+        <div className="grid grid-cols-3 gap-3">
+          <div className="bg-white rounded-lg border border-gray-200 p-3">
+            <p className="text-xs text-gray-500 mb-1">Pending</p>
+            <p className="text-lg font-bold text-gray-900">{queue.length}</p>
+          </div>
+          <div className="bg-white rounded-lg border border-gray-200 p-3">
+            <p className="text-xs text-gray-500 mb-1">Errors</p>
+            <p className="text-lg font-bold text-red-600">{errorCount}</p>
+          </div>
+          <div className="bg-white rounded-lg border border-gray-200 p-3">
+            <p className="text-xs text-gray-500 mb-1">Conflicts</p>
+            <p className="text-lg font-bold text-amber-600">{conflictCount}</p>
+          </div>
+        </div>
+
         {/* Header row */}
         <div className="flex items-center justify-between">
           <p className="text-sm text-gray-500">
-            <span className="font-semibold text-gray-900">{queue.length}</span> pending action{queue.length !== 1 ? "s" : ""}
+            <span className="font-semibold text-gray-900">{syncableCount}</span> ready to sync
           </p>
           <div className="flex items-center gap-2">
+            {syncableCount > 0 && (
+              <button
+                onClick={handlePushAll}
+                disabled={pushingAll || !isOnline}
+                className="flex items-center gap-1.5 px-4 py-1.5 text-xs font-semibold text-white bg-[#CC0000] border border-[#CC0000] rounded-lg hover:bg-[#aa0000] disabled:opacity-40"
+              >
+                {pushingAll ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
+                Push Changes
+              </button>
+            )}
             <button
               onClick={refresh}
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 border border-gray-200 rounded-lg bg-white hover:bg-gray-50"
