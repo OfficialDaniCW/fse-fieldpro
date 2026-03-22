@@ -32,7 +32,6 @@ export default function AdminPage() {
   });
 
   // Auto-refetch on mount to ensure fresh data
-  import { useEffect } from "react";
   useEffect(() => {
     refetchParts();
   }, [refetchParts]);
