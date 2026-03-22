@@ -80,6 +80,15 @@ Deno.serve(async (req) => {
       });
       verified++;
 
+      // Check if we should capture a manufacturer reference from the manual extraction
+      // Only store if not already recorded
+      if (!existingPart.manufacturer_part_ref && tsg_parts_map[tsgPartNumber]?.manufacturer_ref) {
+        await base44.asServiceRole.entities.Part.update(existingPart.id, {
+          manufacturer_part_ref: tsg_parts_map[tsgPartNumber].manufacturer_ref
+        });
+        updated++;
+      }
+
       await base44.asServiceRole.entities.PartVerification.create({
         part_id: existingPart.id,
         part_number: tsgPartNumber,
