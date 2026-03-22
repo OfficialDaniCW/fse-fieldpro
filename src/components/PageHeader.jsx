@@ -1,8 +1,8 @@
-import React from "react";
-import { useConnectionBanner } from "../lib/ConnectionBannerContext";
+import React, { useContext } from "react";
+import { ConnectionBannerContext } from "../lib/ConnectionBannerContext";
 
 export default function PageHeader({ title, subtitle, children }) {
-  const banner = useConnectionBanner();
+  const banner = useContext(ConnectionBannerContext) || null;
 
   return (
     <div className="flex-shrink-0">
