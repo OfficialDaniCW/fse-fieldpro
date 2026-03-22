@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { AlertTriangle, ChevronDown, ChevronUp, RefreshCw, Trash2 } from "lucide-react";
 
 export default function ConflictResolver({ conflict, onResolve, onRemove, isResolving }) {
