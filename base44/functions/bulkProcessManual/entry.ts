@@ -14,7 +14,9 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'manual_id required' }, { status: 400 });
     }
 
-    const manual = await base44.entities.Manual.get(manual_id);
+    // Fetch the manual record
+    const manuals = await base44.entities.Manual.filter({ id: manual_id });
+    const manual = manuals?.[0];
     if (!manual) {
       return Response.json({ error: 'Manual not found' }, { status: 404 });
     }
@@ -23,59 +25,69 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Manual has no PDF file' }, { status: 400 });
     }
 
-    // Step 1: Extract text from PDF
-    const extractResult = await base44.integrations.Core.ExtractDataFromUploadedFile({
-      file_url: manual.pdf_file,
-      json_schema: {
-        type: "object",
-        properties: {
-          full_text: { type: "string", description: "All text content from the document" },
-          error_codes: { type: "string", description: "Any error codes found with their descriptions" },
-          troubleshooting: { type: "string", description: "Any troubleshooting steps or procedures" }
-        }
-      }
+    // Step 1: Extract full text from PDF using LLM vision (same approach as extractPdfText)
+    const manual_text = await base44.integrations.Core.InvokeLLM({
+      prompt: `Extract ALL text content from this PDF document. Include everything: headings, body text, tables, error codes, part numbers, specifications, procedures, warnings, safety notes. Format with proper line breaks. Do not summarise - extract the full text verbatim as it appears in the document.`,
+      file_urls: [manual.pdf_file],
     });
 
-    let manual_text = null;
+    // Step 2: Extract structured error codes and troubleshooting from the text
     let error_codes = null;
     let troubleshooting_steps = null;
 
-    if (extractResult.status === 'success' && extractResult.output) {
-      manual_text = extractResult.output.full_text || null;
-      error_codes = extractResult.output.error_codes || null;
-      troubleshooting_steps = extractResult.output.troubleshooting || null;
+    if (manual_text && manual_text.length > 100) {
+      const structured = await base44.integrations.Core.InvokeLLM({
+        prompt: `From the following equipment manual text, extract:
+1. All error codes and fault codes with their meanings and recommended actions (format each as "CODE: description")
+2. All troubleshooting procedures and diagnostic steps (format as numbered steps)
+
+If none exist, return empty strings.
+
+MANUAL TEXT:
+${manual_text.slice(0, 10000)}`,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            error_codes: { type: "string", description: "Error codes with descriptions, one per line" },
+            troubleshooting_steps: { type: "string", description: "Troubleshooting procedures as numbered steps" }
+          }
+        }
+      });
+
+      error_codes = structured?.error_codes || null;
+      troubleshooting_steps = structured?.troubleshooting_steps || null;
     }
 
-    // Step 2: Generate AI summary
+    // Step 3: Generate AI summary
     let summary = null;
     if (manual_text) {
       summary = await base44.integrations.Core.InvokeLLM({
-        prompt: `Summarise this equipment manual in 2-3 sentences. Focus on: what equipment it covers, key maintenance topics, and any critical safety points.\n\nMANUAL TEXT:\n${manual_text.slice(0, 8000)}`,
+        prompt: `Summarise this equipment manual in 2-3 sentences. Cover: what equipment it's for, key maintenance/installation topics, and any critical safety points.\n\nMANUAL TEXT:\n${manual_text.slice(0, 6000)}`,
       });
     }
 
-    // Step 3: Update the manual record
+    // Step 4: Update manual record with extracted content
     await base44.entities.Manual.update(manual_id, {
-      manual_text,
+      manual_text: manual_text || null,
       error_codes,
       troubleshooting_steps,
       summary,
       extracted_parts_status: extract_parts ? 'processing' : 'none'
     });
 
-    // Step 4: Optionally extract parts
+    // Step 5: Optionally extract parts from manual
     let parts_extracted = 0;
     if (extract_parts && manual_text) {
       const partsResult = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are extracting parts data from a technical equipment manual. 
-Extract ALL part numbers and components mentioned. For each part, provide as much detail as the manual gives.
-Return only parts that have a clear part number or component identifier.
+        prompt: `You are extracting spare parts data from a technical equipment manual.
+Extract ALL part numbers, components, and assemblies mentioned that have an identifiable part number or reference code.
+For each part, extract as much detail as the manual provides.
+Only include items with a clear part number or alphanumeric reference code.
 
-MANUAL: ${manual.title} (${manual.equipment_manufacturer} ${manual.equipment_model})
-VERSION: ${manual.version || 'N/A'}
+MANUAL: ${manual.title} (${manual.equipment_manufacturer} ${manual.equipment_model}) ${manual.version ? `v${manual.version}` : ''}
 
 MANUAL TEXT:
-${manual_text.slice(0, 12000)}`,
+${manual_text.slice(0, 14000)}`,
         response_json_schema: {
           type: "object",
           properties: {
@@ -104,7 +116,6 @@ ${manual_text.slice(0, 12000)}`,
 
       if (partsResult?.parts?.length > 0) {
         for (const part of partsResult.parts) {
-          // Check if part number already exists
           const existing = await base44.entities.Part.filter({ part_number: part.part_number });
           if (!existing || existing.length === 0) {
             await base44.entities.Part.create({
