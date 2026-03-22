@@ -356,9 +356,25 @@ export default function PartCard({ part, manuals = [], onOpenManual, allParts = 
              <>
                {/* TSG Part Number - Large and Prominent */}
                <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-4">
-                 <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">TSG Part Number</p>
-                 <p className="font-mono text-2xl font-bold text-[#CC0000] break-all">{part.part_number}</p>
-                 <p className="text-xs text-gray-500 mt-2">Internal TSG identifier (primary reference)</p>
+                 <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-3">TSG Part Number</p>
+                 <div className="flex items-start gap-2">
+                   <div className="flex-1 min-w-0">
+                     <p className="font-mono text-2xl font-bold text-[#CC0000] break-all">{part.part_number}</p>
+                     <p className="text-xs text-gray-500 mt-2">Internal TSG identifier (primary reference)</p>
+                   </div>
+                   <button
+                     onClick={(e) => {
+                       e.stopPropagation();
+                       navigator.clipboard.writeText(part.part_number);
+                       setCopied(true);
+                       setTimeout(() => setCopied(false), 2000);
+                     }}
+                     className="flex-shrink-0 mt-1 p-2 rounded-lg text-gray-500 hover:bg-red-100 hover:text-[#CC0000] transition-colors"
+                     title="Copy TSG Part Number"
+                   >
+                     {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                   </button>
+                 </div>
                </div>
 
                {/* Manufacturer Reference */}
