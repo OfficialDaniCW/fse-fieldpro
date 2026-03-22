@@ -10,21 +10,15 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
     }
 
-    const body = await req.json();
-    
-    if (!body.file_base64) {
+    const formData = await req.formData();
+    const zipFile = formData.get('file');
+
+    if (!zipFile) {
       return Response.json({ error: 'No file provided' }, { status: 400 });
     }
 
-    // Decode base64 to binary string, then to ArrayBuffer
-    const binaryString = atob(body.file_base64);
-    const bytes = new Uint8Array(binaryString.length);
-    for (let i = 0; i < binaryString.length; i++) {
-      bytes[i] = binaryString.charCodeAt(i);
-    }
-    const zipBuffer = bytes.buffer;
     const zip = new JSZip();
-    await zip.loadAsync(zipBuffer);
+    await zip.loadAsync(zipFile);
 
     // Find and parse manual_data.json
     let jsonData = null;
@@ -44,19 +38,10 @@ Deno.serve(async (req) => {
     const pageImages = [];
     for (const [filename, file] of Object.entries(zip.files)) {
       if (filename.startsWith('images/') && filename.match(/\.(png|jpg|jpeg)$/i)) {
-        const buffer = await file.async('arraybuffer');
-        const mimeType = filename.endsWith('.png') ? 'image/png' : 'image/jpeg';
-
-        // Convert buffer to base64 for upload
-        const bytes = new Uint8Array(buffer);
-        let binary = '';
-        for (let i = 0; i < bytes.byteLength; i++) {
-          binary += String.fromCharCode(bytes[i]);
-        }
-        const base64 = btoa(binary);
+        const blob = await file.async('blob');
 
         const uploadRes = await base44.integrations.Core.UploadFile({
-          file: base64
+          file: blob
         });
 
         const cleanFilename = filename.split('/').pop();
@@ -77,18 +62,10 @@ Deno.serve(async (req) => {
     let pdfUrl = null;
     for (const [filename, file] of Object.entries(zip.files)) {
       if (filename.startsWith('source_pdf/') && filename.endsWith('.pdf')) {
-        const buffer = await file.async('arraybuffer');
-
-        // Convert buffer to base64 for upload
-        const bytes = new Uint8Array(buffer);
-        let binary = '';
-        for (let i = 0; i < bytes.byteLength; i++) {
-          binary += String.fromCharCode(bytes[i]);
-        }
-        const base64 = btoa(binary);
+        const blob = await file.async('blob');
 
         const uploadRes = await base44.integrations.Core.UploadFile({
-          file: base64
+          file: blob
         });
         pdfUrl = uploadRes.file_url;
         break;
