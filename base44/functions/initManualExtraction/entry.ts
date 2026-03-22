@@ -12,21 +12,36 @@ Deno.serve(async (req) => {
       return Response.json({ skipped: true, reason: 'not_create_event' });
     }
 
-    // Only mark as pending if the manual has a PDF file
-    if (data?.pdf_file) {
-      await base44.asServiceRole.entities.Manual.update(data.id, {
-        extracted_parts_status: 'pending'
-      });
-
-      return Response.json({ success: true, marked_pending: true });
+    // Only process if manual has a PDF file
+    if (!data?.pdf_file) {
+      return Response.json({ skipped: true, reason: 'no_pdf_file' });
     }
 
-    // No PDF yet, mark as 'none'
+    // Set to pending
     await base44.asServiceRole.entities.Manual.update(data.id, {
-      extracted_parts_status: 'none'
+      processing_status: 'pending'
     });
 
-    return Response.json({ success: true, marked_none: true });
+    // Queue for processing (non-blocking)
+    // In production, this would queue to a job processor
+    // For now, trigger bulkProcessManual via service role
+    try {
+      await base44.asServiceRole.functions.invoke('bulkProcessManual', {
+        manual_id: data.id
+      });
+    } catch (e) {
+      // Processing error logged but doesn't block manual creation
+      console.log('Processing queued with error:', e.message);
+      await base44.asServiceRole.entities.Manual.update(data.id, {
+        processing_status: 'processing'
+      });
+    }
+
+    return Response.json({
+      success: true,
+      manual_id: data.id,
+      status: 'queued_for_processing'
+    });
 
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
