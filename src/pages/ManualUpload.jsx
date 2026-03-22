@@ -12,6 +12,7 @@ export default function ManualUpload() {
   const [jsonFile, setJsonFile] = useState(null);
   const [imageFiles, setImageFiles] = useState([]);
   const [mdFile, setMdFile] = useState(null);
+  const [pdfFile, setPdfFile] = useState(null);
   const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
   const [stagingId, setStagingId] = useState(null);
   const [result, setResult] = useState(null);
@@ -29,6 +30,10 @@ export default function ManualUpload() {
     setMdFile(e.target.files?.[0] || null);
   };
 
+  const handlePdfChange = (e) => {
+    setPdfFile(e.target.files?.[0] || null);
+  };
+
   const uploadFiles = async () => {
     if (!manualTitle || !manufacturer || !jsonFile || imageFiles.length === 0) {
       setError('Please fill in all required fields and select at least one image');
@@ -37,7 +42,7 @@ export default function ManualUpload() {
 
     setError(null);
     setStep('uploading');
-    const totalFiles = 1 + imageFiles.length + (mdFile ? 1 : 0);
+    const totalFiles = 1 + imageFiles.length + (mdFile ? 1 : 0) + (pdfFile ? 1 : 0);
     let uploaded = 0;
 
     try {
@@ -74,6 +79,17 @@ export default function ManualUpload() {
         console.log('MD uploaded:', mdUrl);
       }
 
+      // Upload PDF file if provided
+      let pdfUrl = null;
+      if (pdfFile) {
+        setUploadProgress({ current: uploaded, total: totalFiles });
+        const pdfUpload = await base44.integrations.Core.UploadFile({ file: pdfFile });
+        pdfUrl = pdfUpload.file_url;
+        uploaded++;
+        setUploadProgress({ current: uploaded, total: totalFiles });
+        console.log('PDF uploaded:', pdfUrl);
+      }
+
       // Create staging record
       console.log('Creating staging record...');
       const staging = await base44.entities.StagingUpload.create({
@@ -82,6 +98,7 @@ export default function ManualUpload() {
         json_file_url: jsonUpload.file_url,
         image_urls: imageUrls,
         md_file_url: mdUrl,
+        pdf_url: pdfUrl,
         status: 'pending'
       });
 
@@ -122,6 +139,7 @@ export default function ManualUpload() {
     setJsonFile(null);
     setImageFiles([]);
     setMdFile(null);
+    setPdfFile(null);
     setStagingId(null);
     setResult(null);
     setError(null);
@@ -186,6 +204,16 @@ export default function ManualUpload() {
                 {imageFiles.length > 0 && (
                   <p className="text-xs text-green-600 flex items-center gap-1"><ImageIcon className="h-3 w-3" /> {imageFiles.length} image{imageFiles.length !== 1 ? 's' : ''} selected</p>
                 )}
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Original PDF - Optional</label>
+                <Input
+                  type="file"
+                  accept=".pdf"
+                  onChange={handlePdfChange}
+                />
+                {pdfFile && <p className="text-xs text-green-600 flex items-center gap-1"><FileText className="h-3 w-3" /> {pdfFile.name}</p>}
               </div>
 
               <div className="space-y-2">
@@ -283,6 +311,12 @@ export default function ManualUpload() {
                   <span className="text-sm font-medium text-slate-700">Images</span>
                   <span className="text-sm text-slate-900">{imageFiles.length} uploaded</span>
                 </div>
+                {pdfFile && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-slate-700">PDF</span>
+                    <CheckCircle2 className="h-4 w-4 text-green-600" />
+                  </div>
+                )}
                 {mdFile && (
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium text-slate-700">Documentation</span>
