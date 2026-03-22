@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { BookOpen, Package, Zap, Box, MoreHorizontal, ChevronRight, ChevronDown } from "lucide-react";
 
 // Smart grouping logic: organizes manuals by brand, then by component type

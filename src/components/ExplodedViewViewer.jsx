@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import { useState, useRef } from "react";
 import { ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
 
 export default function ExplodedViewViewer({ imageUrl, title = "Diagram" }) {
