@@ -296,8 +296,61 @@ export default function PartCard({ part, manuals = [], onOpenManual, allParts = 
               <><Copy className="w-4 h-4" /> Copy Part Number</>
             )}
           </button>
-        </div>
-      )}
-    </div>
-  );
-}
+             </>
+           )}
+
+           {/* REFERENCE TAB */}
+           {activeTab === "reference" && (
+             <>
+               {/* TSG Part Number - Large and Prominent */}
+               <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-4">
+                 <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">TSG Part Number</p>
+                 <p className="font-mono text-2xl font-bold text-[#CC0000] break-all">{part.part_number}</p>
+                 <p className="text-xs text-gray-500 mt-2">Internal TSG identifier (primary reference)</p>
+               </div>
+
+               {/* Manufacturer Reference */}
+               {part.manufacturer_part_ref ? (
+                 <div className="bg-blue-50 border border-blue-200 rounded-lg px-4 py-3">
+                   <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Manufacturer Ref</p>
+                   <p className="font-mono text-lg font-semibold text-blue-900 break-all">{part.manufacturer_part_ref}</p>
+                   <p className="text-xs text-blue-700 mt-2">Cross-reference with manufacturer catalogues</p>
+                 </div>
+               ) : (
+                 <div className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-3">
+                   <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Manufacturer Ref</p>
+                   <p className="text-sm text-gray-500 italic">Not available</p>
+                 </div>
+               )}
+
+               {/* Manufacturer */}
+               {part.brand && (
+                 <div className="bg-green-50 border border-green-200 rounded-lg px-4 py-3">
+                   <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Manufacturer</p>
+                   <p className="text-sm font-semibold text-green-900">{part.brand}</p>
+                 </div>
+               )}
+
+               {/* Superseded By */}
+               {part.superseded_by ? (
+                 <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3">
+                   <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Superseded By</p>
+                   <p className="font-mono text-sm font-semibold text-amber-900 break-all">{part.superseded_by}</p>
+                   {replacementPart && (
+                     <p className="text-xs text-amber-700 mt-2">{replacementPart.description}</p>
+                   )}
+                 </div>
+               ) : (
+                 <div className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-3">
+                   <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Superseded By</p>
+                   <p className="text-sm text-gray-500 italic">Not superseded</p>
+                 </div>
+               )}
+             </>
+           )}
+          </div>
+          </div>
+          )}
+          </div>
+          );
+          }
