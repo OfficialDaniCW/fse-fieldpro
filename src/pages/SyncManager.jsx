@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from "react";
-import { RefreshCw, Trash2, AlertTriangle, CheckCircle2, Clock, WifiOff, Loader2, Info } from "lucide-react";
+import React, { useState, useCallback, useEffect } from "react";
+import { RefreshCw, Trash2, AlertTriangle, CheckCircle2, Clock, WifiOff, Loader2, Info, Upload, TrendingUp } from "lucide-react";
 import { getQueue, dequeue, clearQueue, resolveConflict } from "../lib/pendingQueue";
 import { replayAction, checkForConflict } from "../lib/useSyncManager";
 import { useCurrentUser } from "../lib/useCurrentUser";
@@ -12,6 +12,8 @@ import { formatDistanceToNow } from "date-fns";
 const ACTION_LABELS = {
   CREATE_MANUAL: "Create Manual",
   CREATE_PART: "Create Part",
+  UPDATE_MANUAL: "Update Manual",
+  UPDATE_PART: "Update Part",
 };
 
 export default function SyncManagerPage() {
@@ -19,7 +21,9 @@ export default function SyncManagerPage() {
   const [queue, setQueue] = useState(() => getQueue());
   const [retrying, setRetrying] = useState({});
   const [resolving, setResolving] = useState({});
-  const [isOnline] = useState(navigator.onLine);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [pushingAll, setPushingAll] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState({});
 
   const refresh = useCallback(() => setQueue(getQueue()), []);
 
