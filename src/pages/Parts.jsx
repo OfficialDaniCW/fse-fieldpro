@@ -81,8 +81,21 @@ export default function PartsPage() {
 
   const activeFilterCount = Object.values(filters).filter(Boolean).length;
 
+  const cacheAge = cacheMetadata?.parts_cached_at 
+    ? Math.round((Date.now() - cacheMetadata.parts_cached_at) / 1000 / 60) 
+    : null;
+
   return (
     <div className="min-h-screen bg-gray-50 pb-24">
+      {/* Offline indicator */}
+      {isOfflineData && (
+        <div className="bg-amber-50 border-b border-amber-200 px-4 py-2 flex items-center gap-2 text-sm">
+          <WifiOff className="w-4 h-4 text-amber-600" />
+          <span className="text-amber-800 font-medium">Offline mode</span>
+          {cacheAge !== null && <span className="text-amber-700 text-xs">• Cached {cacheAge}m ago</span>}
+        </div>
+      )}
+
       <div className="bg-[#CC0000] shadow-md px-4 pt-10 pb-4 flex-shrink-0">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-3">
@@ -95,7 +108,7 @@ export default function PartsPage() {
             </div>
           </div>
           <div className="bg-white/20 rounded-full px-3 py-1 flex items-center gap-1.5">
-            <div className="w-2 h-2 rounded-full bg-white"></div>
+            <div className={`w-2 h-2 rounded-full ${isOfflineData ? 'bg-amber-400' : 'bg-white'}`}></div>
             <span className="text-white text-xs font-bold">{parts.length.toLocaleString()} parts</span>
           </div>
         </div>
