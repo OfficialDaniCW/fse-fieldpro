@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Mic, Send, Image as ImageIcon, Loader2, BookOpen } from "lucide-react";
 import MessageBubble from "../components/MessageBubble";
 import PageHeader from "../components/PageHeader";
+import PartsUsedTray from "../components/PartsUsedTray";
 
 export default function ChatPage() {
   const queryClient = useQueryClient();
@@ -16,6 +17,7 @@ export default function ChatPage() {
   const [isListening, setIsListening] = useState(false);
   const [imageFile, setImageFile] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [partsUsed, setPartsUsed] = useState([]);
   const messagesEndRef = useRef(null);
   const recognitionRef = useRef(null);
 
@@ -179,11 +181,21 @@ export default function ChatPage() {
     return { type: "description", parts: scored };
   };
 
+  const addToPartsUsed = (parts) => {
+    setPartsUsed(prev => {
+      const existingIds = new Set(prev.map(p => p.part_number));
+      const newOnes = parts.filter(p => !existingIds.has(p.part_number));
+      return [...prev, ...newOnes];
+    });
+  };
+
   const buildPartResponse = ({ type, parts }) => {
     if (!parts.length) return NOT_FOUND_MSG;
     if (type === "exact" || (type === "part_number" && parts.length === 1)) {
+      addToPartsUsed(parts);
       return formatPartFull(parts[0]);
     }
+    addToPartsUsed(parts);
     return `Found ${parts.length} matching part${parts.length > 1 ? "s" : ""}:\n\n` +
       parts.map(formatPartSummary).join("\n\n");
   };
@@ -353,6 +365,12 @@ export default function ChatPage() {
         )}
         <div ref={messagesEndRef} />
       </div>
+
+      <PartsUsedTray
+        parts={partsUsed}
+        onRemove={(i) => setPartsUsed(prev => prev.filter((_, idx) => idx !== i))}
+        onClear={() => setPartsUsed([])}
+      />
 
       {/* Input Area */}
       <div className="fixed bottom-16 left-0 right-0 bg-white border-t border-gray-200 p-3 z-10">
