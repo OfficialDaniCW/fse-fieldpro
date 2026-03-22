@@ -19,6 +19,17 @@ export default function Manuals() {
     queryFn: () => base44.entities.Manual.list(),
   });
 
+  // Auto-open a manual if ?manual=<id> is in the URL
+  useEffect(() => {
+    if (manuals.length === 0) return;
+    const params = new URLSearchParams(window.location.search);
+    const manualId = params.get("manual");
+    if (manualId && !selectedManual) {
+      const found = manuals.find(m => m.id === manualId);
+      if (found) setSelectedManual(found);
+    }
+  }, [manuals]);
+
   const filtered = manuals.filter((m) => {
     const q = search.toLowerCase();
     return (
