@@ -3,7 +3,10 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.21';
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const { manual_id } = await req.json();
+    const payload = await req.json();
+    
+    // Handle both direct calls (with manual_id) and automation triggers (with event.entity_id)
+    const manual_id = payload.manual_id || payload.event?.entity_id;
 
     if (!manual_id) {
       return Response.json({ error: 'manual_id required' }, { status: 400 });
