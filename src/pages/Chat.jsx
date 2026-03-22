@@ -364,9 +364,6 @@ export default function ChatPage() {
   return (
     <div className="flex flex-col h-screen bg-gray-50">
       <PageHeader title="FSE FieldPro" subtitle="Technical support & diagnostics">
-        <button onClick={startNewConversation} className="flex items-center gap-1 text-white/80 hover:text-white text-xs px-2 py-1 rounded hover:bg-red-700">
-          <Plus className="w-3.5 h-3.5" /> New
-        </button>
         <Link to="/Manuals">
           <Button variant="ghost" size="sm" className="text-white hover:text-white hover:bg-red-700">
             <BookOpen className="w-4 h-4 mr-1.5" />
