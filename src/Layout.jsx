@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { MessageSquare, Search, BookOpen, User, Star, Shield, BarChart2, WifiOff } from "lucide-react";
 import useSyncManager from "./lib/useSyncManager";
