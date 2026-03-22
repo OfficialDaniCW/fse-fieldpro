@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { ChevronRight, ChevronDown, AlertCircle } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 
 export default function ReplacementChain({ part, allParts = [], onPartClick }) {
   const chain = useMemo(() => {
@@ -46,6 +46,18 @@ export default function ReplacementChain({ part, allParts = [], onPartClick }) {
 
   const currentIndex = chain.findIndex(p => p.part_number === part.part_number);
   const hasChain = chain.length > 1;
+
+  if (!chain || chain.length === 0) {
+    return (
+      <div className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 animate-pulse">
+        <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Replacement Chain</p>
+        <div className="space-y-2">
+          <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+          <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+        </div>
+      </div>
+    );
+  }
 
   if (!hasChain) {
     return (

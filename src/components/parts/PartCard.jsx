@@ -254,10 +254,14 @@ export default function PartCard({ part, manuals = [], onOpenManual, allParts = 
                <p className="text-xs font-semibold text-green-700 uppercase tracking-wide mb-3">Compatible Alternatives</p>
                <div className="space-y-2">
                  {compatiblePartsList.map(cp => (
-                   <div key={cp.id} className="text-sm text-green-900">
+                   <button
+                     key={cp.id}
+                     onClick={(e) => { e.stopPropagation(); }}
+                     className="w-full text-left p-2 rounded-lg hover:bg-green-100 transition-colors text-sm text-green-900"
+                   >
                      <span className="font-mono font-bold">{cp.part_number}</span> — {cp.description}
                      {cp.variant_spec && <p className="text-xs text-green-700">{cp.variant_spec}</p>}
-                   </div>
+                   </button>
                  ))}
                </div>
              </div>
@@ -392,7 +396,21 @@ export default function PartCard({ part, manuals = [], onOpenManual, allParts = 
                {part.manufacturer_part_ref ? (
                  <div className="bg-blue-50 border border-blue-200 rounded-lg px-4 py-3">
                    <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Manufacturer Reference</p>
-                   <p className="font-mono text-lg font-semibold text-blue-900 break-all">{part.manufacturer_part_ref}</p>
+                   <div className="flex items-start gap-2">
+                     <p className="font-mono text-lg font-semibold text-blue-900 break-all flex-1">{part.manufacturer_part_ref}</p>
+                     <button
+                       onClick={(e) => {
+                         e.stopPropagation();
+                         navigator.clipboard.writeText(part.manufacturer_part_ref);
+                         setCopied(true);
+                         setTimeout(() => setCopied(false), 2000);
+                       }}
+                       className="flex-shrink-0 mt-1 p-2 rounded-lg text-blue-600 hover:bg-blue-100 transition-colors"
+                       title="Copy manufacturer reference"
+                     >
+                       {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                     </button>
+                   </div>
                    <p className="text-xs text-blue-700 mt-2">Cross-reference with manufacturer catalogues</p>
                  </div>
                ) : (
