@@ -20,6 +20,7 @@ export default function BulkUpload() {
   const [globalModel, setGlobalModel] = useState("");
   const [globalVersion, setGlobalVersion] = useState("");
   const [extractParts, setExtractParts] = useState(true);
+  const [extractDiagrams, setExtractDiagrams] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
 
@@ -92,15 +93,16 @@ export default function BulkUpload() {
         const { file_url } = await base44.integrations.Core.UploadFile({ file: fileEntry.file });
 
         // 2. Create Manual record
-         // The entity automation will set extracted_parts_status = "pending"
-         // and the scheduled job will process it asynchronously
-         const manual = await base44.entities.Manual.create({
-           title: fileEntry.name,
-           equipment_manufacturer: fileEntry.manufacturer,
-           equipment_model: fileEntry.model,
-           version: fileEntry.version || null,
-           pdf_file: file_url,
-         });
+        // The entity automation will set extracted_parts_status = "pending"
+        // and the scheduled job will process it asynchronously
+        const manual = await base44.entities.Manual.create({
+          title: fileEntry.name,
+          equipment_manufacturer: fileEntry.manufacturer,
+          equipment_model: fileEntry.model,
+          version: fileEntry.version || null,
+          pdf_file: file_url,
+          extract_diagrams: extractDiagrams,
+        });
 
          // Mark as processing (will be picked up by scheduled queue processor)
          updateFile(fileEntry.id, { status: STATUS.PROCESSING });
@@ -183,7 +185,7 @@ export default function BulkUpload() {
               />
             </div>
           </div>
-          <div className="flex items-center justify-between">
+          <div className="space-y-2">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
@@ -193,15 +195,24 @@ export default function BulkUpload() {
               />
               <span className="text-xs text-gray-600">Auto-extract parts into Parts database</span>
             </label>
-            {files.length > 0 && (
-              <button
-                onClick={applyGlobalToAll}
-                className="text-xs text-[#CC0000] font-medium underline"
-              >
-                Apply to all files
-              </button>
-            )}
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={extractDiagrams}
+                onChange={e => setExtractDiagrams(e.target.checked)}
+                className="w-4 h-4 accent-[#CC0000]"
+              />
+              <span className="text-xs text-gray-600">Extract exploded view diagrams (complex equipment only)</span>
+            </label>
           </div>
+          {files.length > 0 && (
+            <button
+              onClick={applyGlobalToAll}
+              className="text-xs text-[#CC0000] font-medium underline block mt-3"
+            >
+              Apply to all files
+            </button>
+          )}
         </div>
 
         {/* Drop zone */}
