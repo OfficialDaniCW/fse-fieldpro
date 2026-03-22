@@ -46,29 +46,39 @@ export default function Manuals() {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-24">
-      <PageHeader title="Equipment Manuals" subtitle="Browse technical documentation">
-        {(isAdmin || isManager) && (
-          <button
-            onClick={() => setShowForm(true)}
-            className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30"
-          >
-            <Plus className="w-5 h-5 text-white" />
-          </button>
-        )}
-      </PageHeader>
-
-      <div className="p-4">
-        {/* Search */}
-        <div className="relative mb-4">
+      <div className="bg-[#CC0000] shadow-md px-4 pt-10 pb-4 flex-shrink-0">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-white flex items-center justify-center flex-shrink-0">
+              <span className="text-xs font-bold text-[#CC0000]">FSE</span>
+            </div>
+            <div>
+              <h1 className="text-base font-semibold text-white leading-tight">Equipment Manuals</h1>
+              <p className="text-xs text-red-200 font-normal opacity-90">Technical documentation</p>
+            </div>
+          </div>
+          {(isAdmin || isManager) && (
+            <button
+              onClick={() => setShowForm(true)}
+              className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30"
+            >
+              <Plus className="w-5 h-5 text-white" />
+            </button>
+          )}
+        </div>
+        <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             type="text"
-            placeholder="Search manuals..."
+            placeholder="Search manufacturer, model, title..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#CC0000]/30"
+            className="w-full pl-9 pr-4 h-12 rounded-xl text-sm bg-white border-0 outline-none text-gray-900 placeholder:text-gray-400"
           />
         </div>
+      </div>
+
+      <div className="p-4">
 
         {/* Grouped manuals */}
         {Object.keys(grouped).length === 0 ? (
