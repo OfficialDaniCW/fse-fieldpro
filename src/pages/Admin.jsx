@@ -40,7 +40,7 @@ export default function AdminPage() {
   });
 
   // Load automations on mount
-  React.useEffect(() => {
+  useEffect(() => {
     const loadAutomations = async () => {
       try {
         // Get automations via function call - this would need a backend endpoint
