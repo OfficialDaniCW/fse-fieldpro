@@ -28,7 +28,7 @@ export default function AdminPage() {
 
   const { data: parts = [] } = useQuery({
     queryKey: ["parts"],
-    queryFn: () => base44.entities.Part.list("-created_date"),
+    queryFn: () => base44.entities.Part.list("-created_date", 10000),
   });
 
   const { data: manuals = [] } = useQuery({
