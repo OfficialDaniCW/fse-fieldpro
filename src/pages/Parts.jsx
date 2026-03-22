@@ -18,9 +18,13 @@ export default function PartsPage() {
   const [viewMode, setViewMode] = useState("cards"); // "cards" | "table"
   const navigate = useNavigate();
 
-  const { data: parts = [], isLoading, isOfflineData } = useOfflineCache('parts', {
+  const { data: parts = [], isLoading, isOfflineData, error } = useOfflineCache('parts', {
     queryKey: ["parts"],
-    queryFn: () => base44.entities.Part.list("-updated_date", 5000),
+    queryFn: async () => {
+      const result = await base44.entities.Part.list("-updated_date", 5000);
+      console.log("Parts fetched:", result);
+      return result;
+    },
   });
   const cacheMetadata = useCacheMetadata();
 
