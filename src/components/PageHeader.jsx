@@ -1,9 +1,9 @@
 import React from "react";
 
-export default function PageHeader({ title, subtitle, children }) {
+export default function PageHeader({ title, subtitle, children, statusBanner }) {
   return (
-    <div className="bg-[#CC0000] shadow-md px-4 pt-10 pb-4 flex-shrink-0">
-      <div className="flex items-center justify-between">
+    <div className="bg-[#CC0000] shadow-md flex-shrink-0">
+      <div className="px-4 pt-10 pb-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-lg bg-white flex items-center justify-center flex-shrink-0">
             <span className="text-xs font-bold text-[#CC0000]">FSE</span>
@@ -15,6 +15,7 @@ export default function PageHeader({ title, subtitle, children }) {
         </div>
         {children && <div className="flex items-center gap-2">{children}</div>}
       </div>
+      {statusBanner}
     </div>
   );
 }
