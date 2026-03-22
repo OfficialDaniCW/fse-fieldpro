@@ -144,7 +144,10 @@ export default function BulkUpload() {
 
       <div className="max-w-2xl mx-auto p-4 space-y-4">
 
-        {/* Global metadata */}
+         {/* Extraction Queue Monitor */}
+         <ExtractionMonitor />
+
+         {/* Global metadata */}
         <div className="bg-white rounded-xl border border-gray-200 p-4">
           <div className="flex items-center gap-2 mb-3">
             <FolderOpen className="w-4 h-4 text-[#CC0000]" />
