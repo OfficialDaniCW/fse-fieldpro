@@ -45,7 +45,7 @@ export default function Manuals() {
   }, [manuals]);
 
   // Search across title, manufacturer, model, manual_text
-  const filtered = manuals.filter((m) => {
+  const filtered = (manuals || []).filter((m) => {
     const q = search.toLowerCase();
     return (
       m.title?.toLowerCase().includes(q) ||
