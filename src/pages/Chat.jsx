@@ -482,7 +482,7 @@ ENGINEER'S QUESTION: ${userText}`,
       </PageHeader>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3" style={{ paddingBottom: "220px" }}>
+      <div className="flex-1 overflow-y-auto px-2 sm:px-4 py-4 space-y-3" style={{ paddingBottom: "220px" }}>
         {showHistoryBanner && messages.length > 0 && (
           <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 text-xs text-amber-700">
             <History className="w-3.5 h-3.5 flex-shrink-0" />
