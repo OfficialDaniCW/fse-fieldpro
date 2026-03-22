@@ -176,11 +176,11 @@ export default function ChatPage() {
   const NOT_FOUND_MSG = "This part is not in the TSG FieldPro database yet. Please check with your supervisor or contact the TSG stores team.";
 
   const searchParts = async (query) => {
-    // Use TanStack Query cache if available (works offline)
-    let allParts = queryClient.getQueryData(["parts"]);
+    // Use local cache (works offline)
+    let allParts = cacheRef.current.parts;
     if (!allParts || allParts.length === 0) {
       allParts = await base44.entities.Part.list("-created_date", 2000);
-      queryClient.setQueryData(["parts"], allParts);
+      cacheRef.current.parts = allParts;
     }
     const q = query.toLowerCase().trim();
 
