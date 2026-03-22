@@ -2,6 +2,7 @@ import React, { useState, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Search, SlidersHorizontal, ChevronLeft, ChevronRight, LayoutGrid, List } from "lucide-react";
+import Fuse from "fuse.js";
 import PartCard from "../components/parts/PartCard";
 import FilterPanel from "../components/parts/FilterPanel";
 import { useNavigate } from "react-router-dom";
@@ -34,16 +35,33 @@ export default function PartsPage() {
   }), [parts]);
 
   const filtered = useMemo(() => {
-    const q = searchTerm.toLowerCase();
-    return parts.filter(p => {
-      const matchSearch = !q || [p.part_number, p.description, p.brand, p.pump_model]
-        .some(v => v?.toLowerCase().includes(q));
+    let results = parts;
+
+    // Apply filters first
+    results = results.filter(p => {
       const matchBrand = !filters.brand || p.brand === filters.brand;
       const matchModel = !filters.pump_model || p.pump_model === filters.pump_model;
       const matchSystem = !filters.system_area || p.system_area === filters.system_area;
       const matchComp = !filters.component_type || p.component_type === filters.component_type;
-      return matchSearch && matchBrand && matchModel && matchSystem && matchComp;
+      return matchBrand && matchModel && matchSystem && matchComp;
     });
+
+    // Apply fuzzy search if search term exists
+    if (searchTerm.trim()) {
+      const fuse = new Fuse(results, {
+        keys: [
+          { name: "description", weight: 0.4 },
+          { name: "pump_model", weight: 0.3 },
+          { name: "brand", weight: 0.2 },
+          { name: "part_number", weight: 0.1 }
+        ],
+        threshold: 0.4,
+        includeScore: true
+      });
+      results = fuse.search(searchTerm).map(r => r.item);
+    }
+
+    return results;
   }, [parts, searchTerm, filters]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
