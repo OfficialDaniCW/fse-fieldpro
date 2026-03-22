@@ -145,7 +145,7 @@ ${maintenanceText}`;
       }
     }
 
-    // Step 8 & 9: Link to parts
+    // Step 8 & 9: Link to parts and capture manufacturer references
     let parts_linked = 0;
     try {
       const allParts = await base44.asServiceRole.entities.Part.filter({
@@ -153,13 +153,23 @@ ${maintenanceText}`;
       });
       
       for (const part of allParts) {
-        if (extractedData.parts_referenced?.some(p => 
+        const matchedRef = extractedData.parts_referenced?.find(p => 
           part.part_number?.toUpperCase() === p.toUpperCase() ||
           part.description?.toUpperCase().includes(p.toUpperCase())
-        )) {
-          await base44.asServiceRole.entities.Part.update(part.id, {
+        );
+        
+        if (matchedRef) {
+          // Extract manufacturer reference from matched part reference if it contains additional info
+          const updatePayload = {
             source_manual_id: manual_id
-          });
+          };
+          
+          // If matchedRef looks like a manufacturer part code (different from TSG number), store it
+          if (matchedRef && matchedRef !== part.part_number && !part.manufacturer_part_ref) {
+            updatePayload.manufacturer_part_ref = matchedRef;
+          }
+          
+          await base44.asServiceRole.entities.Part.update(part.id, updatePayload);
           parts_linked++;
         }
       }
