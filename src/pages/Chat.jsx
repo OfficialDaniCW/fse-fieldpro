@@ -176,7 +176,14 @@ export default function ChatPage() {
 
     // 1. Exact part number match
     const exact = allParts.find(p => p.part_number?.toLowerCase() === q);
-    if (exact) return { type: "exact", parts: [exact] };
+    if (exact) {
+      // If part is obsolete, suggest replacement
+      if (exact.is_obsolete && exact.superseded_by) {
+        const replacement = allParts.find(p => p.part_number === exact.superseded_by);
+        return { type: "obsolete", parts: [exact], alternatives: replacement ? [replacement] : [] };
+      }
+      return { type: "exact", parts: [exact] };
+    }
 
     // 2. Looks like a part number — search part_number field only
     if (PART_NUMBER_REGEX.test(q) && !q.includes(" ")) {
@@ -225,15 +232,27 @@ export default function ChatPage() {
     });
   };
 
-  const buildPartResponse = ({ type, parts }) => {
+  const buildPartResponse = ({ type, parts, alternatives }) => {
     if (!parts.length) return NOT_FOUND_MSG;
-    if (type === "exact" || (type === "part_number" && parts.length === 1)) {
+    
+    let response = "";
+    
+    if (type === "obsolete" && alternatives?.length > 0) {
+      response = `⚠️ **This part is obsolete.**\n\n`;
+      response += `**${parts[0].part_number}** — ${parts[0].description}\n\n`;
+      response += `**Recommended replacement:**\n\n`;
+      response += `${formatPartFull(alternatives[0])}`;
+      addToPartsUsed(alternatives);
+    } else if (type === "exact" || (type === "part_number" && parts.length === 1)) {
       addToPartsUsed(parts);
-      return formatPartFull(parts[0]);
+      response = formatPartFull(parts[0]);
+    } else {
+      addToPartsUsed(parts);
+      response = `Found ${parts.length} matching part${parts.length > 1 ? "s" : ""}:\n\n` +
+        parts.map(formatPartSummary).join("\n\n");
     }
-    addToPartsUsed(parts);
-    return `Found ${parts.length} matching part${parts.length > 1 ? "s" : ""}:\n\n` +
-      parts.map(formatPartSummary).join("\n\n");
+    
+    return response;
   };
 
   const injectAssistantMessage = (conversation, content) => {
