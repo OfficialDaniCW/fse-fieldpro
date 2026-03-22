@@ -136,15 +136,35 @@ export default function SyncManagerPage() {
           </div>
         )}
 
+        {/* Conflicts section */}
+        {queue.some(a => a.hasConflict) && (
+          <div className="space-y-3">
+            <p className="text-xs font-semibold text-amber-700 uppercase tracking-wide">⚠️ Conflicts Detected</p>
+            {queue
+              .filter(a => a.hasConflict)
+              .map(action => (
+                <ConflictResolver
+                  key={action.id}
+                  conflict={action.conflict}
+                  onResolve={(resolution) => handleResolveConflict(action, resolution)}
+                  onRemove={() => handleRemove(action.id)}
+                  isResolving={resolving[action.id]}
+                />
+              ))}
+          </div>
+        )}
+
         {/* Queue items */}
-        {queue.map(action => {
-          const hasError = !!action.lastError;
-          const isRetrying = retrying[action.id];
-          return (
-            <div
-              key={action.id}
-              className={`bg-white rounded-xl border shadow-sm overflow-hidden ${hasError ? "border-red-200" : "border-gray-200"}`}
-            >
+        {queue
+          .filter(a => !a.hasConflict)
+          .map(action => {
+            const hasError = !!action.lastError;
+            const isRetrying = retrying[action.id];
+            return (
+              <div
+                key={action.id}
+                className={`bg-white rounded-xl border shadow-sm overflow-hidden ${hasError ? "border-red-200" : "border-gray-200"}`}
+              >
               {/* Top row */}
               <div className="px-4 pt-4 pb-3 flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
@@ -212,9 +232,9 @@ export default function SyncManagerPage() {
                   {JSON.stringify(action.payload, null, 2)}
                 </pre>
               </details>
-            </div>
-          );
-        })}
+              </div>
+            );
+          })}
       </div>
     </div>
   );
