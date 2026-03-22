@@ -2,14 +2,9 @@ import * as React from "react";
 import { cva } from "class-variance-authority";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { ToastContext } from "./use-toast";
 
 export const ToastProvider = ({ children }) => {
-  return (
-    <ToastContext.Provider value={{}}>
-      {children}
-    </ToastContext.Provider>
-  );
+  return <>{children}</>;
 };
 ToastProvider.displayName = "ToastProvider";
 
