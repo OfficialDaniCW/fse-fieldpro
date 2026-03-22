@@ -11,7 +11,7 @@ export default function MessageBubble({ message }) {
           <span className="text-[8px] font-bold text-white tracking-tight">FSE</span>
         </div>
       )}
-      <div className={`max-w-[85%] ${isUser && "flex flex-col items-end"}`}>
+      <div className={`max-w-xs sm:max-w-sm md:max-w-md ${isUser && "flex flex-col items-end"}`}>
         <div
           className={`rounded-xl px-3.5 py-2.5 ${
             isUser
