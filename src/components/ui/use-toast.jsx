@@ -144,27 +144,23 @@ function toast({ ...props }) {
 }
 
 function useToast() {
-  const context = useContext(ToastContext);
-  if (!context) {
-    const [state, setState] = useState(memoryState);
+  const [state, setState] = useState(memoryState);
 
-    useEffect(() => {
-      listeners.push(setState);
-      return () => {
-        const index = listeners.indexOf(setState);
-        if (index > -1) {
-          listeners.splice(index, 1);
-        }
-      };
-    }, [state]);
-
-    return {
-      ...state,
-      toast,
-      dismiss: (toastId) => dispatch({ type: actionTypes.DISMISS_TOAST, toastId }),
+  useEffect(() => {
+    listeners.push(setState);
+    return () => {
+      const index = listeners.indexOf(setState);
+      if (index > -1) {
+        listeners.splice(index, 1);
+      }
     };
-  }
-  return context;
+  }, [state]);
+
+  return {
+    ...state,
+    toast,
+    dismiss: (toastId) => dispatch({ type: actionTypes.DISMISS_TOAST, toastId }),
+  };
 }
 
 export { useToast, toast, ToastContext };
