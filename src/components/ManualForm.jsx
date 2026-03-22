@@ -48,24 +48,15 @@ export default function ManualForm({ onClose, onSuccess }) {
       let summary = null;
 
       if (pdfFile) {
-        setUploadStage("Uploading PDF...");
-        const { file_url } = await base44.integrations.Core.UploadFile({ file: pdfFile });
-        pdf_file = file_url;
+         setUploadStage("Uploading PDF...");
+         const { file_url } = await base44.integrations.Core.UploadFile({ file: pdfFile });
+         pdf_file = file_url;
+       }
 
-        setUploadStage("Extracting text from PDF...");
-        try {
-          const extracted = await base44.functions.invoke("extractPdfText", { pdf_url: pdf_file });
-          manual_text = extracted.data?.manual_text || null;
-          summary = extracted.data?.summary || null;
-        } catch (extractErr) {
-          console.warn("PDF text extraction failed:", extractErr);
-          toast("PDF uploaded but text extraction failed. Manual will still be saved.", { icon: "⚠️" });
-        }
-      }
-
-      setUploadStage("Saving manual...");
-      await base44.entities.Manual.create({ ...formData, pdf_file, manual_text, summary });
-      toast.success("Manual added successfully!" + (manual_text ? " Text extracted for AI search." : ""));
+       setUploadStage("Saving manual...");
+       await base44.entities.Manual.create({ ...formData, pdf_file });
+       // Entity automation will mark as "pending" for extraction queue
+       toast.success("Manual added successfully! Parts & text will be extracted by background job.");
       onSuccess?.();
       onClose();
     } catch (error) {
