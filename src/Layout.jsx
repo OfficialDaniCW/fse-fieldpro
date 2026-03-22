@@ -53,7 +53,21 @@ export default function Layout({ children, currentPageName }) {
     { name: "Profile", label: "Profile", icon: User, to: "/Profile" },
   ];
 
+  const bannerNode = (isOffline || showOnlineBanner) ? (
+    <div className={`w-full flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold ${
+      isOffline
+        ? "bg-amber-100 text-amber-700 border-t border-amber-300"
+        : "bg-green-100 text-green-700 border-t border-green-300"
+    }`}>
+      <span className={`w-2 h-2 rounded-full flex-shrink-0 ${isOffline ? "bg-amber-500" : "bg-green-500 animate-pulse"}`} />
+      {isOffline
+        ? pendingCount > 0 ? `Offline · ${pendingCount} queued` : "Offline · cached"
+        : "Online"}
+    </div>
+  ) : null;
+
   return (
+    <ConnectionBannerContext.Provider value={bannerNode}>
     <div className="min-h-screen flex flex-col">
 
       <main className="flex-1">
