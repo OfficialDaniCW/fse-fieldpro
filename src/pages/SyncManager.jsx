@@ -302,6 +302,19 @@ export default function SyncManagerPage() {
                 </div>
               </div>
 
+              {/* Progress bar */}
+              {uploadProgress[action.id] !== undefined && (
+                <div className="px-4 pb-3">
+                  <div className="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
+                    <div
+                      className="h-full bg-[#CC0000] transition-all duration-300"
+                      style={{ width: `${uploadProgress[action.id]}%` }}
+                    />
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1">{uploadProgress[action.id]}%</p>
+                </div>
+              )}
+
               {/* Error reason */}
               {hasError && (
                 <div className="mx-4 mb-4 px-3 py-2 bg-red-50 border border-red-100 rounded-lg flex items-start gap-2">
