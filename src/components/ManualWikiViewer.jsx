@@ -155,12 +155,11 @@ export default function ManualWikiViewer({ manual, onBack }) {
   const isFailed = displayManual.processing_status === 'failed';
   const isComplete = displayManual.processing_status === 'complete' && displayManual.manual_text;
 
-  // Fetch fresh manual data on mount
+  // Fetch fresh manual data on mount (use get() for single manual)
   useEffect(() => {
     const fetchManual = async () => {
       try {
-        const manuals = await base44.entities.Manual.list();
-        const found = manuals.find(m => m.id === manual.id);
+        const found = await base44.entities.Manual.get(manual.id);
         if (found) setDisplayManual(found);
       } catch (err) {
         console.error('Failed to fetch manual:', err);
@@ -170,29 +169,27 @@ export default function ManualWikiViewer({ manual, onBack }) {
     fetchManual();
   }, [manual.id]);
 
-  // Poll every 5 seconds if processing
+  // Poll every 10 seconds if processing (get() single manual instead of list all)
   useEffect(() => {
     if (!isProcessing) return;
 
     const interval = setInterval(async () => {
       try {
-        const manuals = await base44.entities.Manual.list();
-        const found = manuals.find(m => m.id === manual.id);
+        const found = await base44.entities.Manual.get(manual.id);
         if (found) setDisplayManual(found);
       } catch (err) {
         console.error('Poll error:', err);
       }
-    }, 5000);
+    }, 10000);
 
     return () => clearInterval(interval);
   }, [isProcessing, manual.id]);
 
-  // Manual refresh button
+  // Manual refresh button (use get() for single manual)
   const handleRefresh = async () => {
     setIsLoading(true);
     try {
-      const manuals = await base44.entities.Manual.list();
-      const found = manuals.find(m => m.id === manual.id);
+      const found = await base44.entities.Manual.get(manual.id);
       if (found) setDisplayManual(found);
     } finally {
       setIsLoading(false);
@@ -305,7 +302,7 @@ export default function ManualWikiViewer({ manual, onBack }) {
             </div>
             <div className="flex gap-2 mt-2">
               <button
-                onClick={() => setRefreshCount(c => c + 1)}
+                onClick={handleRefresh}
                 className="px-4 py-2 bg-red-600 text-white rounded-lg font-semibold text-sm hover:bg-red-700 transition-colors"
               >
                 Retry
