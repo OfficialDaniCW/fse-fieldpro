@@ -175,17 +175,22 @@ export default function ManualViewer({ manual, onBack }) {
 
       <div className="max-w-4xl mx-auto p-4 space-y-4">
         {/* Summary */}
-        {manual.summary && (
-          <div className="bg-blue-50 border border-blue-200 rounded-xl px-5 py-4 flex gap-3">
-            <Info className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-blue-900 leading-relaxed">{manual.summary}</p>
-          </div>
-        )}
+          {manual.summary && (
+            <div className="bg-blue-50 border border-blue-200 rounded-xl px-5 py-4 flex gap-3">
+              <Info className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-blue-900 leading-relaxed">{manual.summary}</p>
+            </div>
+          )}
 
-        {/* PDF viewer — shown first so engineers can access it immediately */}
-        {manual.pdf_file && (
-          <PdfViewer url={manual.pdf_file} title={manual.title} />
-        )}
+          {/* Exploded view diagram */}
+          {manual.exploded_view_image_url && (
+            <ExplodedViewViewer imageUrl={manual.exploded_view_image_url} title="Exploded View Diagram" />
+          )}
+
+          {/* PDF viewer — shown first so engineers can access it immediately */}
+          {manual.pdf_file && (
+            <PdfViewer url={manual.pdf_file} title={manual.title} />
+          )}
 
         <ContentSection
           label="Error Codes"
