@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { MessageSquare, Search, BookOpen, User, Star, Shield, BarChart2, WifiOff } from "lucide-react";
-import useSyncManager from "./lib/useSyncManager";
 import { useQueryClient } from "@tanstack/react-query";
 import { getQueue } from "./lib/pendingQueue";
 import { useAuth } from "./lib/AuthContext";
