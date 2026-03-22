@@ -33,7 +33,7 @@ export default function ZipUpload() {
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await base44.functions.invoke('processZipManual', formData);
+      const response = await base44.functions.invoke('processZipManual', { file });
 
       if (response.data.success) {
         setResult(response.data);
