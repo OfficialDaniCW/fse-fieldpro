@@ -4,10 +4,12 @@ import { base44 } from "@/api/base44Client";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Mic, Send, Image as ImageIcon, Loader2, BookOpen } from "lucide-react";
+import { Mic, Send, Image as ImageIcon, Loader2, BookOpen, History, Plus } from "lucide-react";
 import MessageBubble from "../components/MessageBubble";
 import PageHeader from "../components/PageHeader";
 import PartsUsedTray from "../components/PartsUsedTray";
+
+const CONV_STORAGE_KEY = "fse_last_conversation_id";
 
 export default function ChatPage() {
   const queryClient = useQueryClient();
@@ -18,6 +20,7 @@ export default function ChatPage() {
   const [imageFile, setImageFile] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [partsUsed, setPartsUsed] = useState([]);
+  const [showHistoryBanner, setShowHistoryBanner] = useState(false);
   const messagesEndRef = useRef(null);
   const recognitionRef = useRef(null);
 
@@ -29,29 +32,46 @@ export default function ChatPage() {
     scrollToBottom();
   }, [messages]);
 
+  const startNewConversation = async () => {
+    try {
+      const conversation = await base44.agents.createConversation({
+        agent_name: "field_service_assistant",
+        metadata: { name: "Troubleshooting Session", description: "Field service troubleshooting assistance" }
+      });
+      localStorage.setItem(CONV_STORAGE_KEY, conversation.id);
+      setConversationId(conversation.id);
+      setMessages(conversation.messages || []);
+      setPartsUsed([]);
+      setShowHistoryBanner(false);
+      const unsubscribe = base44.agents.subscribeToConversation(conversation.id, (data) => {
+        setMessages(data.messages);
+      });
+      return () => unsubscribe();
+    } catch (error) {
+      console.error("Error creating conversation:", error);
+    }
+  };
+
   useEffect(() => {
-    // Create conversation on mount
     const initConversation = async () => {
-      try {
-        const conversation = await base44.agents.createConversation({
-          agent_name: "field_service_assistant",
-          metadata: {
-            name: "Troubleshooting Session",
-            description: "Field service troubleshooting assistance"
+      const savedId = localStorage.getItem(CONV_STORAGE_KEY);
+      if (savedId) {
+        try {
+          const conversation = await base44.agents.getConversation(savedId);
+          if (conversation && conversation.messages?.length > 0) {
+            setConversationId(conversation.id);
+            setMessages(conversation.messages);
+            setShowHistoryBanner(true);
+            const unsubscribe = base44.agents.subscribeToConversation(conversation.id, (data) => {
+              setMessages(data.messages);
+            });
+            return () => unsubscribe();
           }
-        });
-        setConversationId(conversation.id);
-        setMessages(conversation.messages || []);
-
-        // Subscribe to updates
-        const unsubscribe = base44.agents.subscribeToConversation(conversation.id, (data) => {
-          setMessages(data.messages);
-        });
-
-        return () => unsubscribe();
-      } catch (error) {
-        console.error("Error creating conversation:", error);
+        } catch {
+          // Conversation expired or not found — create new
+        }
       }
+      return startNewConversation();
     };
 
     initConversation();
