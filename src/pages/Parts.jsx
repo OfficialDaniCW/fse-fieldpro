@@ -2,7 +2,6 @@ import React, { useState, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Search, SlidersHorizontal, ChevronLeft, ChevronRight, LayoutGrid, List } from "lucide-react";
-import PageHeader from "../components/PageHeader";
 import PartCard from "../components/parts/PartCard";
 import FilterPanel from "../components/parts/FilterPanel";
 
