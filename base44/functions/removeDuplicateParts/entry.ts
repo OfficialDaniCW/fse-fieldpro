@@ -24,11 +24,26 @@ Deno.serve(async (req) => {
       }
     });
 
-    // Delete duplicate records
+    // Delete in batches of 5 with delays
     let deleted = 0;
-    for (const id of toDelete) {
-      await base44.asServiceRole.entities.Part.delete(id);
-      deleted++;
+    const batchSize = 5;
+    
+    for (let i = 0; i < toDelete.length; i += batchSize) {
+      const batch = toDelete.slice(i, i + batchSize);
+      
+      for (const id of batch) {
+        try {
+          await base44.asServiceRole.entities.Part.delete(id);
+          deleted++;
+        } catch (e) {
+          console.error(`Failed to delete ${id}:`, e.message);
+        }
+      }
+      
+      // Wait 1 second between batches
+      if (i + batchSize < toDelete.length) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
     }
 
     return Response.json({
