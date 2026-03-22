@@ -29,14 +29,26 @@ export default function ZipUpload() {
     setIsLoading(true);
     setError(null);
     setResult(null);
+    setProgress({ stage: 'Uploading file...', percent: 10 });
 
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-
+      setProgress({ stage: 'Extracting ZIP contents...', percent: 25 });
+      setProgress({ stage: 'Processing metadata...', percent: 40 });
+      setProgress({ stage: 'Uploading images...', percent: 55 });
+      
       const response = await base44.functions.invoke('processZipManual', { file });
 
       if (response.data.success) {
+        setProgress({ stage: 'Linking parts to manual...', percent: 75 });
+        
+        // Trigger part linking after manual upload
+        try {
+          await base44.functions.invoke('linkPartsToManuals', { manual_id: response.data.manual.id });
+          setProgress({ stage: 'Complete!', percent: 100 });
+        } catch (linkErr) {
+          console.warn('Part linking failed:', linkErr);
+        }
+        
         setResult(response.data);
       } else {
         setError(response.data.error || 'Upload failed');
@@ -45,6 +57,7 @@ export default function ZipUpload() {
       setError(err.message || 'Error processing zip file');
     } finally {
       setIsLoading(false);
+      setProgress({ stage: '', percent: 0 });
     }
   };
 
