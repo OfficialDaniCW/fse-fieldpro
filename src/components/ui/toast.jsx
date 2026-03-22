@@ -2,8 +2,7 @@ import * as React from "react";
 import { cva } from "class-variance-authority";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-const ToastContext = React.createContext(null);
+import { ToastContext } from "./use-toast";
 
 export const ToastProvider = ({ children }) => {
   return (
