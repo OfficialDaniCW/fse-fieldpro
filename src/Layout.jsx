@@ -9,12 +9,21 @@ import { useCurrentUser } from "./lib/useCurrentUser";
 export default function Layout({ children, currentPageName }) {
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
   const [pendingCount, setPendingCount] = useState(() => getQueue().length);
+  const [showOnlineBanner, setShowOnlineBanner] = useState(false);
   const queryClient = useQueryClient();
   const { isAdmin, isManager } = useCurrentUser();
 
   useEffect(() => {
-    const goOffline = () => setIsOffline(true);
-    const goOnline = () => { setIsOffline(false); setPendingCount(getQueue().length); };
+    const goOffline = () => {
+      setIsOffline(true);
+      setShowOnlineBanner(false);
+    };
+    const goOnline = () => {
+      setIsOffline(false);
+      setPendingCount(getQueue().length);
+      setShowOnlineBanner(true);
+      setTimeout(() => setShowOnlineBanner(false), 5000);
+    };
     window.addEventListener("offline", goOffline);
     window.addEventListener("online", goOnline);
     return () => {
