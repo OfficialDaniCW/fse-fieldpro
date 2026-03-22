@@ -21,78 +21,92 @@ Deno.serve(async (req) => {
     const zip = new JSZip();
     await zip.loadAsync(zipBuffer);
 
-    // Find and parse the JSON metadata file
-    let jsonFile = null;
+    // Find and parse manual_data.json
     let jsonData = null;
-
     for (const [filename, file] of Object.entries(zip.files)) {
-      if (filename.endsWith('.json') && !filename.startsWith('__MACOSX')) {
+      if (filename === 'manual_data.json' || filename.endsWith('/manual_data.json')) {
         const content = await file.async('text');
         jsonData = JSON.parse(content);
-        jsonFile = filename;
         break;
       }
     }
 
     if (!jsonData) {
-      return Response.json({ error: 'No JSON metadata file found in zip' }, { status: 400 });
+      return Response.json({ error: 'No manual_data.json found in zip' }, { status: 400 });
     }
 
-    // Extract and upload images
+    // Extract and upload images from images/ folder
     const pageImages = [];
-    const imageUrls = {};
-
     for (const [filename, file] of Object.entries(zip.files)) {
-      if (filename.match(/\.png$/i) && !filename.startsWith('__MACOSX')) {
-        // Extract image metadata from filename
-        const match = filename.match(/p(\d+)_img(\d+)\.png/i);
-        const pageNum = match ? parseInt(match[1]) : null;
-        const imgNum = match ? parseInt(match[2]) : null;
-
+      if (filename.startsWith('images/') && filename.match(/\.(png|jpg|jpeg)$/i)) {
         const buffer = await file.async('arraybuffer');
-        const blob = new Blob([buffer], { type: 'image/png' });
+        const mimeType = filename.endsWith('.png') ? 'image/png' : 'image/jpeg';
+        const blob = new Blob([buffer], { type: mimeType });
 
-        // Upload image using Base44 integration
         const uploadRes = await base44.integrations.Core.UploadFile({
           file: blob
         });
 
+        const cleanFilename = filename.split('/').pop();
+        const match = cleanFilename.match(/p(\d+)_img(\d+)/i);
+        const pageNum = match ? parseInt(match[1]) : null;
+
         pageImages.push({
-          filename: filename.split('/').pop(),
+          filename: cleanFilename,
           page_number: pageNum,
           image_url: uploadRes.file_url,
           width_px: null,
           height_px: null
         });
-
-        imageUrls[filename] = uploadRes.file_url;
       }
     }
 
-    // Map JSON data to Manual entity
-    const models = jsonData.models_covered?.join(', ') || 'Unknown';
-    const manualText = jsonData.sections
-      ?.map(s => `${s.title}\n${s.content}`)
+    // Extract and upload PDF from source_pdf/ folder
+    let pdfUrl = null;
+    for (const [filename, file] of Object.entries(zip.files)) {
+      if (filename.startsWith('source_pdf/') && filename.endsWith('.pdf')) {
+        const buffer = await file.async('arraybuffer');
+        const blob = new Blob([buffer], { type: 'application/pdf' });
+
+        const uploadRes = await base44.integrations.Core.UploadFile({
+          file: blob
+        });
+        pdfUrl = uploadRes.file_url;
+        break;
+      }
+    }
+
+    // Build manual text from chapters
+    const manualText = jsonData.chapters
+      ?.map(ch => `${ch.title}\n${ch.full_text || ''}`)
       .join('\n\n') || '';
 
-    const tableOfContents = jsonData.sections
-      ?.map(s => s.title)
+    const tableOfContents = jsonData.chapters
+      ?.map(ch => ch.title)
       .join(' | ') || '';
+
+    const errorCodes = jsonData.chapters
+      ?.flatMap(ch => ch.error_codes || [])
+      .join(' | ') || '';
+
+    const models = jsonData.models_covered?.join(', ') || 'Unknown';
 
     const manualRecord = {
       title: jsonData.title,
       manufacturer: jsonData.manufacturer,
       model: models,
-      manual_type: jsonData.manual_type || 'Technical Manual',
+      manual_type: 'Technical Manual',
       summary: jsonData.summary,
       source_url: jsonData.source_url,
+      pdf_file: pdfUrl,
       manual_text: manualText,
       table_of_contents: tableOfContents,
-      error_codes: jsonData.error_codes?.join(' | ') || '',
-      component_type: jsonData.component_type || 'Other',
-      brand_category: jsonData.brand_category || 'Other',
+      error_codes: errorCodes,
+      component_type: 'Other',
+      brand_category: 'Gilbarco',
       page_images: JSON.stringify(pageImages),
-      processing_status: 'complete'
+      processing_status: 'complete',
+      version: jsonData.issue || '1.0'
     };
 
     // Create manual record
