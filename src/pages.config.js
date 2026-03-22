@@ -48,7 +48,7 @@
  * The mainPage value must match a key in the PAGES object exactly.
  */
 import Chat from './pages/Chat';
-import Manuals from './pages/Manuals.jsx';
+import Manuals from './pages/Manuals';
 import Parts from './pages/Parts';
 import Profile from './pages/Profile';
 import Admin from './pages/Admin';
