@@ -117,7 +117,7 @@ export default function PartsPage() {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
             <input
-              placeholder="Search part number, description, brand..."
+              placeholder="Search part number, manufacturer ref, description..."
               value={searchTerm}
               onChange={handleSearch}
               className="w-full pl-9 pr-4 h-12 text-sm bg-white rounded-xl border-0 outline-none text-gray-900 placeholder:text-gray-400"
