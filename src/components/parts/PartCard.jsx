@@ -131,6 +131,16 @@ export default function PartCard({ part, manuals = [], onOpenManual, allParts = 
               Details
             </button>
             <button
+              onClick={() => setActiveTab("manuals")}
+              className={`flex-1 px-4 py-3 text-xs font-semibold uppercase tracking-wide transition-colors ${
+                activeTab === "manuals"
+                  ? "text-[#CC0000] border-b-2 border-[#CC0000]"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              Manuals
+            </button>
+            <button
               onClick={() => setActiveTab("reference")}
               className={`flex-1 px-4 py-3 text-xs font-semibold uppercase tracking-wide transition-colors ${
                 activeTab === "reference"
