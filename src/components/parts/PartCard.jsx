@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ChevronDown, ChevronUp, Copy, Check, AlertTriangle, Star, BookOpen } from "lucide-react";
+import { ChevronDown, ChevronUp, Copy, Check, AlertTriangle, Star, BookOpen, RefreshCw } from "lucide-react";
 import { isFavorite, toggleFavorite } from "../../lib/favorites";
 
 const Tag = ({ label, color }) => {
@@ -16,7 +16,7 @@ const Tag = ({ label, color }) => {
   );
 };
 
-export default function PartCard({ part, manuals = [], onOpenManual }) {
+export default function PartCard({ part, manuals = [], onOpenManual, allParts = [] }) {
   // Find a manual that matches this part's brand/model
   const matchedManual = manuals.find(m => {
     const mfr = m.equipment_manufacturer?.toLowerCase() || "";
@@ -48,6 +48,12 @@ export default function PartCard({ part, manuals = [], onOpenManual }) {
     part.installation_step_2,
     part.installation_step_3,
   ].filter(Boolean);
+
+  // Get replacement and compatible parts
+  const replacementPart = part.superseded_by ? allParts.find(p => p.part_number === part.superseded_by) : null;
+  const compatiblePartsList = part.compatible_parts?.length > 0
+    ? allParts.filter(p => part.compatible_parts.includes(p.part_number))
+    : [];
 
 
 
@@ -164,11 +170,48 @@ export default function PartCard({ part, manuals = [], onOpenManual }) {
             </div>
           )}
 
+          {/* Obsolete warning */}
+          {part.is_obsolete && (
+            <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 flex gap-3 items-start">
+              <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-amber-800 font-semibold leading-relaxed">This part is obsolete. See alternatives below.</p>
+            </div>
+          )}
+
           {/* Safety warning */}
           {part.safety_warning && (
             <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3 flex gap-3 items-start">
               <AlertTriangle className="w-4 h-4 text-[#CC0000] flex-shrink-0 mt-0.5" />
               <p className="text-sm text-red-900 font-semibold leading-relaxed">{part.safety_warning}</p>
+            </div>
+          )}
+
+          {/* Superseded by */}
+          {replacementPart && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg px-4 py-3">
+              <div className="flex items-center gap-2 mb-2">
+                <RefreshCw className="w-4 h-4 text-blue-600" />
+                <p className="text-xs font-semibold text-blue-700 uppercase tracking-wide">Newer Version Available</p>
+              </div>
+              <p className="text-sm text-blue-900 mb-2">
+                <span className="font-mono font-bold">{replacementPart.part_number}</span> — {replacementPart.description}
+              </p>
+              {replacementPart.variant_spec && <p className="text-xs text-blue-700 mb-1">{replacementPart.variant_spec}</p>}
+            </div>
+          )}
+
+          {/* Compatible parts */}
+          {compatiblePartsList.length > 0 && (
+            <div className="bg-green-50 border border-green-200 rounded-lg px-4 py-3">
+              <p className="text-xs font-semibold text-green-700 uppercase tracking-wide mb-3">Compatible Alternatives</p>
+              <div className="space-y-2">
+                {compatiblePartsList.map(cp => (
+                  <div key={cp.id} className="text-sm text-green-900">
+                    <span className="font-mono font-bold">{cp.part_number}</span> — {cp.description}
+                    {cp.variant_spec && <p className="text-xs text-green-700">{cp.variant_spec}</p>}
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
