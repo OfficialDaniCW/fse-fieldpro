@@ -25,9 +25,10 @@ export default function PartForm({ onClose, onSuccess }) {
     part_number: "", description: "", brand: "", pump_model: "",
     system_area: "", component_type: "", variant_spec: "",
     what_it_does: "", installation_step_1: "", installation_step_2: "",
-    installation_step_3: "", safety_warning: "",
+    installation_step_3: "", safety_warning: "", image_url: "",
   });
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const set = (key, val) => setFormData(f => ({ ...f, [key]: val }));
 
