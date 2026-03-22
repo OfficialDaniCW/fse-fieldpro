@@ -86,7 +86,7 @@ Deno.serve(async (req) => {
       manual_type: jsonData.manual_type || 'Technical Manual',
       summary: jsonData.summary,
       source_url: jsonData.source_url,
-      pdf_file: jsonData.pdf_url || null,
+      pdf_file: staging.pdf_url || jsonData.pdf_url || null,
       manual_text: manualText,
       table_of_contents: tableOfContents,
       error_codes: errorCodes,
