@@ -98,7 +98,7 @@ export default function PartCard({ part }) {
 
       {/* Expanded content */}
       {expanded && (
-        <div className="border-t border-gray-100 pt-4 pb-4 space-y-5">
+        <div className="border-t border-gray-100 px-4 pt-4 pb-4 space-y-5">
           {/* Specs grid */}
           <div className="grid grid-cols-2 gap-4">
             {part.pump_model && (
