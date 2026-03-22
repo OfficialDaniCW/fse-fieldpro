@@ -4,7 +4,7 @@ import { MessageSquare, Search, BookOpen, User, Star, Shield, BarChart2, WifiOff
 import useSyncManager from "./lib/useSyncManager";
 import { useQueryClient } from "@tanstack/react-query";
 import { getQueue } from "./lib/pendingQueue";
-import { useCurrentUser } from "./lib/useCurrentUser";
+import { useAuth } from "./lib/AuthContext";
 import { ConnectionBannerContext } from "./lib/ConnectionBannerContext";
 
 export default function Layout({ children, currentPageName }) {
@@ -12,7 +12,10 @@ export default function Layout({ children, currentPageName }) {
   const [pendingCount, setPendingCount] = useState(() => getQueue().length);
   const [showOnlineBanner, setShowOnlineBanner] = useState(false);
   const queryClient = useQueryClient();
-  const { isAdmin, isManager } = useCurrentUser();
+  const { user } = useAuth();
+  
+  const isAdmin = user?.role === "admin";
+  const isManager = user?.role === "manager";
 
   useEffect(() => {
     const goOffline = () => {
