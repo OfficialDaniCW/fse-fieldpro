@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Search, SlidersHorizontal, ChevronLeft, ChevronRight, LayoutGrid, List, WifiOff } from "lucide-react";
 import Fuse from "fuse.js";
 import PartCard from "../components/parts/PartCard";
-import FilterPanel from "../components/parts/FilterPanel";
+import SimpleFilterPanel from "../components/parts/SimpleFilterPanel";
 import { useNavigate } from "react-router-dom";
 import { useOfflineCache, useCacheMetadata } from "@/hooks/useOfflineCache";
 
@@ -143,7 +143,7 @@ export default function PartsPage() {
 
       {/* Filter Panel */}
       {showFilter && (
-        <FilterPanel
+        <SimpleFilterPanel
           options={options}
           filters={filters}
           onSelect={setFilter}
