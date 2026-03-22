@@ -16,8 +16,7 @@ Deno.serve(async (req) => {
     }
 
     // Step 1: Load manual record
-    const manuals = await base44.asServiceRole.entities.Manual.filter({ id: manual_id });
-    const manual = manuals?.[0];
+    const manual = await base44.asServiceRole.entities.Manual.get(manual_id);
 
     if (!manual) {
       return Response.json({ error: 'Manual not found' }, { status: 404 });
@@ -30,7 +29,7 @@ Deno.serve(async (req) => {
     // Step 2: Update to processing
     await base44.asServiceRole.entities.Manual.update(manual_id, { processing_status: 'processing' });
 
-    // Step 3: Extract text from PDF
+    // Step 3: Extract text from PDF using InvokeLLM
     let extractedData;
     try {
       const extraction = await base44.integrations.Core.InvokeLLM({
@@ -110,8 +109,9 @@ ${maintenanceText}`;
     // Step 6: Assign to folder based on manufacturer + model
     let folder_id = null;
     try {
+      const mfr = extractedData.manufacturer || manual.manufacturer;
       const folders = await base44.asServiceRole.entities.ManualFolder.filter({
-        brand: extractedData.manufacturer || manual.manufacturer
+        brand: mfr
       });
       if (folders?.length > 0) {
         folder_id = folders[0].id;
@@ -120,7 +120,7 @@ ${maintenanceText}`;
       console.log('Folder assignment skipped:', e.message);
     }
 
-    // Step 7: Extract diagram if enabled
+    // Step 7: Extract diagram (if enabled)
     let exploded_view_image_url = null;
     if (manual.extract_diagrams) {
       try {
@@ -145,26 +145,29 @@ ${maintenanceText}`;
       }
     }
 
-    // Step 8 & 9: Link to parts and capture manufacturer references
+    // Step 8 & 9: Link to parts
     let parts_linked = 0;
     try {
+      const mfr = extractedData.manufacturer || manual.manufacturer;
       const allParts = await base44.asServiceRole.entities.Part.filter({
-        brand: extractedData.manufacturer || manual.manufacturer
+        brand: mfr
       });
       
       for (const part of allParts) {
-        const matchedRef = extractedData.parts_referenced?.find(p => 
+        if (extractedData.parts_referenced?.some(p => 
           part.part_number?.toUpperCase() === p.toUpperCase() ||
           part.description?.toUpperCase().includes(p.toUpperCase())
-        );
-        
-        if (matchedRef) {
-          // Extract manufacturer reference from matched part reference if it contains additional info
+        )) {
           const updatePayload = {
             source_manual_id: manual_id
           };
           
-          // If matchedRef looks like a manufacturer part code (different from TSG number), store it
+          // Capture manufacturer reference if found
+          const matchedRef = extractedData.parts_referenced?.find(p => 
+            part.part_number?.toUpperCase() === p.toUpperCase() ||
+            part.description?.toUpperCase().includes(p.toUpperCase())
+          );
+          
           if (matchedRef && matchedRef !== part.part_number && !part.manufacturer_part_ref) {
             updatePayload.manufacturer_part_ref = matchedRef;
           }
