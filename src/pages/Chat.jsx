@@ -267,8 +267,10 @@ export default function ChatPage() {
   const buildManualContext = (manuals) => {
     return manuals.map(m => {
       const sections = [];
-      sections.push(`**Manual: ${m.title}** (${m.equipment_manufacturer} ${m.equipment_model})`);
-      if (m.manual_text) sections.push(m.manual_text.slice(0, 3000));
+      const meta = [m.equipment_manufacturer, m.equipment_model, m.version].filter(Boolean).join(" ");
+      sections.push(`**Manual: ${m.title}** (${meta})`);
+      if (m.summary) sections.push(`Summary: ${m.summary}`);
+      if (m.manual_text) sections.push(m.manual_text.slice(0, 4000));
       if (m.error_codes) sections.push(`Error Codes:\n${m.error_codes}`);
       if (m.troubleshooting_steps) sections.push(`Troubleshooting:\n${m.troubleshooting_steps}`);
       return sections.join("\n\n");
