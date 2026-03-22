@@ -14,8 +14,8 @@ const RECENT_SEARCHES_KEY = "fse_recent_searches";
 const MAX_RECENT = 5;
 
 export default function ChatPage() {
-  const queryClient = useQueryClient();
   const [conversationId, setConversationId] = useState(null);
+  const cacheRef = React.useRef({});
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [isListening, setIsListening] = useState(false);
