@@ -10,9 +10,35 @@ export async function replayAction(action) {
     await base44.entities.Manual.create(action.payload);
   } else if (action.type === ACTION_TYPES.CREATE_PART) {
     await base44.entities.Part.create(action.payload);
+  } else if (action.type === ACTION_TYPES.UPDATE_MANUAL) {
+    await base44.entities.Manual.update(action.payload.id, action.payload.data);
+  } else if (action.type === ACTION_TYPES.UPDATE_PART) {
+    await base44.entities.Part.update(action.payload.id, action.payload.data);
   } else {
     throw new Error(`Unknown action type: ${action.type}`);
   }
+}
+
+// Checks for conflicts by comparing local vs server version
+export async function checkForConflict(action) {
+  try {
+    const entityType = action.type.startsWith('MANUAL') ? 'Manual' : 'Part';
+    const entity = await base44.entities[entityType].get(action.payload.id);
+    
+    if (entity && action.payload.data) {
+      // Check if any fields differ
+      const hasConflict = Object.entries(action.payload.data).some(
+        ([key, val]) => entity[key] !== val
+      );
+      
+      if (hasConflict) {
+        return { hasConflict: true, serverData: entity };
+      }
+    }
+  } catch (err) {
+    // Entity not found or other error - no conflict
+  }
+  return { hasConflict: false };
 }
 
 export default function useSyncManager({ onSynced } = {}) {
