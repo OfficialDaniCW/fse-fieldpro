@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -16,8 +16,6 @@ import AutomationRetry from "../components/admin/AutomationRetry";
 import { useCurrentUser } from "../lib/useCurrentUser";
 import { toast } from "sonner";
 import { Toaster } from "sonner";
-import { AlertTriangle } from "lucide-react";
-import { list_automations } from "@/lib/base44-helpers";
 
 export default function AdminPage() {
   const { isAdmin, loading } = useCurrentUser();
@@ -27,7 +25,6 @@ export default function AdminPage() {
   const [showManualForm, setShowManualForm] = useState(false);
   const [showPartForm, setShowPartForm] = useState(false);
   const [editingPart, setEditingPart] = useState(null);
-  const [automations, setAutomations] = useState([]);
 
   const { data: parts = [] } = useQuery({
     queryKey: ["parts"],
@@ -39,19 +36,7 @@ export default function AdminPage() {
     queryFn: () => base44.entities.Manual.list("-created_date"),
   });
 
-  // Load automations on mount
-  useEffect(() => {
-    const loadAutomations = async () => {
-      try {
-        // Get automations via function call - this would need a backend endpoint
-        // For now, we'll just check if any critical ones are in a failed state
-        setAutomations([]);
-      } catch (error) {
-        console.error("Failed to load automations:", error);
-      }
-    };
-    loadAutomations();
-  }, []);
+
 
   if (loading) return <div className="flex items-center justify-center h-screen"><div className="w-8 h-8 border-4 border-slate-200 border-t-[#CC0000] rounded-full animate-spin" /></div>;
 
@@ -145,14 +130,7 @@ export default function AdminPage() {
           </a>
         </div>
 
-        {/* Automation Status Monitor */}
-        {automations.length > 0 && (
-          <div className="mb-4 space-y-2">
-            {automations.filter(a => a.failed_runs > 0 || a.consecutive_failures > 0).map(automation => (
-              <AutomationRetry key={automation.id} automation={automation} />
-            ))}
-          </div>
-        )}
+
 
         {/* Quick links */}
         <div className="flex gap-2 mb-4">
