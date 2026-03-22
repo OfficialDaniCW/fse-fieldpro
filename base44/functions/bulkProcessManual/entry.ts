@@ -32,9 +32,13 @@ Deno.serve(async (req) => {
     // Step 3: Extract text from PDF using InvokeLLM
     let extractedData;
     try {
+      // BUG FIX 1: Log and handle file_urls correctly
+      console.log('pdf_file value:', manual.pdf_file, typeof manual.pdf_file);
+      const pdfUrl = typeof manual.pdf_file === 'string' ? manual.pdf_file : manual.pdf_file?.url || manual.pdf_file;
+      
       const extraction = await base44.integrations.Core.InvokeLLM({
         model: 'gemini_3_pro',
-        file_urls: [manual.pdf_file],
+        file_urls: [pdfUrl],
         prompt: `Extract the complete text content from this PDF manual.
 Return a JSON object with these exact fields:
 - title: the full document title
@@ -66,13 +70,23 @@ Return ONLY valid JSON, no markdown.`,
           }
         }
       });
-      extractedData = extraction;
+      
+      // BUG FIX 2: Handle markdown-wrapped JSON responses
+      try {
+        const rawText = typeof extraction === 'object' ? JSON.stringify(extraction) : extraction;
+        const cleanJson = rawText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+        extractedData = JSON.parse(cleanJson);
+      } catch (parseError) {
+        extractedData = extraction;
+      }
     } catch (error) {
-      await base44.asServiceRole.entities.Manual.update(manual_id, {
-        processing_status: 'failed',
-        processing_error: `Text extraction failed: ${error.message}`
-      });
-      return Response.json({ error: `Extraction failed: ${error.message}` }, { status: 500 });
+     // BUG FIX 3: Properly set failed status with detailed error message
+     const errorMsg = error.message || 'Unknown error during extraction';
+     await base44.asServiceRole.entities.Manual.update(manual_id, {
+       processing_status: 'failed',
+       processing_error: `Text extraction failed: ${errorMsg}`
+     });
+     return Response.json({ error: `Extraction failed: ${errorMsg}` }, { status: 500 });
     }
 
     // Step 5: Build structured manual_text
@@ -124,9 +138,10 @@ ${maintenanceText}`;
     let exploded_view_image_url = null;
     if (manual.extract_diagrams) {
       try {
+        const pdfUrl = typeof manual.pdf_file === 'string' ? manual.pdf_file : manual.pdf_file?.url || manual.pdf_file;
         const diagramResult = await base44.integrations.Core.InvokeLLM({
           model: 'gemini_3_pro',
-          file_urls: [manual.pdf_file],
+          file_urls: [pdfUrl],
           prompt: `Identify the main exploded view, assembly diagram, or parts diagram in this technical manual. Return the page number and a brief description of what it shows.`,
           response_json_schema: {
             type: 'object',
@@ -215,6 +230,11 @@ ${maintenanceText}`;
     });
 
   } catch (error) {
-    return Response.json({ error: error.message }, { status: 500 });
+   // BUG FIX 3: Catch any unhandled errors and mark manual as failed
+   await base44.asServiceRole.entities.Manual.update(manual_id, {
+     processing_status: 'failed',
+     processing_error: `Processing failed: ${error.message}`
+   }).catch(e => console.log('Could not update manual to failed status:', e.message));
+   return Response.json({ error: error.message }, { status: 500 });
   }
-});
+  });
