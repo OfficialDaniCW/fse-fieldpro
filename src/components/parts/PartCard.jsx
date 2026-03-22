@@ -16,7 +16,17 @@ const Tag = ({ label, color }) => {
   );
 };
 
-export default function PartCard({ part }) {
+export default function PartCard({ part, manuals = [], onOpenManual }) {
+  // Find a manual that matches this part's brand/model
+  const matchedManual = manuals.find(m => {
+    const mfr = m.equipment_manufacturer?.toLowerCase() || "";
+    const model = m.equipment_model?.toLowerCase() || "";
+    const brand = part.brand?.toLowerCase() || "";
+    const pumpModel = part.pump_model?.toLowerCase() || "";
+    return (brand && mfr.includes(brand)) ||
+           (brand && brand.includes(mfr)) ||
+           (pumpModel && model && (pumpModel.includes(model) || model.includes(pumpModel)));
+  }) || null;
   const [expanded, setExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
   const [favorited, setFavorited] = useState(() => isFavorite(part.id));
