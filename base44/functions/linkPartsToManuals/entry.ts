@@ -66,23 +66,3 @@ Deno.serve(async (req) => {
     return Response.json({ error: error.message }, { status: 500 });
   }
 });
-
-// Simple extraction: looks for common part names in manual text
-function extractPartNamesFromManual(text) {
-  const names = new Set();
-  
-  // Common part types and patterns
-  const patterns = [
-    /seal|gasket|valve|pump|filter|sensor|bearing|spring|bracket|connector|wire/gi,
-    /flow meter|pressure switch|control unit|solenoid|coil|relay/gi
-  ];
-
-  patterns.forEach(pattern => {
-    const matches = text.match(pattern);
-    if (matches) {
-      matches.forEach(match => names.add(match.toLowerCase()));
-    }
-  });
-
-  return Array.from(names);
-}
