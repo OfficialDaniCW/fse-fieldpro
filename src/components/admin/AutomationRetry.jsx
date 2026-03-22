@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { AlertTriangle, RefreshCw, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { base44 } from "@/api/base44Client";
 
 export default function AutomationRetry({ automation }) {
   const [isRetrying, setIsRetrying] = useState(false);
