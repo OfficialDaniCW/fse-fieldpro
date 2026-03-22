@@ -129,10 +129,10 @@ export default function BulkUpload() {
 
   const statusLabel = (f) => {
     if (f.status === STATUS.ERROR) return <span className="text-xs text-red-500">{f.error}</span>;
-    if (f.status === STATUS.UPLOADING) return <span className="text-xs text-blue-500">Uploading PDF...</span>;
-    if (f.status === STATUS.PROCESSING) return <span className="text-xs text-blue-500">Extracting text{extractParts ? " & parts" : ""}...</span>;
-    if (f.status === STATUS.DONE) return <span className="text-xs text-green-500">Complete</span>;
-    return <span className="text-xs text-gray-400">Ready</span>;
+    if (f.status === STATUS.UPLOADING) return <span className="text-xs text-blue-500 animate-pulse">Uploading PDF...</span>;
+    if (f.status === STATUS.PROCESSING) return <span className="text-xs text-blue-500 animate-pulse">AI extracting text{extractParts ? " & parts" : ""}... (may take 30–60s)</span>;
+    if (f.status === STATUS.DONE) return <span className="text-xs text-green-600 font-medium">✓ Complete — text & parts extracted</span>;
+    return <span className="text-xs text-gray-400">Ready to upload</span>;
   };
 
   const doneCount = files.filter(f => f.status === STATUS.DONE).length;
