@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { ChevronDown, ChevronUp, Copy, Check, AlertTriangle, Star, BookOpen, RefreshCw, ExternalLink, Tag as TagIcon } from "lucide-react";
 import { isFavorite, toggleFavorite } from "../../lib/favorites";
 import ReplacementChain from "./ReplacementChain";

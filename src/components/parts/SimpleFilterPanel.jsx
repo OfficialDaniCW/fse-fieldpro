@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Search, ChevronDown, ChevronUp, X } from "lucide-react";
 import QuickAccessSection from "./QuickAccessSection";
 
