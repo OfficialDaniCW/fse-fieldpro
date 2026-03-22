@@ -15,13 +15,21 @@ export default function ManualsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [showForm, setShowForm] = useState(false);
   const queryClient = useQueryClient();
-  const { isAdmin } = useCurrentUser();
+  const { isAdmin, isManager } = useCurrentUser();
+  const canAddManual = isAdmin || isManager;
 
   const { data: manuals = [], isLoading } = useQuery({
     queryKey: ["manuals"],
     queryFn: () => base44.entities.Manual.list("-created_date"),
-    initialData: []
   });
+
+  // Group manuals by manufacturer
+  const grouped = filteredManuals.reduce((acc, manual) => {
+    const key = manual.equipment_manufacturer || "Other";
+    if (!acc[key]) acc[key] = [];
+    acc[key].push(manual);
+    return acc;
+  }, {});
 
   const filteredManuals = manuals.filter((manual) =>
     manual.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -86,8 +94,8 @@ export default function ManualsPage() {
           </div>
         )}
 
-        {/* Add Manual Button - Admin only */}
-        {isAdmin && (
+        {/* Add Manual Button - Admin and Manager */}
+        {canAddManual && (
           <div className="fixed bottom-20 left-4 right-4 max-w-4xl mx-auto">
             <Button 
               onClick={() => setShowForm(true)}
