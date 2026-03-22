@@ -117,7 +117,36 @@ export default function PartCard({ part, manuals = [], onOpenManual, allParts = 
 
       {/* Expanded content */}
       {expanded && (
-        <div className="border-t border-gray-100 px-4 pt-4 pb-4 space-y-5">
+        <div className="border-t border-gray-100">
+          {/* Tab navigation */}
+          <div className="flex border-b border-gray-200 bg-gray-50">
+            <button
+              onClick={() => setActiveTab("details")}
+              className={`flex-1 px-4 py-3 text-xs font-semibold uppercase tracking-wide transition-colors ${
+                activeTab === "details"
+                  ? "text-[#CC0000] border-b-2 border-[#CC0000]"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              Details
+            </button>
+            <button
+              onClick={() => setActiveTab("reference")}
+              className={`flex-1 px-4 py-3 text-xs font-semibold uppercase tracking-wide transition-colors ${
+                activeTab === "reference"
+                  ? "text-[#CC0000] border-b-2 border-[#CC0000]"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              Reference
+            </button>
+          </div>
+
+          {/* Tab content */}
+          <div className="px-4 pt-4 pb-4 space-y-5">
+            {/* DETAILS TAB */}
+            {activeTab === "details" && (
+              <>
           {/* Part image */}
           {part.image_url && (
             <div className="rounded-lg overflow-hidden border border-gray-200 bg-gray-50 p-3">
