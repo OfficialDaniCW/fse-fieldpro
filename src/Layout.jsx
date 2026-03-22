@@ -56,19 +56,6 @@ export default function Layout({ children, currentPageName }) {
     <div className="min-h-screen flex flex-col">
 
       <main className="flex-1">
-        {/* Connection status bar — below page header */}
-        {(isOffline || showOnlineBanner) && (
-          <div className={`w-full flex items-center justify-center gap-1.5 px-3 py-1 text-xs font-semibold shadow-sm ${
-            isOffline
-              ? "bg-amber-100 text-amber-700 border-b border-amber-300"
-              : "bg-green-100 text-green-700 border-b border-green-300"
-          }`}>
-            <span className={`w-2 h-2 rounded-full ${isOffline ? "bg-amber-500" : "bg-green-500 animate-pulse"}`} />
-            {isOffline
-              ? pendingCount > 0 ? `Offline · ${pendingCount} queued` : "Offline · cached"
-              : "Online"}
-          </div>
-        )}
         {children}
       </main>
 
