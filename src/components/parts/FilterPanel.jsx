@@ -27,7 +27,7 @@ export default function FilterPanel({ options, filters, onSelect, onClose }) {
               {/* All button */}
               <button
                 onClick={() => selected && onSelect(key, selected)}
-                className={`flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors ${
+                className={`flex-shrink-0 px-4 py-2 rounded-lg text-sm font-bold border transition-colors ${
                   !selected
                     ? "bg-[#CC0000] text-white border-[#CC0000]"
                     : "bg-white text-gray-600 border-gray-300"
@@ -39,7 +39,7 @@ export default function FilterPanel({ options, filters, onSelect, onClose }) {
                 <button
                   key={opt}
                   onClick={() => onSelect(key, opt)}
-                  className={`flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold border whitespace-nowrap transition-colors ${
+                  className={`flex-shrink-0 px-4 py-2 rounded-lg text-sm font-semibold border whitespace-nowrap transition-colors ${
                     selected === opt
                       ? "bg-[#CC0000] text-white border-[#CC0000]"
                       : "bg-white text-gray-700 border-gray-300 hover:border-gray-400"
