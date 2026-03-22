@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { X, Loader2 } from "lucide-react";
+import { X, Loader2, CloudOff } from "lucide-react";
 import { toast } from "sonner";
+import { enqueue, ACTION_TYPES } from "../lib/pendingQueue";
 
 const FIELD = (label, key, placeholder, required = false) => ({ label, key, placeholder, required });
 
@@ -33,10 +34,21 @@ export default function PartForm({ onClose, onSuccess }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
-    // Strip empty strings to keep records clean
     const payload = Object.fromEntries(
       Object.entries(formData).filter(([, v]) => v.trim() !== "")
     );
+
+    if (!navigator.onLine) {
+      enqueue({ type: ACTION_TYPES.CREATE_PART, payload });
+      toast.success("Saved offline — will sync when you reconnect.", {
+        icon: <CloudOff className="w-4 h-4" />, duration: 5000,
+      });
+      onSuccess?.();
+      onClose();
+      setSaving(false);
+      return;
+    }
+
     await base44.entities.Part.create(payload);
     toast.success("Part added successfully!");
     onSuccess?.();
