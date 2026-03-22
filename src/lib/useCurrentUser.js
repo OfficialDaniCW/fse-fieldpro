@@ -6,6 +6,10 @@ export function useCurrentUser() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!base44.auth) {
+      setLoading(false);
+      return;
+    }
     base44.auth.me().then((u) => {
       setUser(u);
       setLoading(false);
