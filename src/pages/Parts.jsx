@@ -21,9 +21,9 @@ export default function PartsPage() {
   const { data: parts = [], isLoading, isOfflineData, error } = useOfflineCache('parts', {
     queryKey: ["parts"],
     queryFn: async () => {
-      const result = await base44.entities.Part.list("-updated_date", 5000);
-      console.log("Parts fetched:", result);
-      return result;
+      const result = await base44.entities.Part.list();
+      console.log("Parts fetched:", result?.length || 0, "items");
+      return result || [];
     },
   });
   const cacheMetadata = useCacheMetadata();
