@@ -146,7 +146,14 @@ export default function PartsPage() {
           <div className="text-center text-gray-400 py-16 text-sm">No parts match your search</div>
         ) : viewMode === "cards" ? (
           <div className="px-4 py-3 space-y-3">
-            {paginated.map(part => <PartCard key={part.id} part={part} />)}
+            {paginated.map(part => (
+              <PartCard
+                key={part.id}
+                part={part}
+                manuals={manuals}
+                onOpenManual={(manualId) => navigate(`/Manuals?manual=${manualId}`)}
+              />
+            ))}
           </div>
         ) : (
           <TableView parts={paginated} />
