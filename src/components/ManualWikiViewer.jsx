@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { ArrowLeft, AlertTriangle, AlertCircle, FileText, Loader2, ExternalLink, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { base44 } from "@/api/base44Client";
+import ManualPartsBrowser from "./ManualPartsBrowser";
 
 function parseLine(line, idx) {
   const trimmed = line.trim();
@@ -369,9 +370,10 @@ export default function ManualWikiViewer({ manual, onBack }) {
             )}
           </div>
 
-          {/* Sidebar - TOC */}
-          <div className="md:col-span-1">
+          {/* Sidebar - TOC & Parts */}
+          <div className="md:col-span-1 space-y-4">
             <TableOfContents toc_string={displayManual.table_of_contents} />
+            <ManualPartsBrowser manualId={displayManual.id} />
           </div>
         </div>
       )}
