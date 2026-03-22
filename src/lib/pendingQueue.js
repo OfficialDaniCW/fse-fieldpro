@@ -69,4 +69,6 @@ export function clearQueue() {
 export const ACTION_TYPES = {
   CREATE_MANUAL: 'CREATE_MANUAL',
   CREATE_PART: 'CREATE_PART',
+  UPDATE_MANUAL: 'UPDATE_MANUAL',
+  UPDATE_PART: 'UPDATE_PART',
 };
