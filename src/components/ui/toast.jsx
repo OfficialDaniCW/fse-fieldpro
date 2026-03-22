@@ -4,7 +4,7 @@ import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const ToastProvider = ({ children }) => {
-  return <>{children}</>;
+  return children;
 };
 ToastProvider.displayName = "ToastProvider";
 
