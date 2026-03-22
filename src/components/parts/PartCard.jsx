@@ -380,14 +380,14 @@ export default function PartCard({ part, manuals = [], onOpenManual, allParts = 
                {/* Manufacturer Reference */}
                {part.manufacturer_part_ref ? (
                  <div className="bg-blue-50 border border-blue-200 rounded-lg px-4 py-3">
-                   <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Manufacturer Ref</p>
+                   <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Manufacturer Reference</p>
                    <p className="font-mono text-lg font-semibold text-blue-900 break-all">{part.manufacturer_part_ref}</p>
                    <p className="text-xs text-blue-700 mt-2">Cross-reference with manufacturer catalogues</p>
                  </div>
                ) : (
                  <div className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-3">
-                   <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Manufacturer Ref</p>
-                   <p className="text-sm text-gray-500 italic">Not available</p>
+                   <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Manufacturer Reference</p>
+                   <p className="text-sm text-gray-500">Not recorded</p>
                  </div>
                )}
 
