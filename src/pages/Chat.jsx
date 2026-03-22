@@ -429,7 +429,7 @@ export default function ChatPage() {
       />
 
       {/* Input Area */}
-      <div className="fixed bottom-16 left-0 right-0 bg-white border-t border-gray-200 p-3 z-10">
+      <div className="fixed bottom-16 left-0 right-0 bg-white border-t border-gray-200 p-3 z-30">
         {imageFile && (
           <div className="mb-2 flex items-center gap-2 bg-gray-100 px-3 py-2 rounded-lg border border-gray-200">
             <ImageIcon className="w-4 h-4 text-[#CC0000]" />
