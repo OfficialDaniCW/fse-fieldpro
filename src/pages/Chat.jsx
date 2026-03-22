@@ -472,7 +472,7 @@ ENGINEER'S QUESTION: ${userText}`,
 
   return (
     <div className="flex flex-col h-screen bg-gray-50">
-      <PageHeader title="FSE FieldPro" subtitle="Technical support & diagnostics">
+      <PageHeader title="Assistant" subtitle="Technical support & diagnostics">
         <Link to="/Manuals">
           <Button variant="ghost" size="sm" className="text-white hover:text-white hover:bg-red-700">
             <BookOpen className="w-4 h-4 mr-1.5" />
