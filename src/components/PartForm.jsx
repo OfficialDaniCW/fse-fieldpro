@@ -130,6 +130,25 @@ export default function PartForm({ onClose, onSuccess }) {
             />
           </div>
 
+          <div>
+            <Label>Part Image</Label>
+            <div className="mt-1 flex items-center gap-2">
+              {formData.image_url && (
+                <div className="flex-shrink-0">
+                  <img src={formData.image_url} alt="Part" className="h-12 w-12 rounded object-cover border" />
+                </div>
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                disabled={uploading}
+                className="flex-1 text-sm"
+              />
+              {uploading && <Loader2 className="w-4 h-4 animate-spin text-gray-500" />}
+            </div>
+          </div>
+
           <div className="flex gap-3 pt-2 border-t">
             <Button type="button" variant="outline" onClick={onClose} disabled={saving} className="flex-1">
               Cancel
