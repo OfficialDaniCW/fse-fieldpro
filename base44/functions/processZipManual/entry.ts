@@ -5,6 +5,8 @@ Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me();
+    
+    console.log('[ZIP] Processing started by user:', user?.email);
 
     if (!user || user.role !== 'admin') {
       return Response.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
@@ -14,11 +16,20 @@ Deno.serve(async (req) => {
     const zipFile = formData.get('file');
 
     if (!zipFile) {
+      console.error('[ZIP] No file provided in formData');
       return Response.json({ error: 'No file provided' }, { status: 400 });
     }
+    
+    console.log('[ZIP] File received:', {
+      name: zipFile.name,
+      size: zipFile.size,
+      type: zipFile.type
+    });
 
     const zip = new JSZip();
+    console.log('[ZIP] Loading ZIP file...');
     await zip.loadAsync(zipFile);
+    console.log('[ZIP] ZIP loaded successfully, files:', Object.keys(zip.files).length);
 
     // Find and parse manual_data.json
     let jsonData = null;
@@ -26,23 +37,37 @@ Deno.serve(async (req) => {
       if (filename === 'manual_data.json' || filename.endsWith('/manual_data.json')) {
         const content = await file.async('text');
         jsonData = JSON.parse(content);
+        console.log('[ZIP] Parsed manual_data.json:', {
+          title: jsonData.title,
+          manufacturer: jsonData.manufacturer,
+          chapters: jsonData.chapters?.length || 0
+        });
         break;
       }
     }
 
     if (!jsonData) {
+      console.error('[ZIP] No manual_data.json found in ZIP');
       return Response.json({ error: 'No manual_data.json found in zip' }, { status: 400 });
     }
 
     // Extract and upload images from images/ folder
     const pageImages = [];
-    for (const [filename, file] of Object.entries(zip.files)) {
-      if (filename.startsWith('images/') && filename.match(/\.(png|jpg|jpeg)$/i)) {
+    const imageFiles = Object.entries(zip.files).filter(
+      ([filename]) => filename.startsWith('images/') && filename.match(/\.(png|jpg|jpeg)$/i)
+    );
+    console.log('[ZIP] Found images to upload:', imageFiles.length);
+    
+    for (const [filename, file] of imageFiles) {
+      try {
         const blob = await file.async('blob');
+        console.log('[ZIP] Uploading image:', filename, `(${blob.size} bytes)`);
 
         const uploadRes = await base44.integrations.Core.UploadFile({
           file: blob
         });
+        
+        console.log('[ZIP] Image uploaded successfully:', uploadRes.file_url);
 
         const cleanFilename = filename.split('/').pop();
         const match = cleanFilename.match(/p(\d+)_img(\d+)/i);
@@ -55,20 +80,29 @@ Deno.serve(async (req) => {
           width_px: null,
           height_px: null
         });
+      } catch (imgErr) {
+        console.error('[ZIP] Failed to upload image:', filename, imgErr);
       }
     }
+    console.log('[ZIP] Finished uploading images. Total uploaded:', pageImages.length);
 
     // Extract and upload PDF from source_pdf/ folder
     let pdfUrl = null;
     for (const [filename, file] of Object.entries(zip.files)) {
       if (filename.startsWith('source_pdf/') && filename.endsWith('.pdf')) {
-        const blob = await file.async('blob');
+        try {
+          const blob = await file.async('blob');
+          console.log('[ZIP] Uploading PDF:', filename, `(${blob.size} bytes)`);
 
-        const uploadRes = await base44.integrations.Core.UploadFile({
-          file: blob
-        });
-        pdfUrl = uploadRes.file_url;
-        break;
+          const uploadRes = await base44.integrations.Core.UploadFile({
+            file: blob
+          });
+          pdfUrl = uploadRes.file_url;
+          console.log('[ZIP] PDF uploaded successfully:', pdfUrl);
+          break;
+        } catch (pdfErr) {
+          console.error('[ZIP] Failed to upload PDF:', filename, pdfErr);
+        }
       }
     }
 
@@ -106,7 +140,12 @@ Deno.serve(async (req) => {
     };
 
     // Create manual record
+    console.log('[ZIP] Creating manual record in database...');
     const createdManual = await base44.entities.Manual.create(manualRecord);
+    console.log('[ZIP] Manual created successfully:', {
+      id: createdManual.id,
+      title: createdManual.title
+    });
 
     return Response.json({
       success: true,

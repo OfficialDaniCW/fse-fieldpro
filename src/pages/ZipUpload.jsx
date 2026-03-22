@@ -3,25 +3,50 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Upload, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
+import { logger } from '@/lib/logger';
 
 async function uploadZipFile(file) {
+  logger.logUserAction('ZIP_UPLOAD_STARTED', {
+    fileName: file.name,
+    fileSize: file.size,
+    fileType: file.type
+  });
+
   const formData = new FormData();
   formData.append('file', file, file.name);
   
+  const startTime = performance.now();
   const response = await fetch('/api/functions/processZipManual', {
     method: 'POST',
     body: formData
   });
+  const responseTime = performance.now() - startTime;
+
+  logger.logApiCall('POST', '/api/functions/processZipManual', response.status, responseTime, {
+    fileName: file.name
+  });
 
   if (!response.ok) {
     const error = await response.json();
+    logger.error('ZIP_UPLOAD', new Error(error.error || 'Upload failed'), {
+      status: response.status,
+      fileName: file.name
+    });
     throw new Error(error.error || 'Upload failed');
   }
 
   const data = await response.json();
   if (!data.success) {
+    logger.error('ZIP_UPLOAD', new Error(data.error || 'Upload failed'), {
+      fileName: file.name
+    });
     throw new Error(data.error || 'Upload failed');
   }
+
+  logger.info('ZIP_UPLOAD', 'Upload completed successfully', {
+    manualId: data.manual_id,
+    imagesUploaded: data.images_uploaded
+  });
 
   return data;
 }
@@ -44,6 +69,7 @@ export default function ZipUpload() {
 
   const processZip = async (file) => {
     if (!file.name.endsWith('.zip')) {
+      logger.warn('ZIP_UPLOAD', 'Invalid file type', { fileName: file.name });
       setError('Please upload a .zip file');
       return;
     }
@@ -68,7 +94,7 @@ export default function ZipUpload() {
           await base44.functions.invoke('linkPartsToManuals', { manual_id: response.manual.id });
           setProgress({ stage: 'Complete!', percent: 100 });
         } catch (linkErr) {
-          console.warn('Part linking failed:', linkErr);
+          logger.warn('ZIP_UPLOAD', 'Part linking failed', { error: linkErr.message });
         }
         
         setResult(response);
@@ -76,6 +102,7 @@ export default function ZipUpload() {
         setError(response.error || 'Upload failed');
       }
     } catch (err) {
+      logger.logError('ZIP_UPLOAD', err, { fileName: file.name });
       setError(err.message || 'Error processing zip file');
     } finally {
       setIsLoading(false);
