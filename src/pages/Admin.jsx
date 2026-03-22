@@ -12,9 +12,12 @@ import PartForm from "../components/PartForm";
 import PartEditModal from "../components/parts/PartEditModal";
 import ActivityLogViewer from "../components/admin/ActivityLogViewer";
 import TSGPartsVerifier from "../components/admin/TSGPartsVerifier";
+import AutomationRetry from "../components/admin/AutomationRetry";
 import { useCurrentUser } from "../lib/useCurrentUser";
 import { toast } from "sonner";
 import { Toaster } from "sonner";
+import { AlertTriangle } from "lucide-react";
+import { list_automations } from "@/lib/base44-helpers";
 
 export default function AdminPage() {
   const { isAdmin, loading } = useCurrentUser();
@@ -24,6 +27,7 @@ export default function AdminPage() {
   const [showManualForm, setShowManualForm] = useState(false);
   const [showPartForm, setShowPartForm] = useState(false);
   const [editingPart, setEditingPart] = useState(null);
+  const [automations, setAutomations] = useState([]);
 
   const { data: parts = [] } = useQuery({
     queryKey: ["parts"],
@@ -33,6 +37,18 @@ export default function AdminPage() {
   const { data: manuals = [] } = useQuery({
     queryKey: ["manuals"],
     queryFn: () => base44.entities.Manual.list("-created_date"),
+  });
+
+  // Load automations
+  useQuery({
+    queryKey: ["automations"],
+    queryFn: async () => {
+      const response = await fetch("/api/automations");
+      const data = await response.json();
+      setAutomations(data || []);
+      return data;
+    },
+    staleTime: 30000,
   });
 
   if (loading) return <div className="flex items-center justify-center h-screen"><div className="w-8 h-8 border-4 border-slate-200 border-t-[#CC0000] rounded-full animate-spin" /></div>;
@@ -126,6 +142,15 @@ export default function AdminPage() {
             → WhatsApp Link for Manual Guide
           </a>
         </div>
+
+        {/* Automation Status Monitor */}
+        {automations.length > 0 && (
+          <div className="mb-4 space-y-2">
+            {automations.filter(a => a.failed_runs > 0 || a.consecutive_failures > 0).map(automation => (
+              <AutomationRetry key={automation.id} automation={automation} />
+            ))}
+          </div>
+        )}
 
         {/* Quick links */}
         <div className="flex gap-2 mb-4">
