@@ -23,7 +23,7 @@ export default function PartsUsedTray({ parts, onRemove, onClear }) {
   };
 
   return (
-    <div className="fixed bottom-16 left-0 right-0 z-20 border-t border-gray-200 bg-white shadow-lg">
+    <div className="fixed bottom-28 left-0 right-0 z-20 border-t border-gray-200 bg-white shadow-lg">
       {/* Header bar — always visible */}
       <button
         onClick={() => setOpen(o => !o)}
