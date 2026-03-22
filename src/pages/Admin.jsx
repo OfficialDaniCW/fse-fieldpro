@@ -4,10 +4,12 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, Plus, Trash2, FileText, Package, Shield } from "lucide-react";
+import { Search, Plus, Trash2, FileText, Package, Shield, Pencil, Upload } from "lucide-react";
+import { Link } from "react-router-dom";
 import PageHeader from "../components/PageHeader";
 import ManualForm from "../components/ManualForm";
 import PartForm from "../components/PartForm";
+import PartEditModal from "../components/parts/PartEditModal";
 import { useCurrentUser } from "../lib/useCurrentUser";
 import { toast } from "sonner";
 import { Toaster } from "sonner";
@@ -19,6 +21,7 @@ export default function AdminPage() {
   const [searchManuals, setSearchManuals] = useState("");
   const [showManualForm, setShowManualForm] = useState(false);
   const [showPartForm, setShowPartForm] = useState(false);
+  const [editingPart, setEditingPart] = useState(null);
 
   const { data: parts = [] } = useQuery({
     queryKey: ["parts"],
@@ -133,6 +136,11 @@ export default function AdminPage() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <Input placeholder="Search parts..." value={searchParts} onChange={e => setSearchParts(e.target.value)} className="pl-9" />
               </div>
+              <Link to="/ImportParts">
+                <Button variant="outline" className="shrink-0">
+                  <Upload className="w-4 h-4 mr-1" /> Import CSV
+                </Button>
+              </Link>
               <Button onClick={() => setShowPartForm(true)} className="bg-[#CC0000] hover:bg-[#aa0000] shrink-0">
                 <Plus className="w-4 h-4 mr-1" /> Add
               </Button>
@@ -148,6 +156,9 @@ export default function AdminPage() {
                       <p className="text-xs text-gray-400">{p.brand}{p.pump_model ? ` · ${p.pump_model}` : ""}</p>
                     )}
                   </div>
+                  <Button variant="ghost" size="sm" onClick={() => setEditingPart(p)} className="text-gray-400 h-8 w-8 p-0 hover:text-gray-700 shrink-0">
+                    <Pencil className="w-4 h-4" />
+                  </Button>
                   <Button variant="ghost" size="sm" onClick={() => deletePart(p.id)} className="text-red-400 h-8 w-8 p-0 hover:text-red-600 shrink-0">
                     <Trash2 className="w-4 h-4" />
                   </Button>
@@ -169,6 +180,13 @@ export default function AdminPage() {
         <PartForm
           onClose={() => setShowPartForm(false)}
           onSuccess={() => queryClient.invalidateQueries({ queryKey: ["parts"] })}
+        />
+      )}
+      {editingPart && (
+        <PartEditModal
+          part={editingPart}
+          onClose={() => setEditingPart(null)}
+          onSuccess={() => { queryClient.invalidateQueries({ queryKey: ["parts"] }); setEditingPart(null); }}
         />
       )}
       <Toaster position="top-center" />
