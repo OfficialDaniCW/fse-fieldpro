@@ -57,28 +57,35 @@ export default function PartsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-24">
-      <PageHeader title="FSE FieldPro" subtitle="Parts Finder">
-        <div className="bg-white/20 rounded-full px-3 py-1 flex items-center gap-1.5">
-          <div className="w-2 h-2 rounded-full bg-white"></div>
-          <span className="text-white text-xs font-bold">{parts.length.toLocaleString()} parts</span>
+      <div className="bg-[#CC0000] shadow-md px-4 pt-10 pb-4 flex-shrink-0">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-white flex items-center justify-center flex-shrink-0">
+              <span className="text-xs font-bold text-[#CC0000]">FSE</span>
+            </div>
+            <div>
+              <h1 className="text-base font-semibold text-white leading-tight">FSE FieldPro</h1>
+              <p className="text-xs text-red-200 font-normal opacity-90">Parts Finder</p>
+            </div>
+          </div>
+          <div className="bg-white/20 rounded-full px-3 py-1 flex items-center gap-1.5">
+            <div className="w-2 h-2 rounded-full bg-white"></div>
+            <span className="text-white text-xs font-bold">{parts.length.toLocaleString()} parts</span>
+          </div>
         </div>
-      </PageHeader>
-
-      {/* Search bar */}
-      <div className="bg-[#CC0000] px-4 pb-4">
         <div className="relative flex gap-2">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
             <input
-              placeholder="Search e.g. Gilbarco VR hose"
+              placeholder="Search part number, description, brand..."
               value={searchTerm}
               onChange={handleSearch}
-              className="w-full pl-9 pr-4 h-11 text-sm bg-white rounded-lg border-0 outline-none text-gray-900 placeholder:text-gray-400"
+              className="w-full pl-9 pr-4 h-12 text-sm bg-white rounded-xl border-0 outline-none text-gray-900 placeholder:text-gray-400"
             />
           </div>
           <button
             onClick={() => setShowFilter(v => !v)}
-            className={`flex items-center gap-2 px-4 h-11 rounded-lg font-semibold text-sm flex-shrink-0 ${
+            className={`flex items-center gap-2 px-4 h-12 rounded-xl font-semibold text-sm flex-shrink-0 transition-colors ${
               showFilter || activeFilterCount > 0
                 ? "bg-white text-[#CC0000]"
                 : "bg-[#aa0000] text-white"
