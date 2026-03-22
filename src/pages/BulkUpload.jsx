@@ -7,6 +7,7 @@ import { Shield, UploadCloud, X, CheckCircle2, AlertCircle, Loader2, FolderOpen,
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Toaster } from "sonner";
+import ExtractionMonitor from "@/components/ExtractionMonitor";
 
 const STATUS = { PENDING: "pending", UPLOADING: "uploading", PROCESSING: "processing", DONE: "done", ERROR: "error" };
 
