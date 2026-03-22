@@ -14,10 +14,16 @@ export default function PartsPage() {
   const [page, setPage] = useState(1);
   const [showFilter, setShowFilter] = useState(false);
   const [viewMode, setViewMode] = useState("cards"); // "cards" | "table"
+  const navigate = useNavigate();
 
   const { data: parts = [], isLoading } = useQuery({
     queryKey: ["parts"],
     queryFn: () => base44.entities.Part.list("-created_date", 2000),
+  });
+
+  const { data: manuals = [] } = useQuery({
+    queryKey: ["manuals"],
+    queryFn: () => base44.entities.Manual.list(),
   });
 
   const options = useMemo(() => ({
