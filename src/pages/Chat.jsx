@@ -10,6 +10,8 @@ import PageHeader from "../components/PageHeader";
 import PartsUsedTray from "../components/PartsUsedTray";
 
 const CONV_STORAGE_KEY = "fse_last_conversation_id";
+const RECENT_SEARCHES_KEY = "fse_recent_searches";
+const MAX_RECENT = 5;
 
 export default function ChatPage() {
   const queryClient = useQueryClient();
@@ -21,6 +23,7 @@ export default function ChatPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [partsUsed, setPartsUsed] = useState([]);
   const [showHistoryBanner, setShowHistoryBanner] = useState(false);
+  const [recentSearches, setRecentSearches] = useState([]);
   const messagesEndRef = useRef(null);
   const recognitionRef = useRef(null);
 
@@ -31,6 +34,13 @@ export default function ChatPage() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  useEffect(() => {
+    const saved = localStorage.getItem(RECENT_SEARCHES_KEY);
+    if (saved) {
+      setRecentSearches(JSON.parse(saved));
+    }
+  }, []);
 
   const startNewConversation = async () => {
     try {
@@ -353,6 +363,13 @@ ${candidates.map(c => `ID:${c.idx} | ${c.manufacturer} ${c.model} ${c.version} |
     base44.entities.SearchLog.create({ query, result_type, result_count }).catch(() => {});
   };
 
+  const addToRecentSearches = (query) => {
+    if (!query.trim()) return;
+    const updated = [query, ...recentSearches.filter(s => s !== query)].slice(0, MAX_RECENT);
+    setRecentSearches(updated);
+    localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(updated));
+  };
+
   // --- Send handler ---
   const handleSend = async () => {
     if (!input.trim() && !imageFile) return;
@@ -362,6 +379,7 @@ ${candidates.map(c => `ID:${c.idx} | ${c.manufacturer} ${c.model} ${c.version} |
     setInput("");
     setImageFile(null);
     setIsProcessing(true);
+    if (userText) addToRecentSearches(userText);
 
     const conversation = await base44.agents.getConversation(conversationId);
 
@@ -479,6 +497,22 @@ ENGINEER'S QUESTION: ${userText}`,
             </div>
             
             <div className="space-y-2">
+              {recentSearches.length > 0 && (
+                <div className="bg-white border border-gray-200 rounded-lg p-3 shadow-sm">
+                  <p className="text-xs font-mono text-gray-400 mb-2">RECENT SEARCHES:</p>
+                  <div className="space-y-1.5">
+                    {recentSearches.map((search, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => { setInput(search); }}
+                        className="block text-sm text-blue-600 hover:underline text-left w-full"
+                      >
+                        "{search}"
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
               <div className="bg-white border border-gray-200 rounded-lg p-3 shadow-sm">
                 <p className="text-xs font-mono text-gray-400 mb-2">EXAMPLE QUERIES:</p>
                 <div className="space-y-1.5">
