@@ -108,8 +108,8 @@ export default function PartsPage() {
               <span className="text-xs font-bold text-[#CC0000]">FSE</span>
             </div>
             <div>
-              <h1 className="text-base font-semibold text-white leading-tight">FSE FieldPro</h1>
-              <p className="text-xs text-red-200 font-normal opacity-90">Parts Finder</p>
+              <h1 className="text-base font-semibold text-white leading-tight">Parts</h1>
+              <p className="text-xs text-red-200 font-normal opacity-90">Part Finder</p>
             </div>
           </div>
           <div className="bg-white/20 rounded-full px-3 py-1 flex items-center gap-1.5">
