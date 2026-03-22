@@ -1,5 +1,5 @@
 import { useEffect, useCallback, useRef } from 'react';
-import { getQueue, dequeue, markFailed } from './pendingQueue';
+import { getQueue, dequeue, markFailed, markConflict, resolveConflict } from './pendingQueue';
 import { base44 } from '@/api/base44Client';
 import { ACTION_TYPES } from './pendingQueue';
 import { toast } from 'sonner';
@@ -55,6 +55,15 @@ export default function useSyncManager({ onSynced } = {}) {
 
     for (const action of queue) {
       try {
+        // Check for conflicts before replaying UPDATE actions
+        if (action.type.startsWith('UPDATE_')) {
+          const { hasConflict, serverData } = await checkForConflict(action);
+          if (hasConflict) {
+            markConflict(action.id, action.payload.data, serverData);
+            continue; // Skip this action, let user resolve
+          }
+        }
+        
         await replayAction(action);
         dequeue(action.id);
         successCount++;
