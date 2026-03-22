@@ -18,19 +18,20 @@ Deno.serve(async (req) => {
     // Get all parts
     const allParts = await base44.asServiceRole.entities.Part.list();
 
-    // Parse extracted parts from manual_text (basic parsing - assumes parts mention their names)
-    const extractedPartNames = extractPartNamesFromManual(manual.manual_text || '');
-
     let updatedCount = 0;
+    const manualModel = (manual.model || '').toLowerCase().trim();
 
-    // Match parts by description/name (NEVER by part_number)
+    // BUG FIX 5: Match parts by model using case-insensitive partial matching
+    // If manual extracted "SK700-2" and part has "Gilbarco SK700-2 (MK2)", it should match
     for (const part of allParts) {
-      const matchedNames = extractedPartNames.filter(name =>
-        part.description.toLowerCase().includes(name.toLowerCase()) ||
-        name.toLowerCase().includes(part.description.toLowerCase())
+      const partModel = (part.pump_model || '').toLowerCase().trim();
+      
+      // Case-insensitive partial match: either string contains the other
+      const modelMatches = manualModel && partModel && (
+        partModel.includes(manualModel) || manualModel.includes(partModel)
       );
 
-      if (matchedNames.length > 0) {
+      if (modelMatches) {
         // Create manual link entry
         const newLink = {
           manual_id: manual.id,
