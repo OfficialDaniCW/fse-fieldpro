@@ -33,7 +33,6 @@ export default function Layout({ children, currentPageName }) {
     };
   }, []);
 
-  // Sync manager — fires when device reconnects
   useSyncManager({
     onSynced: () => {
       setPendingCount(getQueue().length);
@@ -46,9 +45,7 @@ export default function Layout({ children, currentPageName }) {
     { name: "Parts", label: "Parts", icon: Search, to: "/Parts" },
     { name: "Favorites", label: "Favourites", icon: Star, to: "/Favorites" },
     { name: "Manuals", label: "Manuals", icon: BookOpen, to: "/Manuals" },
-    ...(isAdmin ? [
-      { name: "Admin", label: "Admin", icon: Shield, to: "/Admin" },
-    ] : []),
+    ...(isAdmin ? [{ name: "Admin", label: "Admin", icon: Shield, to: "/Admin" }] : []),
     ...(isManager && !isAdmin ? [{ name: "Stats", label: "Stats", icon: BarChart2, to: "/Stats" }] : []),
     { name: "Profile", label: "Profile", icon: User, to: "/Profile" },
   ];
@@ -68,37 +65,33 @@ export default function Layout({ children, currentPageName }) {
 
   return (
     <ConnectionBannerContext.Provider value={bannerNode}>
-    <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col">
+        <main className="flex-1">
+          {children}
+        </main>
 
-      <main className="flex-1">
-        {children}
-      </main>
-
-
-
-      {/* Bottom Navigation */}
-      <nav className="bg-white border-t border-gray-200 fixed bottom-0 left-0 right-0 z-50">
-        <div className="max-w-4xl mx-auto flex">
-          {tabs.map(({ name, label, icon: Icon, to }) => {
-            const isActive = currentPageName === name;
-            return (
-              <Link
-                key={name}
-                to={to}
-                className={`flex-1 flex flex-col items-center justify-center py-3 transition-colors ${
-                  isActive
-                    ? "text-[#CC0000] border-t-2 border-[#CC0000]"
-                    : "text-gray-400 hover:text-gray-500 border-t-2 border-transparent"
-                }`}
-              >
-                <Icon className="w-5 h-5 mb-0.5" />
-                <span className="text-xs font-medium">{label}</span>
-              </Link>
-            );
-          })}
-        </div>
-      </nav>
-    </div>
+        <nav className="bg-white border-t border-gray-200 fixed bottom-0 left-0 right-0 z-50">
+          <div className="max-w-4xl mx-auto flex">
+            {tabs.map(({ name, label, icon: Icon, to }) => {
+              const isActive = currentPageName === name;
+              return (
+                <Link
+                  key={name}
+                  to={to}
+                  className={`flex-1 flex flex-col items-center justify-center py-3 transition-colors ${
+                    isActive
+                      ? "text-[#CC0000] border-t-2 border-[#CC0000]"
+                      : "text-gray-400 hover:text-gray-500 border-t-2 border-transparent"
+                  }`}
+                >
+                  <Icon className="w-5 h-5 mb-0.5" />
+                  <span className="text-xs font-medium">{label}</span>
+                </Link>
+              );
+            })}
+          </div>
+        </nav>
+      </div>
     </ConnectionBannerContext.Provider>
   );
 }
