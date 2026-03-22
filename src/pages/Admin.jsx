@@ -12,7 +12,6 @@ import PartForm from "../components/PartForm";
 import PartEditModal from "../components/parts/PartEditModal";
 import ActivityLogViewer from "../components/admin/ActivityLogViewer";
 import TSGPartsVerifier from "../components/admin/TSGPartsVerifier";
-import AutomationRetry from "../components/admin/AutomationRetry";
 import { useCurrentUser } from "../lib/useCurrentUser";
 import { toast } from "sonner";
 import { Toaster } from "sonner";
