@@ -105,11 +105,11 @@ export default function Manuals() {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-lg bg-white flex items-center justify-center flex-shrink-0">
-              <BookOpen className="w-5 h-5 text-[#CC0000]" />
+              <span className="text-xs font-bold text-[#CC0000]">FSE</span>
             </div>
             <div>
-              <h1 className="text-base font-semibold text-white leading-tight">Manuals Library</h1>
-              <p className="text-xs text-red-200 font-normal">{(manuals || []).length} manuals</p>
+              <h1 className="text-base font-semibold text-white leading-tight">Manuals</h1>
+              <p className="text-xs text-red-200 font-normal opacity-90">{(manuals || []).length} manuals</p>
             </div>
           </div>
           {isAdmin && (
