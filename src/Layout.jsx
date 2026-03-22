@@ -17,6 +17,13 @@ export default function Layout({ children, currentPageName }) {
   const isAdmin = user?.role === "admin";
   const isManager = user?.role === "manager";
 
+  useSyncManager({
+    onSynced: () => {
+      setPendingCount(getQueue().length);
+      queryClient.invalidateQueries({ queryKey: ["manuals"] });
+    },
+  });
+
   useEffect(() => {
     const goOffline = () => {
       setIsOffline(true);
@@ -35,13 +42,6 @@ export default function Layout({ children, currentPageName }) {
       window.removeEventListener("online", goOnline);
     };
   }, []);
-
-  useSyncManager({
-    onSynced: () => {
-      setPendingCount(getQueue().length);
-      queryClient.invalidateQueries({ queryKey: ["manuals"] });
-    },
-  });
 
   const tabs = [
     { name: "Chat", label: "Assistant", icon: MessageSquare, to: "/" },
