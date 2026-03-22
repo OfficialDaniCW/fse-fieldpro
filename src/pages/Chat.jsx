@@ -481,7 +481,7 @@ ENGINEER'S QUESTION: ${userText}`,
               <span className="w-2 h-2 bg-gray-300 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
               <span className="w-2 h-2 bg-gray-300 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
             </div>
-            <span className="text-xs">Searching database...</span>
+            <span className="text-xs">Searching database & manuals...</span>
           </div>
         )}
         <div ref={messagesEndRef} />
