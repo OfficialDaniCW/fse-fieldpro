@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { WifiOff, CheckCircle2, AlertCircle, Clock, Trash2, RefreshCw, Star, Info } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
-import { getQueue, removeFromQueue, retryAction, resolveConflict } from "@/lib/pendingQueue";
+import { getQueue, dequeue, markFailed, resolveConflict } from "@/lib/pendingQueue";
 import { getFavorites } from "@/lib/favorites";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
@@ -51,12 +51,17 @@ export default function OfflineModePage() {
   };
 
   const handleRemove = (id) => {
-    removeFromQueue(id);
+    dequeue(id);
     setQueue(getQueue());
   };
 
   const handleRetry = (id) => {
-    retryAction(id);
+    // Reset retry count to allow retry
+    const queue = getQueue().map(a => 
+      a.id === id ? { ...a, retries: 0, lastError: null } : a
+    );
+    const { saveQueue } = require("@/lib/pendingQueue");
+    saveQueue(queue);
     setQueue(getQueue());
   };
 
