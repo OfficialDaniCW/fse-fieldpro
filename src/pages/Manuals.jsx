@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { BookOpen, Search, Plus, List, FolderOpen, Eye, FileText } from "lucide-react";
+import { BookOpen, Search, Plus, List, FolderOpen, Eye, FileText, WifiOff } from "lucide-react";
 import ManualWikiViewer from "@/components/ManualWikiViewer";
 import ManualForm from "@/components/ManualForm";
 import { useCurrentUser } from "@/lib/useCurrentUser";
 import { Button } from "@/components/ui/button";
+import { useOfflineCache, useCacheMetadata } from "@/hooks/useOfflineCache";
 
 export default function Manuals() {
   const [search, setSearch] = useState("");
@@ -16,7 +17,7 @@ export default function Manuals() {
   const queryClient = useQueryClient();
   const { isAdmin } = useCurrentUser();
 
-  const { data: manuals = [] } = useQuery({
+  const { data: manuals = [], isOfflineData } = useOfflineCache('manuals', {
     queryKey: ["manuals"],
     queryFn: () => base44.entities.Manual.list(),
   });
@@ -25,6 +26,11 @@ export default function Manuals() {
     queryKey: ["folders"],
     queryFn: () => base44.entities.ManualFolder.list(),
   });
+
+  const cacheMetadata = useCacheMetadata();
+  const cacheAge = cacheMetadata?.manuals_cached_at 
+    ? Math.round((Date.now() - cacheMetadata.manuals_cached_at) / 1000 / 60) 
+    : null;
 
   // Auto-open a manual if ?manual=<id> is in the URL
   useEffect(() => {
