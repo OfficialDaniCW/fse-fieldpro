@@ -125,8 +125,8 @@ export default function Manuals() {
           </div>
           {isAdmin && (
             <div className="flex gap-2">
-              <Link to="/ZipUpload">
-                <button className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 active:bg-white/40 transition-colors" title="Upload ZIP">
+              <Link to="/ManualUpload">
+                <button className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 active:bg-white/40 transition-colors" title="Upload Manual">
                   <Upload className="w-5 h-5 text-white" />
                 </button>
               </Link>
