@@ -82,6 +82,22 @@ export default function ZipUpload() {
       <h1 className="text-3xl font-bold mb-2">Import Manual from ZIP</h1>
       <p className="text-gray-600 mb-6">Upload a ZIP file containing JSON metadata and PNG images</p>
 
+      {/* Progress Panel */}
+      {isLoading && (
+        <Card className="p-4 mb-6 bg-blue-50 border border-blue-200">
+          <div className="space-y-3">
+            <p className="text-sm font-semibold text-blue-900">{progress.stage}</p>
+            <div className="w-full bg-blue-200 rounded-full h-2">
+              <div
+                className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                style={{ width: `${progress.percent}%` }}
+              />
+            </div>
+            <p className="text-xs text-blue-700">{progress.percent}% complete</p>
+          </div>
+        </Card>
+      )}
+
       {/* Upload Zone */}
       <Card
         className={`p-8 mb-6 border-2 border-dashed cursor-pointer transition-all ${
