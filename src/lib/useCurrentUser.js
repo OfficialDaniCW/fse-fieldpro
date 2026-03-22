@@ -14,8 +14,9 @@ export function useCurrentUser() {
 
   const isAdmin = user?.role === "admin";
   const isManager = user?.role === "manager";
-  const isFSE = user?.role === "fse" || (!user?.role && !isAdmin && !isManager);
-  const canEdit = isAdmin;
+  // Treat unset role as FSE (most restrictive default)
+  const isFSE = !isAdmin && !isManager;
+  const canEdit = isAdmin || isManager;
 
   return { user, loading, isAdmin, isManager, isFSE, canEdit };
 }
