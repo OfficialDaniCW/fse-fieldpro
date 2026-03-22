@@ -198,8 +198,8 @@ export default function Manuals() {
                   <h2 className="text-sm font-semibold text-gray-600 mb-2">Folders</h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {getCurrentFolderContents().map(folder => {
-                       const manualCount = (manuals || []).filter(m => m.folder_id === folder.id).length;
-                      return (
+                             const manualCount = (filtered || []).filter(m => m.folder_id === folder.id).length;
+                            return (
                         <button
                           key={folder.id}
                           onClick={() => handleFolderClick(folder.id)}
