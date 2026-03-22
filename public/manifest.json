@@ -1,0 +1,50 @@
+{
+  "name": "FSE FieldPro - Field Service Assistant",
+  "short_name": "FieldPro",
+  "description": "Technical assistant for field service engineers - parts, manuals, and troubleshooting",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#ffffff",
+  "theme_color": "#CC0000",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23CC0000' width='192' height='192'/><text x='50%' y='50%' font-size='80' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='middle'>FSE</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 540 720'><rect fill='%23f3f4f6' width='540' height='720'/><text x='50%' y='50%' font-size='48' font-weight='bold' fill='%23333' text-anchor='middle' dominant-baseline='middle'>FieldPro</text></svg>",
+      "sizes": "540x720",
+      "form_factor": "narrow"
+    }
+  ],
+  "categories": ["productivity", "utilities"],
+  "shortcuts": [
+    {
+      "name": "Search Parts",
+      "short_name": "Parts",
+      "description": "Quick access to parts finder",
+      "url": "/Parts",
+      "icons": []
+    },
+    {
+      "name": "View Manuals",
+      "short_name": "Manuals",
+      "description": "Equipment manuals and documentation",
+      "url": "/Manuals",
+      "icons": []
+    },
+    {
+      "name": "Chat Assistant",
+      "short_name": "Chat",
+      "description": "AI troubleshooting assistant",
+      "url": "/",
+      "icons": []
+    }
+  ]
+}
