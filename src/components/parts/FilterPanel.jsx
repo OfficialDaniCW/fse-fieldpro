@@ -41,32 +41,34 @@ function FilterSection({ filterKey, label, hint, icon: Icon, options, selected, 
         </div>
       </button>
 
-      {/* Chips */}
+      {/* Chips — horizontal scroll */}
       {open && (
-        <div className="px-4 pb-3 flex gap-2 flex-wrap">
-          <button
-            onClick={() => selected && onSelect(filterKey, selected)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors ${
-              !selected
-                ? "bg-[#CC0000] text-white border-[#CC0000]"
-                : "bg-white text-gray-500 border-gray-300 hover:border-gray-400"
-            }`}
-          >
-            All
-          </button>
-          {options.map(opt => (
+        <div className="px-4 pb-3 overflow-x-auto">
+          <div className="flex gap-2 pb-2">
             <button
-              key={opt}
-              onClick={() => onSelect(filterKey, opt)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold border whitespace-nowrap transition-colors ${
-                selected === opt
+              onClick={() => selected && onSelect(filterKey, selected)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors flex-shrink-0 ${
+                !selected
                   ? "bg-[#CC0000] text-white border-[#CC0000]"
-                  : "bg-white text-gray-700 border-gray-300 hover:border-gray-400"
+                  : "bg-white text-gray-500 border-gray-300 hover:border-gray-400"
               }`}
             >
-              {opt}
+              All
             </button>
-          ))}
+            {options.map(opt => (
+              <button
+                key={opt}
+                onClick={() => onSelect(filterKey, opt)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold border whitespace-nowrap transition-colors flex-shrink-0 ${
+                  selected === opt
+                    ? "bg-[#CC0000] text-white border-[#CC0000]"
+                    : "bg-white text-gray-700 border-gray-300 hover:border-gray-400"
+                }`}
+              >
+                {opt}
+              </button>
+            ))}
+          </div>
         </div>
       )}
     </div>
