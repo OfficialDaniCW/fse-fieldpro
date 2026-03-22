@@ -1,0 +1,116 @@
+import React, { useState } from "react";
+import { base44 } from "@/api/base44Client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { X, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+
+const FIELD = (label, key, placeholder, required = false) => ({ label, key, placeholder, required });
+
+const TEXT_FIELDS = [
+  FIELD("Part Number *", "part_number", "e.g. 140852556 or SK700-A", true),
+  FIELD("Description *", "description", "e.g. Vapour Recovery Hose Assembly", true),
+  FIELD("Brand / Manufacturer", "brand", "e.g. Gilbarco"),
+  FIELD("Compatible Pump Model", "pump_model", "e.g. Encore 700S"),
+  FIELD("System Area", "system_area", "e.g. Hydraulic, Electrical, Mechanical"),
+  FIELD("Component Type", "component_type", "e.g. Hose, Seal, Valve, PCB"),
+  FIELD("Variant / Spec", "variant_spec", "e.g. 4m length, 3/4\" BSP"),
+];
+
+export default function PartForm({ onClose, onSuccess }) {
+  const [formData, setFormData] = useState({
+    part_number: "", description: "", brand: "", pump_model: "",
+    system_area: "", component_type: "", variant_spec: "",
+    what_it_does: "", installation_step_1: "", installation_step_2: "",
+    installation_step_3: "", safety_warning: "",
+  });
+  const [saving, setSaving] = useState(false);
+
+  const set = (key, val) => setFormData(f => ({ ...f, [key]: val }));
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    // Strip empty strings to keep records clean
+    const payload = Object.fromEntries(
+      Object.entries(formData).filter(([, v]) => v.trim() !== "")
+    );
+    await base44.entities.Part.create(payload);
+    toast.success("Part added successfully!");
+    onSuccess?.();
+    onClose();
+    setSaving(false);
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-start justify-center overflow-y-auto">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-lg m-4 my-8">
+        <div className="flex items-center justify-between p-4 border-b">
+          <h2 className="text-lg font-bold text-gray-800">Add Part</h2>
+          <button onClick={onClose}><X className="w-6 h-6 text-gray-500" /></button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-4 space-y-4">
+          {/* Core fields */}
+          {TEXT_FIELDS.map(({ label, key, placeholder, required }) => (
+            <div key={key}>
+              <Label htmlFor={key}>{label}</Label>
+              <Input
+                id={key}
+                required={required}
+                placeholder={placeholder}
+                value={formData[key]}
+                onChange={e => set(key, e.target.value)}
+                className="mt-1"
+              />
+            </div>
+          ))}
+
+          <div>
+            <Label>What it does</Label>
+            <Textarea
+              placeholder="Plain-English description of the part's function..."
+              value={formData.what_it_does}
+              onChange={e => set("what_it_does", e.target.value)}
+              className="mt-1 h-20 text-sm"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Installation Steps (optional)</Label>
+            {[1, 2, 3].map(n => (
+              <Input
+                key={n}
+                placeholder={`Step ${n}`}
+                value={formData[`installation_step_${n}`]}
+                onChange={e => set(`installation_step_${n}`, e.target.value)}
+                className="text-sm"
+              />
+            ))}
+          </div>
+
+          <div>
+            <Label>Safety Warning</Label>
+            <Input
+              placeholder="e.g. ⚠️ Isolate power before work."
+              value={formData.safety_warning}
+              onChange={e => set("safety_warning", e.target.value)}
+              className="mt-1"
+            />
+          </div>
+
+          <div className="flex gap-3 pt-2 border-t">
+            <Button type="button" variant="outline" onClick={onClose} disabled={saving} className="flex-1">
+              Cancel
+            </Button>
+            <Button type="submit" disabled={saving} className="flex-1 bg-[#CC0000] hover:bg-[#aa0000]">
+              {saving ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Saving...</> : "Add Part"}
+            </Button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
