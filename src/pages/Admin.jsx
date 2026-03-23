@@ -144,11 +144,6 @@ export default function AdminPage() {
               <Upload className="w-3.5 h-3.5" /> Import CSV
             </button>
           </Link>
-          <Link to="/BulkUpload" className="flex-1">
-            <button className="w-full flex items-center justify-center gap-2 py-2 px-3 bg-[#CC0000] border border-[#CC0000] rounded-lg text-xs font-medium text-white hover:bg-[#aa0000]">
-              <FolderUp className="w-3.5 h-3.5" /> Bulk PDFs
-            </button>
-          </Link>
         </div>
 
         <Tabs defaultValue="manuals">

@@ -12,7 +12,7 @@ import SyncManager from './pages/SyncManager';
 import ImportParts from './pages/ImportParts';
 import BulkUpload from './pages/BulkUpload';
 import OfflineMode from './pages/OfflineMode';
-import ZipUpload from './pages/ZipUpload';
+
 import ManualUpload from './pages/ManualUpload';
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -90,11 +90,7 @@ const AuthenticatedApp = () => {
           <OfflineMode />
         </LayoutWrapper>
       } />
-      <Route path="/ZipUpload" element={
-        <LayoutWrapper currentPageName="ZipUpload">
-          <ZipUpload />
-        </LayoutWrapper>
-      } />
+
       <Route path="/ManualUpload" element={
         <LayoutWrapper currentPageName="ManualUpload">
           <ManualUpload />

@@ -344,7 +344,7 @@ ${candidates.map(c => `ID:${c.idx} | ${c.manufacturer} ${c.model} ${c.version} |
   const buildManualContext = (manuals, query) => {
     return manuals.map(m => {
       const sections = [];
-      const meta = [m.equipment_manufacturer, m.equipment_model, m.version].filter(Boolean).join(" ");
+      const meta = [m.manufacturer, m.model, m.version].filter(Boolean).join(" ");
       sections.push(`=== Manual: ${m.title} (${meta}) ===`);
       if (m.summary) sections.push(`Overview: ${m.summary}`);
       // Prioritise error codes / troubleshooting for diagnostic queries

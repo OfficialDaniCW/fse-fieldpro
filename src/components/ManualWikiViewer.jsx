@@ -276,7 +276,7 @@ export default function ManualWikiViewer({ manual, onBack }) {
           <div className="bg-white rounded-lg border border-blue-200 p-8 flex flex-col items-center justify-center text-center">
             <Loader2 className="w-12 h-12 text-blue-500 animate-spin mb-4" />
             <p className="text-gray-800 font-medium">Extracting content from PDF...</p>
-            <p className="text-sm text-gray-600 mt-2">Auto-refreshing every 5 seconds</p>
+            <p className="text-sm text-gray-600 mt-2">Auto-refreshing every 10 seconds</p>
             <button
               onClick={handleRefresh}
               disabled={isLoading}

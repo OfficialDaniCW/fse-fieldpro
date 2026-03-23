@@ -47,7 +47,7 @@ export default function StatsPage() {
 
   // Compute manufacturer distribution from manuals
   const mfrCounts = manuals.reduce((acc, m) => {
-    const mfr = m.equipment_manufacturer || "Unknown";
+    const mfr = m.manufacturer || "Unknown";
     acc[mfr] = (acc[mfr] || 0) + 1;
     return acc;
   }, {});
