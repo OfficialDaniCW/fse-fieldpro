@@ -297,7 +297,43 @@ export default function Manuals() {
                 </div>
               )}
 
-              {breadcrumb.length === 0 && getCurrentFolderContents().length === 0 && getManualsInFolder().length === 0 && (
+              {/* Unassigned manuals — shown at root level */}
+              {breadcrumb.length === 0 && (() => {
+                const unassigned = filtered.filter(m => !m.folder_id);
+                if (unassigned.length === 0) return null;
+                return (
+                  <div>
+                    <h2 className="text-sm font-semibold text-gray-600 mb-2">Unassigned</h2>
+                    <div className="space-y-2">
+                      {unassigned.map(manual => (
+                        <div key={manual.id} className="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md transition-shadow">
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="flex-1 min-w-0">
+                              <h3 className="font-bold text-gray-900 line-clamp-2">{manual.title}</h3>
+                              <div className="flex flex-wrap gap-1 mt-2">
+                                <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">{manual.manufacturer}</span>
+                                <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">{manual.model}</span>
+                              </div>
+                            </div>
+                            <div className="flex gap-2 flex-shrink-0">
+                              {manual.pdf_file && (
+                                <a href={manual.pdf_file} target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
+                                  <FileText className="w-4 h-4 text-gray-600" />
+                                </a>
+                              )}
+                              <button onClick={() => setSelectedManual(manual)} className="w-9 h-9 rounded-lg bg-[#CC0000] hover:bg-[#aa0000] flex items-center justify-center transition-colors text-white">
+                                <Eye className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {breadcrumb.length === 0 && getCurrentFolderContents().length === 0 && filtered.filter(m => !m.folder_id).length === 0 && (
                 <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
                   <BookOpen className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                   <p className="text-gray-500 font-medium">No manuals yet</p>
