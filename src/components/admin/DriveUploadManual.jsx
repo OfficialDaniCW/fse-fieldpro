@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
-import { Upload, FolderOpen, CheckCircle2, Loader2, FileJson, FolderPlus, Image, X } from "lucide-react";
+import { Upload, FolderOpen, CheckCircle2, Loader2, FileJson, FolderPlus } from "lucide-react";
 import { toast } from "sonner";
 
 export default function DriveUploadManual({ onUploaded }) {
@@ -11,10 +11,7 @@ export default function DriveUploadManual({ onUploaded }) {
   const [selectedFolderBrand, setSelectedFolderBrand] = useState("");
   const [jsonFile, setJsonFile] = useState(null);
   const [pdfFile, setPdfFile] = useState(null);
-  const [imageFiles, setImageFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState("");
-  const [done, setDone] = useState(false);
 
   // New subfolder creation state
   const [showNewFolder, setShowNewFolder] = useState(false);
@@ -110,20 +107,6 @@ export default function DriveUploadManual({ onUploaded }) {
         });
       }
 
-      // Upload images into images/diagrams/
-      if (imageFiles.length > 0) {
-        setUploadProgress("Creating images/diagrams folders...");
-        const imagesFolderId = await createSubfolder(selectedFolderId, "images", selectedFolderBrand);
-        const diagramsFolderId = await createSubfolder(imagesFolderId, "diagrams", selectedFolderBrand);
-
-        for (let i = 0; i < imageFiles.length; i++) {
-          const img = imageFiles[i];
-          setUploadProgress(`Uploading image ${i + 1} of ${imageFiles.length}: ${img.name}`);
-          const imgBase64 = await readFileAsBase64(img);
-          await uploadFileToDrive(diagramsFolderId, img.name, imgBase64, img.type || "image/jpeg");
-        }
-      }
-
       setDone(true);
       setJsonFile(null);
       setPdfFile(null);
@@ -139,7 +122,6 @@ export default function DriveUploadManual({ onUploaded }) {
     }
   };
 
-  const removeImage = (idx) => setImageFiles(prev => prev.filter((_, i) => i !== idx));
 
   return (
     <div className="bg-white border border-gray-200 rounded-xl p-4 space-y-4">
@@ -155,7 +137,7 @@ export default function DriveUploadManual({ onUploaded }) {
       </div>
 
       <p className="text-xs text-gray-500">
-        Upload your JSON, PDF, and diagram images. Images are placed in <code className="font-mono bg-gray-100 px-1 rounded">images/diagrams/</code> automatically.
+        Upload your <code className="font-mono bg-gray-100 px-1 rounded">manual_data.json</code> and the original PDF. No images needed — zero integration credits used.
       </p>
 
       {/* Create new subfolder */}
@@ -244,35 +226,6 @@ export default function DriveUploadManual({ onUploaded }) {
         </label>
       </div>
 
-      {/* Diagram images */}
-      <div>
-        <label className="text-xs font-medium text-gray-700 block mb-1">
-          Diagram images (optional) — uploaded to <code className="font-mono bg-gray-100 px-0.5 rounded">images/diagrams/</code>
-        </label>
-        <label className="flex items-center gap-2 cursor-pointer border border-dashed border-gray-300 rounded-lg px-3 py-2.5 hover:border-[#CC0000]/50 transition-colors">
-          <Image className="w-4 h-4 text-gray-400 shrink-0" />
-          <span className="text-xs text-gray-500">Click to select images (PNG, JPG, etc.)</span>
-          <input
-            type="file"
-            accept="image/*"
-            multiple
-            className="hidden"
-            onChange={e => setImageFiles(prev => [...prev, ...Array.from(e.target.files)])}
-          />
-        </label>
-        {imageFiles.length > 0 && (
-          <div className="mt-2 space-y-1">
-            {imageFiles.map((img, i) => (
-              <div key={i} className="flex items-center justify-between bg-gray-50 rounded px-2 py-1">
-                <span className="text-xs text-gray-600 truncate">{img.name}</span>
-                <button onClick={() => removeImage(i)} className="text-gray-400 hover:text-red-500 ml-2 shrink-0">
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
 
       {uploading && uploadProgress && (
         <p className="text-xs text-blue-600 bg-blue-50 rounded px-3 py-2">{uploadProgress}</p>
