@@ -23,18 +23,25 @@ Deno.serve(async (req) => {
 
     let updatedCount = 0;
     const manualModel = (manual.model || '').toLowerCase().trim();
+    const manualManufacturer = (manual.manufacturer || '').toLowerCase().trim();
 
-    // BUG FIX 5: Match parts by model using case-insensitive partial matching
-    // If manual extracted "SK700-2" and part has "Gilbarco SK700-2 (MK2)", it should match
+    // Match parts by multiple criteria: model, brand, pump_model, or manufacturer reference
     for (const part of allParts) {
       const partModel = (part.pump_model || '').toLowerCase().trim();
+      const partBrand = (part.brand || '').toLowerCase().trim();
       
-      // Case-insensitive partial match: either string contains the other
+      // Match if:
+      // 1. Model matches (case-insensitive partial)
+      // 2. Manufacturer/brand matches and manual mentions it
       const modelMatches = manualModel && partModel && (
         partModel.includes(manualModel) || manualModel.includes(partModel)
       );
+      
+      const brandMatches = manualManufacturer && partBrand && (
+        partBrand.includes(manualManufacturer) || manualManufacturer.includes(partBrand)
+      );
 
-      if (modelMatches) {
+      if (modelMatches || brandMatches) {
         // Create manual link entry
         const newLink = {
           manual_id: manual.id,
