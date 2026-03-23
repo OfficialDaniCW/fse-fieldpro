@@ -153,7 +153,7 @@ export default function ManualWikiViewer({ manual, onBack }) {
 
   const isProcessing = displayManual.processing_status === 'processing' || displayManual.processing_status === 'pending';
   const isFailed = displayManual.processing_status === 'failed';
-  const isComplete = displayManual.processing_status === 'complete' && displayManual.manual_text;
+  const hasContent = !!(displayManual.manual_text || displayManual.summary || displayManual.error_codes);
 
   // Fetch fresh manual data on mount (use get() for single manual)
   useEffect(() => {
@@ -323,7 +323,7 @@ export default function ManualWikiViewer({ manual, onBack }) {
       )}
 
       {/* Content state */}
-      {isComplete && (
+      {hasContent && !isProcessing && !isFailed && (
         <div className="max-w-6xl mx-auto p-4 grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
           {/* Main content */}
           <div className="md:col-span-3 space-y-4">
@@ -375,11 +375,29 @@ export default function ManualWikiViewer({ manual, onBack }) {
         </div>
       )}
 
-      {/* Empty state */}
-      {!isProcessing && !isFailed && !isComplete && (
+      {/* Empty state — no extracted text, show PDF prominently */}
+      {!isProcessing && !isFailed && !hasContent && (
         <div className="max-w-4xl mx-auto p-4 mt-6">
-          <div className="bg-gray-100 rounded-lg p-8 text-center">
-            <p className="text-gray-600">No content available for this manual.</p>
+          <div className="bg-white rounded-xl border border-gray-200 p-8 text-center space-y-4">
+            <FileText className="w-14 h-14 text-gray-300 mx-auto" />
+            <div>
+              <p className="text-gray-700 font-semibold">No extracted text available</p>
+              <p className="text-sm text-gray-400 mt-1">The PDF is available to read directly below</p>
+            </div>
+            {displayManual.pdf_file ? (
+              <a
+                href={displayManual.pdf_file}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-[#CC0000] text-white px-6 py-3 rounded-lg font-semibold text-sm hover:bg-[#aa0000] transition-colors"
+              >
+                <FileText className="w-4 h-4" />
+                Open PDF Manual
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            ) : (
+              <p className="text-sm text-gray-400">No PDF available either.</p>
+            )}
           </div>
         </div>
       )}
