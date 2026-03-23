@@ -25,43 +25,63 @@ Deno.serve(async (req) => {
     const manualModel = (manual.model || '').toLowerCase().trim();
     const manualManufacturer = (manual.manufacturer || '').toLowerCase().trim();
 
-    // Match parts by multiple criteria: model, brand, pump_model, or manufacturer reference
+    console.log(`[LINK] Linking manual "${manual.title}" (${manualManufacturer} / ${manualModel})`);
+
+    // Match parts only if:
+    // 1. Manufacturer matches (REQUIRED) AND
+    // 2. Model matches (if available)
     for (const part of allParts) {
-      const partModel = (part.pump_model || '').toLowerCase().trim();
       const partBrand = (part.brand || '').toLowerCase().trim();
+      const partModel = (part.pump_model || '').toLowerCase().trim();
       
-      // Match if:
-      // 1. Model matches (case-insensitive partial)
-      // 2. Manufacturer/brand matches and manual mentions it
-      const modelMatches = manualModel && partModel && (
-        partModel.includes(manualModel) || manualModel.includes(partModel)
-      );
+      // First check: manufacturer MUST match
+      if (!manualManufacturer || !partBrand) {
+        continue;
+      }
+
+      const manufacturerMatches = partBrand.includes(manualManufacturer) || manualManufacturer.includes(partBrand);
       
-      const brandMatches = manualManufacturer && partBrand && (
-        partBrand.includes(manualManufacturer) || manualManufacturer.includes(partBrand)
-      );
+      if (!manufacturerMatches) {
+        continue;
+      }
 
-      if (modelMatches || brandMatches) {
-        // Create manual link entry
-        const newLink = {
-          manual_id: manual.id,
-          manual_title: manual.title,
-          pdf_url: manual.pdf_file
-        };
+      // Second check: if manual has a specific model, part model should match
+      let shouldLink = false;
+      
+      if (manualModel && partModel) {
+        // Both have models, check if they match
+        shouldLink = partModel.includes(manualModel) || manualModel.includes(partModel);
+      } else if (!manualModel && manualManufacturer) {
+        // Manual is generic (no specific model), link all parts of that manufacturer
+        shouldLink = true;
+      }
 
-        // Get existing manual_links (avoiding duplicates)
-        const existingLinks = part.manual_links || [];
-        const linkExists = existingLinks.some(l => l.manual_id === manual.id);
+      if (!shouldLink) {
+        continue;
+      }
 
-        if (!linkExists) {
-          const updatedLinks = [...existingLinks, newLink];
-          await base44.asServiceRole.entities.Part.update(part.id, {
-            manual_links: updatedLinks
-          });
-          updatedCount++;
-        }
+      // Create manual link entry
+      const newLink = {
+        manual_id: manual.id,
+        manual_title: manual.title,
+        pdf_url: manual.pdf_file
+      };
+
+      // Get existing manual_links (avoiding duplicates)
+      const existingLinks = part.manual_links || [];
+      const linkExists = existingLinks.some(l => l.manual_id === manual.id);
+
+      if (!linkExists) {
+        const updatedLinks = [...existingLinks, newLink];
+        await base44.asServiceRole.entities.Part.update(part.id, {
+          manual_links: updatedLinks
+        });
+        updatedCount++;
+        console.log(`[LINK] Linked to part ${part.part_number}`);
       }
     }
+
+    console.log(`[LINK] Linked ${updatedCount} parts to manual "${manual.title}"`);
 
     return Response.json({
       success: true,
@@ -70,6 +90,7 @@ Deno.serve(async (req) => {
       parts_linked: updatedCount
     });
   } catch (error) {
+    console.error('[LINK] Error:', error);
     return Response.json({ error: error.message }, { status: 500 });
   }
 });
