@@ -1,4 +1,5 @@
 import { useState } from "react";
+import DriveUploadManual from "./DriveUploadManual";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
@@ -162,15 +163,18 @@ export default function DriveSyncManager() {
         </div>
       </div>
 
+      {/* Upload Manual */}
+      {status?.folders_created && (
+        <DriveUploadManual onUploaded={() => refetch()} />
+      )}
+
       {/* Instructions */}
       <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-xs text-blue-800 space-y-1.5">
-        <p className="font-semibold">How to add a manual via Drive:</p>
+        <p className="font-semibold">How to add a manual:</p>
         <ol className="list-decimal list-inside space-y-1 text-blue-700">
-          <li>Open your Drive → <strong>FSE_FieldPro_Manuals</strong></li>
-          <li>Navigate to the brand folder (e.g. <strong>Gilbarco/SK700_Series</strong>)</li>
-          <li>Upload a <code className="font-mono bg-blue-100 px-1 rounded">manual_data.json</code> file</li>
-          <li>Optionally add the PDF and an <code className="font-mono bg-blue-100 px-1 rounded">images/</code> folder</li>
-          <li>The crawler will auto-import it within 5 minutes, or press <strong>Run Now</strong></li>
+          <li>Use the <strong>Upload Manual to Drive</strong> panel above — select the folder and upload your <code className="font-mono bg-blue-100 px-1 rounded">manual_data.json</code></li>
+          <li>Optionally add the PDF in the same upload</li>
+          <li>Press <strong>Run Now</strong> or wait for auto-crawl to import it</li>
         </ol>
       </div>
     </div>
