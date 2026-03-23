@@ -14,7 +14,7 @@ export default function PartsPage() {
   const [filters, setFilters] = useState({ brand: "", pump_model: "", system_area: "", component_type: "" });
   const [page, setPage] = useState(1);
   const [showFilter, setShowFilter] = useState(false);
-  const [viewMode, setViewMode] = useState("cards"); // "cards" | "table"
+  const [viewMode, setViewMode] = useState("table"); // "cards" | "table"
   const navigate = useNavigate();
 
   const { data: parts = [], isLoading, isOfflineData, error } = useOfflineCache('parts', {
@@ -172,7 +172,7 @@ export default function PartsPage() {
       </div>
 
       {/* Content */}
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-full mx-auto">
         {isLoading ? (
           <div className="text-center text-gray-400 py-16 text-sm">Loading parts...</div>
         ) : parts.length === 0 ? (
@@ -183,7 +183,7 @@ export default function PartsPage() {
         ) : paginated.length === 0 ? (
           <div className="text-center text-gray-400 py-16 text-sm">No parts match your search</div>
         ) : viewMode === "cards" ? (
-          <div className="px-4 py-3 space-y-3">
+          <div className="max-w-4xl mx-auto px-4 py-3 space-y-3">
             {paginated.map(part => (
               <PartCard
                 key={part.id}
@@ -225,31 +225,35 @@ export default function PartsPage() {
 
 function TableView({ parts }) {
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto px-4">
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b-2 border-[#CC0000]">
-             <th className="text-left px-4 py-3 text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap">Part No.</th>
-             <th className="text-left px-4 py-3 text-xs font-medium text-gray-400 uppercase tracking-wider">Description</th>
-             <th className="text-left px-4 py-3 text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap">Mfr. Ref</th>
-             <th className="text-left px-4 py-3 text-xs font-medium text-gray-400 uppercase tracking-wider">Brand</th>
-             <th className="text-left px-4 py-3 text-xs font-medium text-gray-400 uppercase tracking-wider">System</th>
-             <th className="text-left px-4 py-3 text-xs font-medium text-gray-400 uppercase tracking-wider">Component</th>
-           </tr>
+            <th className="text-left px-3 py-3 text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap">Part No.</th>
+            <th className="text-left px-3 py-3 text-xs font-medium text-gray-400 uppercase tracking-wider">Description</th>
+            <th className="text-left px-3 py-3 text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap">Ref Code</th>
+            <th className="text-left px-3 py-3 text-xs font-medium text-gray-400 uppercase tracking-wider">Brand</th>
+            <th className="text-left px-3 py-3 text-xs font-medium text-gray-400 uppercase tracking-wider">Model</th>
+            <th className="text-left px-3 py-3 text-xs font-medium text-gray-400 uppercase tracking-wider">System</th>
+            <th className="text-left px-3 py-3 text-xs font-medium text-gray-400 uppercase tracking-wider">Component</th>
+          </tr>
         </thead>
         <tbody>
           {parts.map((part, idx) => (
-            <tr key={part.id} className={`border-b border-gray-100 ${idx % 2 === 0 ? "bg-white" : "bg-gray-50"}`}>
-              <td className="px-4 py-3 font-mono text-xs font-semibold text-[#CC0000] whitespace-nowrap">{part.part_number}</td>
-              <td className="px-4 py-3 font-medium text-gray-900 text-xs leading-snug">{part.description}</td>
-              <td className="px-4 py-3 font-mono text-xs text-gray-600 max-w-28 truncate" title={part.manufacturer_part_ref}>{part.manufacturer_part_ref || "—"}</td>
-              <td className="px-4 py-3">
+            <tr key={part.id} className={`border-b border-gray-100 hover:bg-blue-50 transition-colors ${idx % 2 === 0 ? "bg-white" : "bg-gray-50"}`}>
+              <td className="px-3 py-3 font-mono text-xs font-semibold text-[#CC0000] whitespace-nowrap">{part.part_number}</td>
+              <td className="px-3 py-3 font-medium text-gray-900 text-xs leading-snug max-w-xs">{part.description}</td>
+              <td className="px-3 py-3 font-mono text-xs text-gray-600 whitespace-nowrap" title={part.manufacturer_part_ref}>{part.manufacturer_part_ref || "—"}</td>
+              <td className="px-3 py-3">
                 {part.brand && <span className="text-xs font-semibold text-red-700 border border-red-200 bg-red-50 px-2 py-0.5 rounded whitespace-nowrap">{part.brand}</span>}
               </td>
-              <td className="px-4 py-3">
+              <td className="px-3 py-3">
+                {part.pump_model && <span className="text-xs font-semibold text-blue-700 border border-blue-200 bg-blue-50 px-2 py-0.5 rounded whitespace-nowrap">{part.pump_model}</span>}
+              </td>
+              <td className="px-3 py-3">
                 {part.system_area && <span className="text-xs font-bold text-green-700 border border-green-300 bg-green-50 px-2 py-0.5 rounded whitespace-nowrap">{part.system_area}</span>}
               </td>
-              <td className="px-4 py-3 text-xs font-medium text-gray-700">{part.component_type}</td>
+              <td className="px-3 py-3 text-xs font-medium text-gray-700">{part.component_type || "—"}</td>
             </tr>
           ))}
         </tbody>
