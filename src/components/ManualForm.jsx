@@ -21,7 +21,7 @@ export default function ManualForm({ onClose, onSuccess }) {
     component_type: "Dispenser"
   });
   const [pdfFile, setPdfFile] = useState(null);
-  const [extractDiagrams, setExtractDiagrams] = useState(false);
+
   const [uploading, setUploading] = useState(false);
   const [uploadStage, setUploadStage] = useState("");
   const [processingResult, setProcessingResult] = useState(null);
@@ -59,7 +59,7 @@ export default function ManualForm({ onClose, onSuccess }) {
         ...formData,
         pdf_file: file_url,
         pdf_url: file_url,
-        extract_diagrams: extractDiagrams,
+
         processing_status: "pending",
         brand_category: formData.manufacturer
       });
@@ -243,21 +243,6 @@ export default function ManualForm({ onClose, onSuccess }) {
             />
           </div>
 
-          {/* Extract Diagrams Toggle */}
-          <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
-            <input
-              type="checkbox"
-              id="extract_diagrams"
-              checked={extractDiagrams}
-              onChange={(e) => setExtractDiagrams(e.target.checked)}
-              className="w-4 h-4 text-[#CC0000] rounded focus:ring-2 focus:ring-[#CC0000] cursor-pointer"
-              disabled={uploading}
-            />
-            <Label htmlFor="extract_diagrams" className="cursor-pointer flex-1 text-sm font-medium">
-              Extract Diagrams
-              <p className="text-xs text-gray-500 font-normal mt-0.5">AI will extract exploded view and assembly diagrams</p>
-            </Label>
-          </div>
 
           {/* PDF Upload */}
           <div>
