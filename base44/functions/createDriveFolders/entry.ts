@@ -57,16 +57,10 @@ Deno.serve(async (req) => {
         await base44.asServiceRole.entities.ManualFolder.update(brandRecord.id, { drive_folder_id: brandFolderId });
       }
 
-      // Create model subfolders
+      // Create model subfolders (no images folders — those are created per-manual on upload)
       for (const model of models) {
         const modelFolderId = await createFolder(model, brandFolderId, accessToken);
         foldersCreated++;
-
-        // Create images subfolder with diagrams and components inside
-        const imagesFolderId = await createFolder('images', modelFolderId, accessToken);
-        await createFolder('diagrams', imagesFolderId, accessToken);
-        await createFolder('components', imagesFolderId, accessToken);
-        foldersCreated += 3;
 
         // Update matching ManualFolder record
         const modelRecord = existingFolders.find(f =>
