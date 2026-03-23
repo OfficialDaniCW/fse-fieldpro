@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, Plus, Trash2, FileText, Package, Shield, Pencil, Upload, RefreshCw, History, CheckCircle2 } from "lucide-react";
+import { Search, Plus, Trash2, FileText, Package, Shield, Pencil, Upload, RefreshCw, History, CheckCircle2, HardDrive } from "lucide-react";
 import { Link } from "react-router-dom";
 import PageHeader from "../components/PageHeader";
 import ManualForm from "../components/ManualForm";
@@ -12,6 +12,7 @@ import PartForm from "../components/PartForm";
 import PartEditModal from "../components/parts/PartEditModal";
 import ActivityLogViewer from "../components/admin/ActivityLogViewer";
 import TSGPartsVerifier from "../components/admin/TSGPartsVerifier";
+import DriveSyncManager from "../components/admin/DriveSyncManager";
 import { useCurrentUser } from "../lib/useCurrentUser";
 import { toast } from "sonner";
 import { Toaster } from "sonner";
@@ -147,7 +148,7 @@ export default function AdminPage() {
         </div>
 
         <Tabs defaultValue="manuals">
-          <TabsList className="w-full mb-4 grid grid-cols-2 sm:grid-cols-4 gap-1 h-auto">
+          <TabsList className="w-full mb-4 grid grid-cols-3 sm:grid-cols-5 gap-1 h-auto">
             <TabsTrigger value="manuals" className="flex flex-col items-center gap-1 py-2">
               <FileText className="w-4 h-4" />
               <span className="text-xs font-medium">Manuals</span>
@@ -157,6 +158,11 @@ export default function AdminPage() {
               <Package className="w-4 h-4" />
               <span className="text-xs font-medium">Parts</span>
               <span className="text-xs text-muted-foreground">({parts.length})</span>
+            </TabsTrigger>
+            <TabsTrigger value="drive" className="flex flex-col items-center gap-1 py-2">
+              <HardDrive className="w-4 h-4" />
+              <span className="text-xs font-medium">Drive</span>
+              <span className="text-xs text-muted-foreground">Sync</span>
             </TabsTrigger>
             <TabsTrigger value="activity" className="flex flex-col items-center gap-1 py-2">
               <History className="w-4 h-4" />
@@ -255,6 +261,11 @@ export default function AdminPage() {
               ))}
               {filteredParts.length === 0 && <p className="text-center text-gray-400 py-8">No parts found</p>}
             </div>
+          </TabsContent>
+
+          {/* Drive Sync Tab */}
+          <TabsContent value="drive">
+            <DriveSyncManager />
           </TabsContent>
 
           {/* Activity Log Tab */}
