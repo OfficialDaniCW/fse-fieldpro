@@ -2,15 +2,18 @@ import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
-import { Upload, FolderOpen, CheckCircle2, Loader2, FileJson, FolderPlus } from "lucide-react";
+import { Upload, FolderOpen, CheckCircle2, Loader2, FileJson, FolderPlus, Image, X } from "lucide-react";
 import { toast } from "sonner";
 
 export default function DriveUploadManual({ onUploaded }) {
   const queryClient = useQueryClient();
   const [selectedFolderId, setSelectedFolderId] = useState("");
+  const [selectedFolderBrand, setSelectedFolderBrand] = useState("");
   const [jsonFile, setJsonFile] = useState(null);
   const [pdfFile, setPdfFile] = useState(null);
+  const [imageFiles, setImageFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState("");
   const [done, setDone] = useState(false);
 
   // New subfolder creation state
@@ -25,10 +28,6 @@ export default function DriveUploadManual({ onUploaded }) {
   });
 
   const driveFolders = folders.filter(f => f.drive_folder_id);
-
-  // Brand-level folders (for picking parent when creating subfolder)
-  const brandFolders = driveFolders.filter(f => f.folder_type === 'brand');
-  // Model folders for upload target
   const modelFolders = driveFolders.filter(f => f.folder_type === 'model');
 
   const grouped = modelFolders.reduce((acc, f) => {
@@ -45,9 +44,30 @@ export default function DriveUploadManual({ onUploaded }) {
     reader.readAsDataURL(file);
   });
 
+  const uploadFileToDrive = async (folderId, filename, base64, mimeType) => {
+    const res = await base44.functions.invoke("uploadFileToDrive", {
+      folder_id: folderId,
+      filename,
+      file_content_base64: base64,
+      mime_type: mimeType
+    });
+    if (res.data?.error) throw new Error(res.data.error);
+    return res.data;
+  };
+
+  const createSubfolder = async (parentId, name, brand) => {
+    const res = await base44.functions.invoke("createDriveSubfolder", {
+      parent_folder_id: parentId,
+      folder_name: name,
+      brand: brand || ""
+    });
+    if (res.data?.error) throw new Error(res.data.error);
+    return res.data.drive_folder_id;
+  };
+
   const handleCreateSubfolder = async () => {
     if (!newFolderParentId || !newFolderName.trim()) {
-      toast.error("Select a brand folder and enter a folder name");
+      toast.error("Select a parent folder and enter a name");
       return;
     }
     setCreatingFolder(true);
@@ -58,19 +78,14 @@ export default function DriveUploadManual({ onUploaded }) {
       brand: parent?.brand || parent?.name || ""
     });
     setCreatingFolder(false);
-
-    if (res.data?.error) {
-      toast.error("Failed: " + res.data.error);
-      return;
-    }
-
+    if (res.data?.error) { toast.error("Failed: " + res.data.error); return; }
     toast.success(`Folder "${newFolderName}" created in Drive`);
     setNewFolderName("");
     setNewFolderParentId("");
     setShowNewFolder(false);
     queryClient.invalidateQueries({ queryKey: ["manual-folders-drive"] });
-    // Auto-select the new folder
     setSelectedFolderId(res.data.drive_folder_id);
+    setSelectedFolderBrand(parent?.brand || "");
   };
 
   const handleUpload = async () => {
@@ -81,37 +96,50 @@ export default function DriveUploadManual({ onUploaded }) {
     setUploading(true);
     setDone(false);
     try {
+      // Upload JSON
+      setUploadProgress("Uploading manual_data.json...");
       const jsonBase64 = await readFileAsBase64(jsonFile);
-      const jsonRes = await base44.functions.invoke("uploadFileToDrive", {
-        folder_id: selectedFolderId,
-        filename: "manual_data.json",
-        file_content_base64: jsonBase64,
-        mime_type: "application/json"
-      });
-      if (jsonRes.data?.error) throw new Error(jsonRes.data.error);
+      await uploadFileToDrive(selectedFolderId, "manual_data.json", jsonBase64, "application/json");
 
+      // Upload PDF
       if (pdfFile) {
+        setUploadProgress("Uploading PDF...");
         const pdfBase64 = await readFileAsBase64(pdfFile);
-        const pdfRes = await base44.functions.invoke("uploadFileToDrive", {
-          folder_id: selectedFolderId,
-          filename: pdfFile.name,
-          file_content_base64: pdfBase64,
-          mime_type: "application/pdf"
+        await uploadFileToDrive(selectedFolderId, pdfFile.name, pdfBase64, "application/pdf").catch(e => {
+          toast.warning("PDF upload failed: " + e.message);
         });
-        if (pdfRes.data?.error) toast.warning("JSON uploaded but PDF failed: " + pdfRes.data.error);
+      }
+
+      // Upload images into images/diagrams/
+      if (imageFiles.length > 0) {
+        setUploadProgress("Creating images/diagrams folders...");
+        const imagesFolderId = await createSubfolder(selectedFolderId, "images", selectedFolderBrand);
+        const diagramsFolderId = await createSubfolder(imagesFolderId, "diagrams", selectedFolderBrand);
+
+        for (let i = 0; i < imageFiles.length; i++) {
+          const img = imageFiles[i];
+          setUploadProgress(`Uploading image ${i + 1} of ${imageFiles.length}: ${img.name}`);
+          const imgBase64 = await readFileAsBase64(img);
+          await uploadFileToDrive(diagramsFolderId, img.name, imgBase64, img.type || "image/jpeg");
+        }
       }
 
       setDone(true);
       setJsonFile(null);
       setPdfFile(null);
-      toast.success("Files uploaded to Drive! Run the crawler to import.");
+      setImageFiles([]);
+      setUploadProgress("");
+      toast.success("All files uploaded! Run the crawler to import.");
       onUploaded?.();
     } catch (err) {
       toast.error("Upload failed: " + err.message);
+      setUploadProgress("");
     } finally {
       setUploading(false);
     }
   };
+
+  const removeImage = (idx) => setImageFiles(prev => prev.filter((_, i) => i !== idx));
 
   return (
     <div className="bg-white border border-gray-200 rounded-xl p-4 space-y-4">
@@ -120,19 +148,14 @@ export default function DriveUploadManual({ onUploaded }) {
           <Upload className="w-4 h-4 text-[#CC0000]" />
           <h3 className="font-semibold text-sm text-gray-900">Upload Manual to Drive</h3>
         </div>
-        <Button
-          size="sm"
-          variant="outline"
-          className="gap-1.5 text-xs h-7"
-          onClick={() => setShowNewFolder(!showNewFolder)}
-        >
+        <Button size="sm" variant="outline" className="gap-1.5 text-xs h-7" onClick={() => setShowNewFolder(!showNewFolder)}>
           <FolderPlus className="w-3.5 h-3.5" />
           New Folder
         </Button>
       </div>
 
       <p className="text-xs text-gray-500">
-        Upload your <code className="font-mono bg-gray-100 px-1 rounded">manual_data.json</code> directly into a Drive folder so the crawler can process it.
+        Upload your JSON, PDF, and diagram images. Images are placed in <code className="font-mono bg-gray-100 px-1 rounded">images/diagrams/</code> automatically.
       </p>
 
       {/* Create new subfolder */}
@@ -144,7 +167,7 @@ export default function DriveUploadManual({ onUploaded }) {
             onChange={e => setNewFolderParentId(e.target.value)}
             className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-xs text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#CC0000]/30"
           >
-            <option value="">— Select parent brand folder —</option>
+            <option value="">— Select parent folder —</option>
             {driveFolders.map(f => (
               <option key={f.id} value={f.drive_folder_id}>
                 {f.brand ? `${f.brand} / ` : ""}{f.name}
@@ -175,21 +198,23 @@ export default function DriveUploadManual({ onUploaded }) {
         <label className="text-xs font-medium text-gray-700 block mb-1">Target folder</label>
         {modelFolders.length === 0 ? (
           <p className="text-xs text-amber-600 bg-amber-50 rounded px-3 py-2">
-            No model folders found. Create Drive folders first, or use "New Folder" above.
+            No model folders found. Use "New Folder" above to create one.
           </p>
         ) : (
           <select
             value={selectedFolderId}
-            onChange={e => setSelectedFolderId(e.target.value)}
+            onChange={e => {
+              setSelectedFolderId(e.target.value);
+              const f = modelFolders.find(f => f.drive_folder_id === e.target.value);
+              setSelectedFolderBrand(f?.brand || "");
+            }}
             className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#CC0000]/30"
           >
             <option value="">— Select a model folder —</option>
             {Object.entries(grouped).map(([brand, items]) => (
               <optgroup key={brand} label={brand}>
                 {items.map(f => (
-                  <option key={f.id} value={f.drive_folder_id}>
-                    {f.name}
-                  </option>
+                  <option key={f.id} value={f.drive_folder_id}>{f.name}</option>
                 ))}
               </optgroup>
             ))}
@@ -204,9 +229,7 @@ export default function DriveUploadManual({ onUploaded }) {
         </label>
         <label className="flex items-center gap-2 cursor-pointer border border-dashed border-gray-300 rounded-lg px-3 py-2.5 hover:border-[#CC0000]/50 transition-colors">
           <FileJson className="w-4 h-4 text-gray-400 shrink-0" />
-          <span className="text-xs text-gray-500 truncate">
-            {jsonFile ? jsonFile.name : "Click to select manual_data.json"}
-          </span>
+          <span className="text-xs text-gray-500 truncate">{jsonFile ? jsonFile.name : "Click to select manual_data.json"}</span>
           <input type="file" accept=".json" className="hidden" onChange={e => setJsonFile(e.target.files[0] || null)} />
         </label>
       </div>
@@ -216,12 +239,44 @@ export default function DriveUploadManual({ onUploaded }) {
         <label className="text-xs font-medium text-gray-700 block mb-1">PDF manual (optional)</label>
         <label className="flex items-center gap-2 cursor-pointer border border-dashed border-gray-300 rounded-lg px-3 py-2.5 hover:border-[#CC0000]/50 transition-colors">
           <FolderOpen className="w-4 h-4 text-gray-400 shrink-0" />
-          <span className="text-xs text-gray-500 truncate">
-            {pdfFile ? pdfFile.name : "Click to select PDF (optional)"}
-          </span>
+          <span className="text-xs text-gray-500 truncate">{pdfFile ? pdfFile.name : "Click to select PDF (optional)"}</span>
           <input type="file" accept=".pdf" className="hidden" onChange={e => setPdfFile(e.target.files[0] || null)} />
         </label>
       </div>
+
+      {/* Diagram images */}
+      <div>
+        <label className="text-xs font-medium text-gray-700 block mb-1">
+          Diagram images (optional) — uploaded to <code className="font-mono bg-gray-100 px-0.5 rounded">images/diagrams/</code>
+        </label>
+        <label className="flex items-center gap-2 cursor-pointer border border-dashed border-gray-300 rounded-lg px-3 py-2.5 hover:border-[#CC0000]/50 transition-colors">
+          <Image className="w-4 h-4 text-gray-400 shrink-0" />
+          <span className="text-xs text-gray-500">Click to select images (PNG, JPG, etc.)</span>
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            className="hidden"
+            onChange={e => setImageFiles(prev => [...prev, ...Array.from(e.target.files)])}
+          />
+        </label>
+        {imageFiles.length > 0 && (
+          <div className="mt-2 space-y-1">
+            {imageFiles.map((img, i) => (
+              <div key={i} className="flex items-center justify-between bg-gray-50 rounded px-2 py-1">
+                <span className="text-xs text-gray-600 truncate">{img.name}</span>
+                <button onClick={() => removeImage(i)} className="text-gray-400 hover:text-red-500 ml-2 shrink-0">
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {uploading && uploadProgress && (
+        <p className="text-xs text-blue-600 bg-blue-50 rounded px-3 py-2">{uploadProgress}</p>
+      )}
 
       <Button
         onClick={handleUpload}
@@ -230,11 +285,11 @@ export default function DriveUploadManual({ onUploaded }) {
         className="bg-[#CC0000] hover:bg-[#aa0000] gap-1.5 w-full"
       >
         {uploading ? (
-          <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Uploading to Drive...</>
+          <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Uploading...</>
         ) : done ? (
           <><CheckCircle2 className="w-3.5 h-3.5" /> Uploaded — Run Crawler to import</>
         ) : (
-          <><Upload className="w-3.5 h-3.5" /> Upload to Drive</>
+          <><Upload className="w-3.5 h-3.5" /> Upload All Files to Drive</>
         )}
       </Button>
     </div>
