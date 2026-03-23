@@ -12,7 +12,6 @@ import PartForm from "../components/PartForm";
 import PartEditModal from "../components/parts/PartEditModal";
 import ActivityLogViewer from "../components/admin/ActivityLogViewer";
 import TSGPartsVerifier from "../components/admin/TSGPartsVerifier";
-
 import { useCurrentUser } from "../lib/useCurrentUser";
 import { toast } from "sonner";
 import { Toaster } from "sonner";
@@ -89,26 +88,9 @@ export default function AdminPage() {
       queryClient.invalidateQueries({ queryKey: ["manuals"] });
       toast.success("Text re-extracted successfully.");
     } catch (err) {
-      console.error("Re-extraction error:", err);
       toast.error("Re-extraction failed: " + (err.message || "Unknown error"));
     }
     setReExtractingId(null);
-  };
-
-  const handleDeleteManualError = async (id) => {
-    try {
-      await deleteManual(id);
-    } catch (err) {
-      toast.error("Delete failed: " + (err.message || "Unknown error"));
-    }
-  };
-
-  const handleDeletePartError = async (id) => {
-    try {
-      await deletePart(id);
-    } catch (err) {
-      toast.error("Delete failed: " + (err.message || "Unknown error"));
-    }
   };
 
   return (
@@ -119,7 +101,7 @@ export default function AdminPage() {
         {/* Info banner */}
         <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg space-y-2">
           <p className="text-xs text-blue-900">
-            💡 <strong>Pro Tip:</strong> The <strong>manual_guide</strong> agent can help users find manuals by brand and component type. It automatically groups hydraulic, electrical, mechanical, and parts documentation.
+            💡 <strong>Pro Tip:</strong> The <strong>manual_guide</strong> agent can help users find manuals by brand and component type.
           </p>
           <a
             href={base44.agents.getWhatsAppConnectURL('manual_guide')}
@@ -130,8 +112,6 @@ export default function AdminPage() {
             → WhatsApp Link for Manual Guide
           </a>
         </div>
-
-
 
         {/* Quick links */}
         <div className="flex gap-2 mb-4">
@@ -149,6 +129,27 @@ export default function AdminPage() {
 
         <Tabs defaultValue="manuals">
           <TabsList className="w-full mb-4 grid grid-cols-2 sm:grid-cols-4 gap-1 h-auto">
+            <TabsTrigger value="manuals" className="flex flex-col items-center gap-1 py-2">
+              <FileText className="w-4 h-4" />
+              <span className="text-xs font-medium">Manuals</span>
+              <span className="text-xs text-muted-foreground">({manuals.length})</span>
+            </TabsTrigger>
+            <TabsTrigger value="parts" className="flex flex-col items-center gap-1 py-2">
+              <Package className="w-4 h-4" />
+              <span className="text-xs font-medium">Parts</span>
+              <span className="text-xs text-muted-foreground">({parts.length})</span>
+            </TabsTrigger>
+            <TabsTrigger value="activity" className="flex flex-col items-center gap-1 py-2">
+              <History className="w-4 h-4" />
+              <span className="text-xs font-medium">Activity</span>
+              <span className="text-xs text-muted-foreground">Log</span>
+            </TabsTrigger>
+            <TabsTrigger value="tsg-verify" className="flex flex-col items-center gap-1 py-2">
+              <CheckCircle2 className="w-4 h-4" />
+              <span className="text-xs font-medium">TSG</span>
+              <span className="text-xs text-muted-foreground">Verify</span>
+            </TabsTrigger>
+          </TabsList>
 
           {/* Manuals Tab */}
           <TabsContent value="manuals">
@@ -193,7 +194,7 @@ export default function AdminPage() {
                         </Button>
                       </>
                     )}
-                    <Button variant="ghost" size="sm" onClick={() => handleDeleteManualError(m.id)} className="text-red-400 h-8 w-8 p-0 hover:text-red-600">
+                    <Button variant="ghost" size="sm" onClick={() => deleteManual(m.id)} className="text-red-400 h-8 w-8 p-0 hover:text-red-600">
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   </div>
@@ -228,7 +229,7 @@ export default function AdminPage() {
                   <Button variant="ghost" size="sm" onClick={() => setEditingPart(p)} className="text-gray-400 h-8 w-8 p-0 hover:text-gray-700 shrink-0">
                     <Pencil className="w-4 h-4" />
                   </Button>
-                  <Button variant="ghost" size="sm" onClick={() => handleDeletePartError(p.id)} className="text-red-400 h-8 w-8 p-0 hover:text-red-600 shrink-0">
+                  <Button variant="ghost" size="sm" onClick={() => deletePart(p.id)} className="text-red-400 h-8 w-8 p-0 hover:text-red-600 shrink-0">
                     <Trash2 className="w-4 h-4" />
                   </Button>
                 </div>
@@ -236,7 +237,6 @@ export default function AdminPage() {
               {filteredParts.length === 0 && <p className="text-center text-gray-400 py-8">No parts found</p>}
             </div>
           </TabsContent>
-
 
           {/* Activity Log Tab */}
           <TabsContent value="activity">
@@ -247,7 +247,7 @@ export default function AdminPage() {
           <TabsContent value="tsg-verify">
             <TSGPartsVerifier />
           </TabsContent>
-          </Tabs>
+        </Tabs>
       </div>
 
       {showManualForm && (
