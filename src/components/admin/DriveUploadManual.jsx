@@ -12,6 +12,8 @@ export default function DriveUploadManual({ onUploaded }) {
   const [jsonFile, setJsonFile] = useState(null);
   const [pdfFile, setPdfFile] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState("");
+  const [done, setDone] = useState(false);
 
   // New subfolder creation state
   const [showNewFolder, setShowNewFolder] = useState(false);
@@ -110,7 +112,6 @@ export default function DriveUploadManual({ onUploaded }) {
       setDone(true);
       setJsonFile(null);
       setPdfFile(null);
-      setImageFiles([]);
       setUploadProgress("");
       toast.success("All files uploaded! Run the crawler to import.");
       onUploaded?.();
