@@ -8,7 +8,6 @@ import { toast } from "sonner";
 export default function DriveUploadManual({ onUploaded }) {
   const queryClient = useQueryClient();
   const [selectedFolderId, setSelectedFolderId] = useState("");
-  const [selectedFolderBrand, setSelectedFolderBrand] = useState("");
   const [jsonFile, setJsonFile] = useState(null);
   const [pdfFile, setPdfFile] = useState(null);
   const [uploading, setUploading] = useState(false);
@@ -54,15 +53,6 @@ export default function DriveUploadManual({ onUploaded }) {
     return res.data;
   };
 
-  const createSubfolder = async (parentId, name, brand) => {
-    const res = await base44.functions.invoke("createDriveSubfolder", {
-      parent_folder_id: parentId,
-      folder_name: name,
-      brand: brand || ""
-    });
-    if (res.data?.error) throw new Error(res.data.error);
-    return res.data.drive_folder_id;
-  };
 
   const handleCreateSubfolder = async () => {
     if (!newFolderParentId || !newFolderName.trim()) {
@@ -84,7 +74,6 @@ export default function DriveUploadManual({ onUploaded }) {
     setShowNewFolder(false);
     queryClient.invalidateQueries({ queryKey: ["manual-folders-drive"] });
     setSelectedFolderId(res.data.drive_folder_id);
-    setSelectedFolderBrand(parent?.brand || "");
   };
 
   const handleUpload = async () => {
@@ -188,8 +177,6 @@ export default function DriveUploadManual({ onUploaded }) {
             value={selectedFolderId}
             onChange={e => {
               setSelectedFolderId(e.target.value);
-              const f = modelFolders.find(f => f.drive_folder_id === e.target.value);
-              setSelectedFolderBrand(f?.brand || "");
             }}
             className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#CC0000]/30"
           >
