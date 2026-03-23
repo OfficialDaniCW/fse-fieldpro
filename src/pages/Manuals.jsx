@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { BookOpen, Search, Plus, List, FolderOpen, Eye, FileText, WifiOff, Upload } from "lucide-react";
+import { BookOpen, Search, Plus, List, FolderOpen, Eye, FileText, WifiOff } from "lucide-react";
 import { Link } from "react-router-dom";
 import ManualWikiViewer from "@/components/ManualWikiViewer";
 import ManualForm from "@/components/ManualForm";
