@@ -21,6 +21,7 @@ export default function ManualForm({ onClose, onSuccess }) {
     component_type: "Dispenser"
   });
   const [pdfFile, setPdfFile] = useState(null);
+  const [jsonFile, setJsonFile] = useState(null);
 
   const [uploading, setUploading] = useState(false);
   const [uploadStage, setUploadStage] = useState("");
@@ -53,12 +54,21 @@ export default function ManualForm({ onClose, onSuccess }) {
       setUploadStage("Uploading PDF...");
       const { file_url } = await base44.integrations.Core.UploadFile({ file: pdfFile });
 
+      // Step 1b: Upload JSON if provided
+      let jsonUrl = null;
+      if (jsonFile) {
+        setUploadStage("Uploading JSON data...");
+        const { file_url: jUrl } = await base44.integrations.Core.UploadFile({ file: jsonFile });
+        jsonUrl = jUrl;
+      }
+
       // Step 2: Create manual record
       setUploadStage("Creating manual record...");
       const manual = await base44.entities.Manual.create({
         ...formData,
         pdf_file: file_url,
         pdf_url: file_url,
+        ...(jsonUrl ? { source_url: jsonUrl } : {}),
 
         processing_status: "pending",
         brand_category: formData.manufacturer
@@ -248,7 +258,7 @@ export default function ManualForm({ onClose, onSuccess }) {
           <div>
             <Label htmlFor="pdf" className="font-semibold">PDF Manual *</Label>
             <div className="mt-1.5">
-              <label className="flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-6 cursor-pointer hover:border-[#CC0000] hover:bg-red-50 transition-colors group disabled:opacity-50">
+              <label className="flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-6 cursor-pointer hover:border-[#CC0000] hover:bg-red-50 transition-colors group">
                 <input
                   type="file"
                   id="pdf"
@@ -263,6 +273,30 @@ export default function ManualForm({ onClose, onSuccess }) {
                     {pdfFile ? pdfFile.name : "Click to select PDF"}
                   </p>
                   <p className="text-xs text-gray-400 mt-1">Max 50MB</p>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          {/* JSON Upload */}
+          <div>
+            <Label htmlFor="json" className="font-semibold">Manual Data JSON <span className="text-gray-400 font-normal">(optional)</span></Label>
+            <div className="mt-1.5">
+              <label className="flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-4 cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors group">
+                <input
+                  type="file"
+                  id="json"
+                  accept=".json"
+                  onChange={(e) => setJsonFile(e.target.files?.[0])}
+                  className="hidden"
+                  disabled={uploading}
+                />
+                <div className="text-center">
+                  <Upload className="w-6 h-6 text-gray-400 mx-auto mb-1 group-hover:text-blue-500 transition-colors" />
+                  <p className="text-sm font-medium text-gray-600">
+                    {jsonFile ? jsonFile.name : "Click to select JSON"}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-0.5">manual_data.json</p>
                 </div>
               </label>
             </div>
