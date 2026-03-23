@@ -35,27 +35,47 @@ Deno.serve(async (req) => {
     const jsonData = await jsonResponse.json();
 
     console.log('[STAGING] Parsed manual data:', {
-      title: jsonData.title,
-      manufacturer: jsonData.manufacturer,
+      title: jsonData.title || jsonData.metadata?.title,
+      manufacturer: jsonData.manufacturer || jsonData.metadata?.manufacturer,
       chapters: jsonData.chapters?.length || 0
     });
 
-    // Build manual text and TOC
+    // Build manual text from chapters and subsections
     const manualText = jsonData.chapters
-      ?.map(ch => `${ch.title}\n${ch.full_text || ''}`)
+      ?.map(ch => {
+        const title = ch.title ? `=== ${ch.title} ===` : '';
+        const content = ch.full_text || ch.content || '';
+        const subsections = ch.subsections
+          ?.map(s => {
+            const subTitle = s.title ? `${s.title}` : '';
+            const subContent = s.content || s.full_text || '';
+            return [subTitle, subContent].filter(x => x).join('\n');
+          })
+          .filter(s => s.trim())
+          .join('\n\n') || '';
+        return [title, content, subsections].filter(x => x).join('\n\n');
+      })
+      .filter(s => s.trim())
       .join('\n\n') || '';
 
+    // Build table of contents including subsections
     const tableOfContents = jsonData.chapters
-      ?.map(ch => ch.title)
+      ?.map(ch => {
+        const main = ch.title || '';
+        const subs = ch.subsections?.map(s => s.title).filter(s => s).join(' | ') || '';
+        return [main, subs].filter(x => x).join(' | ');
+      })
+      .filter(x => x)
       .join(' | ') || '';
 
-    const errorCodes = jsonData.chapters
+    // Extract error codes from metadata or chapters
+    const errorCodes = jsonData.error_codes || jsonData.chapters
       ?.flatMap(ch => ch.error_codes || [])
       .join(' | ') || '';
 
-    const models = jsonData.models_covered?.join(', ') || 'Unknown';
+    const models = jsonData.models || jsonData.models_covered?.join(', ') || jsonData.metadata?.models?.join(', ') || 'Unknown';
 
-    // Process images - rename with manual reference
+    // Process images
     const pageImages = [];
     if (staging.image_urls && staging.image_urls.length > 0) {
       console.log('[STAGING] Processing', staging.image_urls.length, 'images');
@@ -76,17 +96,18 @@ Deno.serve(async (req) => {
       });
     }
 
+    console.log('[STAGING] Built manual_text length:', manualText.length);
     console.log('[STAGING] Processed', pageImages.length, 'images');
 
     // Create manual record
     const manualRecord = {
-      title: jsonData.title,
-      manufacturer: jsonData.manufacturer,
-      model: models,
-      manual_type: jsonData.manual_type || 'Technical Manual',
-      summary: jsonData.summary,
-      source_url: jsonData.source_url,
-      pdf_file: staging.pdf_url || jsonData.pdf_url || null,
+      title: jsonData.title || jsonData.metadata?.title,
+      manufacturer: jsonData.manufacturer || jsonData.metadata?.manufacturer,
+      model: typeof models === 'string' ? models : models.join(', '),
+      manual_type: jsonData.manual_type || jsonData.metadata?.manual_type || 'Technical Manual',
+      summary: jsonData.summary || jsonData.metadata?.summary,
+      source_url: jsonData.source_url || jsonData.metadata?.source_url,
+      pdf_file: staging.pdf_url || jsonData.pdf_url,
       manual_text: manualText,
       table_of_contents: tableOfContents,
       error_codes: errorCodes,
