@@ -207,8 +207,12 @@ export default function ManualWikiViewer({ manual, onBack }) {
 
     lines.forEach(line => {
       const trimmed = line.trim();
-      if (trimmed.match(/^===\s+(.+?)\s+===$/) || (trimmed.match(/^[A-Z][A-Z\s\d&\/-]{3,}:?$/) && trimmed.length > 4)) {
-        if (currentSection && currentContent.length > 0) {
+      // Match section headers like "SECTION TITLE" or "=== SECTION ==="
+      const isSectionStart = trimmed.match(/^===\s+(.+?)\s+===$/) || 
+                             (trimmed.match(/^[A-Z][A-Z\s\d&\/-]{3,}:?$/) && trimmed.length > 4 && !trimmed.includes('|'));
+      
+      if (isSectionStart) {
+        if (currentSection && currentContent.filter(l => l.trim()).length > 0) {
           result.push({ title: currentSection, content: currentContent });
         }
         const match = trimmed.match(/^===\s+(.+?)\s+===$/) || trimmed.match(/^([A-Z][A-Z\s\d&\/-]{3,}):?$/);
@@ -221,11 +225,11 @@ export default function ManualWikiViewer({ manual, onBack }) {
       }
     });
 
-    if (currentSection && currentContent.length > 0) {
+    if (currentSection && currentContent.filter(l => l.trim()).length > 0) {
       result.push({ title: currentSection, content: currentContent });
     }
 
-    return result.filter(s => s.title && !s.title.includes('undefined'));
+    return result.filter(s => s.title && !s.title.includes('undefined') && s.content.some(c => c.trim()));
   }, [displayManual.manual_text]);
 
   return (
