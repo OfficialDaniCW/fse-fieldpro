@@ -4,6 +4,7 @@ import { MessageSquare, Search, BookOpen, User, Star, Shield, BarChart2, WifiOff
 import { getQueue } from "./lib/pendingQueue";
 import { useAuth } from "./lib/AuthContext";
 import { ConnectionBannerContext } from "./lib/ConnectionBannerContext";
+import GlobalSearchBar from "./components/GlobalSearchBar";
 
 export default function Layout({ children, currentPageName }) {
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
@@ -60,7 +61,19 @@ export default function Layout({ children, currentPageName }) {
   return (
     <ConnectionBannerContext.Provider value={bannerNode}>
       <div className="min-h-screen flex flex-col">
-        <main className="flex-1">
+        {/* Global sticky search bar */}
+        <div className="fixed top-0 left-0 right-0 z-40 bg-[#CC0000] px-4 py-2 flex items-center gap-3 shadow-md">
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <div className="w-7 h-7 rounded bg-white flex items-center justify-center">
+              <span className="text-[10px] font-bold text-[#CC0000]">FSE</span>
+            </div>
+            <span className="text-white text-sm font-semibold hidden sm:block">FieldPro</span>
+          </div>
+          <div className="flex-1">
+            <GlobalSearchBar />
+          </div>
+        </div>
+        <main className="flex-1 mt-11">
           {children}
         </main>
         <nav className="bg-white border-t border-gray-200 fixed bottom-0 left-0 right-0 z-50">
