@@ -19,7 +19,7 @@ export default function PartsPage() {
   const [viewMode, setViewMode] = useState("table"); // "cards" | "table"
   const navigate = useNavigate();
 
-  const { data: parts = [], isLoading, isOfflineData, error } = useOfflineCache('parts', {
+  const { data: rawParts, isLoading, isOfflineData, error } = useOfflineCache('parts', {
     queryKey: ["parts"],
     queryFn: async () => {
       const result = await base44.entities.Part.list();
@@ -27,6 +27,7 @@ export default function PartsPage() {
       return result || [];
     },
   });
+  const parts = rawParts ?? [];
   const cacheMetadata = useCacheMetadata();
 
   const { data: manuals = [] } = useQuery({
