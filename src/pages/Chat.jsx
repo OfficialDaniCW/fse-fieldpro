@@ -110,10 +110,12 @@ export default function ChatPage() {
       recognitionRef.current.onerror = (event) => {
         console.error("Speech recognition error:", event.error);
         setIsListening(false);
+        recognitionRef.current = null;
       };
 
       recognitionRef.current.onend = () => {
         setIsListening(false);
+        recognitionRef.current = null;
       };
     }
 
@@ -565,7 +567,7 @@ ENGINEER'S QUESTION: ${userText}`,
           </div>
         )}
         <div className="flex gap-2">
-          <label className="flex-shrink-0">
+          <label className="flex-shrink-0 cursor-pointer">
             <input
               type="file"
               accept="image/*"
@@ -573,9 +575,9 @@ ENGINEER'S QUESTION: ${userText}`,
               onChange={handleImageUpload}
               className="hidden"
             />
-            <button className="bg-white hover:bg-gray-100 text-gray-600 p-2.5 rounded-lg border border-gray-300">
+            <div className="bg-white hover:bg-gray-100 text-gray-600 p-2.5 rounded-lg border border-gray-300">
               <ImageIcon className="w-5 h-5" />
-            </button>
+            </div>
           </label>
 
           <button
