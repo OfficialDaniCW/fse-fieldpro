@@ -57,10 +57,14 @@ Deno.serve(async (req) => {
 
   // Apply in parallel batches of 50
   const BATCH = 50;
+  let done = 0;
   for (let i = 0; i < updates.length; i += BATCH) {
     const chunk = updates.slice(i, i + BATCH);
-    await Promise.all(chunk.map(u => base44.asServiceRole.entities.Part.update(u.id, { brand: u.brand })));
-    console.log(`Updated ${Math.min(i + BATCH, updates.length)} / ${updates.length}`);
+    const results = await Promise.allSettled(chunk.map(u => base44.asServiceRole.entities.Part.update(u.id, { brand: u.brand })));
+    const failed = results.filter(r => r.status === 'rejected');
+    done += chunk.length - failed.length;
+    if (failed.length > 0) console.error(`Batch ${i}-${i+BATCH}: ${failed.length} failures`, failed[0].reason?.message);
+    console.log(`Progress: ${done} done`);
   }
 
   return Response.json({ total: allParts.length, updated: updates.length, done: true });
