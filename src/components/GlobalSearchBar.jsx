@@ -90,14 +90,14 @@ export default function GlobalSearchBar() {
 
   return (
     <>
-      {/* Trigger button */}
+      {/* Inline trigger */}
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-2 bg-white/20 hover:bg-white/30 text-white rounded-xl px-3 py-2 text-sm transition-colors"
+        className="w-full flex items-center gap-2 bg-white/20 hover:bg-white/30 text-white rounded-xl px-3 h-10 text-sm transition-colors"
         title="Search parts (press /)"
       >
-        <Search className="w-4 h-4" />
-        <span className="hidden sm:inline text-xs opacity-80">Search parts...</span>
+        <Search className="w-4 h-4 flex-shrink-0" />
+        <span className="text-sm text-white/70">Search parts by number, description, brand or model...</span>
       </button>
 
       {/* Overlay */}
