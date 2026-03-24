@@ -10,7 +10,9 @@ import { useOfflineCache, useCacheMetadata } from "@/hooks/useOfflineCache";
 const PAGE_SIZE = 15;
 
 export default function PartsPage() {
-  const [searchTerm, setSearchTerm] = useState("");
+  const urlParams = new URLSearchParams(window.location.search);
+  const initialSearch = urlParams.get("search") || "";
+  const [searchTerm, setSearchTerm] = useState(initialSearch);
   const [filters, setFilters] = useState({ brand: "", pump_model: "", system_area: "", component_type: "" });
   const [page, setPage] = useState(1);
   const [showFilter, setShowFilter] = useState(false);
