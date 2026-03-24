@@ -10,8 +10,7 @@ import PageHeader from "../components/PageHeader";
 import ManualForm from "../components/ManualForm";
 import PartForm from "../components/PartForm";
 import PartEditModal from "../components/parts/PartEditModal";
-import ActivityLogViewer from "../components/admin/ActivityLogViewer";
-import TSGPartsVerifier from "../components/admin/TSGPartsVerifier";
+
 import { useCurrentUser } from "../lib/useCurrentUser";
 import { toast } from "sonner";
 import { Toaster } from "sonner";
