@@ -265,8 +265,8 @@ export default function ChatPage() {
     return response;
   };
 
-  const injectAssistantMessage = (conversation, content) => {
-    base44.agents.addMessage(conversation, { role: "assistant", content });
+  const injectAssistantMessage = async (conversation, content) => {
+    await base44.agents.addMessage(conversation, { role: "assistant", content });
   };
 
   // --- Semantic manual search ---

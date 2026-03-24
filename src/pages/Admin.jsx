@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, Plus, Trash2, FileText, Package, Shield, Pencil, Upload, RefreshCw, History, CheckCircle2 } from "lucide-react";
+import { Search, Plus, Trash2, FileText, Package, Shield, Pencil, Upload, RefreshCw } from "lucide-react";
 import { Link } from "react-router-dom";
 import PageHeader from "../components/PageHeader";
 import ManualForm from "../components/ManualForm";
@@ -98,22 +98,8 @@ export default function AdminPage() {
       <PageHeader title="Admin Panel" subtitle="Manage parts & manuals" hideSearch />
 
       <div className="max-w-4xl mx-auto p-4 pb-24">
-        {/* Info banner */}
-        <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg space-y-2">
-          <p className="text-xs text-blue-900">
-            💡 <strong>Pro Tip:</strong> The <strong>manual_guide</strong> agent can help users find manuals by brand and component type.
-          </p>
-          <a
-            href={base44.agents.getWhatsAppConnectURL('manual_guide')}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block text-xs font-semibold text-blue-700 hover:underline"
-          >
-            → WhatsApp Link for Manual Guide
-          </a>
-        </div>
 
-        {/* Quick links */}
+        {/* Quick links */
         <div className="flex gap-2 mb-4">
           <Link to="/SyncManager" className="flex-1">
             <button className="w-full flex items-center justify-center gap-2 py-2 px-3 bg-white border border-gray-200 rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-50">
@@ -128,7 +114,7 @@ export default function AdminPage() {
         </div>
 
         <Tabs defaultValue="manuals">
-          <TabsList className="w-full mb-4 grid grid-cols-2 sm:grid-cols-4 gap-1 h-auto">
+          <TabsList className="w-full mb-4 grid grid-cols-2 gap-1 h-auto">
             <TabsTrigger value="manuals" className="flex flex-col items-center gap-1 py-2">
               <FileText className="w-4 h-4" />
               <span className="text-xs font-medium">Manuals</span>
@@ -138,16 +124,6 @@ export default function AdminPage() {
               <Package className="w-4 h-4" />
               <span className="text-xs font-medium">Parts</span>
               <span className="text-xs text-muted-foreground">({parts.length})</span>
-            </TabsTrigger>
-            <TabsTrigger value="activity" className="flex flex-col items-center gap-1 py-2">
-              <History className="w-4 h-4" />
-              <span className="text-xs font-medium">Activity</span>
-              <span className="text-xs text-muted-foreground">Log</span>
-            </TabsTrigger>
-            <TabsTrigger value="tsg-verify" className="flex flex-col items-center gap-1 py-2">
-              <CheckCircle2 className="w-4 h-4" />
-              <span className="text-xs font-medium">TSG</span>
-              <span className="text-xs text-muted-foreground">Verify</span>
             </TabsTrigger>
           </TabsList>
 
@@ -238,15 +214,7 @@ export default function AdminPage() {
             </div>
           </TabsContent>
 
-          {/* Activity Log Tab */}
-          <TabsContent value="activity">
-            <ActivityLogViewer />
-          </TabsContent>
 
-          {/* TSG Verification Tab */}
-          <TabsContent value="tsg-verify">
-            <TSGPartsVerifier />
-          </TabsContent>
         </Tabs>
       </div>
 

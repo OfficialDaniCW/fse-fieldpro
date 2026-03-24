@@ -39,7 +39,7 @@ export default function GlobalSearchBar() {
         }
       }
       setLoading(true);
-      const data = await base44.entities.Part.list("-created_date", 2000);
+      const data = await base44.entities.Part.list();
       setParts(data || []);
       sessionStorage.setItem(CACHE_KEY, JSON.stringify({ data: data || [], ts: Date.now() }));
       setLoading(false);
