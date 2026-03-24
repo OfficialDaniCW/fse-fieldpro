@@ -78,14 +78,19 @@ Deno.serve(async (req) => {
       newBrand = currentBrand.toUpperCase().trim();
     }
 
-    // Only update if something changed
     if (newBrand !== currentBrand) {
       updates.push({ id: part.id, part_number: part.part_number, old_brand: currentBrand, new_brand: newBrand });
-      if (!dry_run) {
-        await base44.asServiceRole.entities.Part.update(part.id, { brand: newBrand });
-      }
     } else {
       skipped.push(part.id);
+    }
+  }
+
+  // Apply updates in parallel batches of 20
+  if (!dry_run && updates.length > 0) {
+    const BATCH = 20;
+    for (let i = 0; i < updates.length; i += BATCH) {
+      const chunk = updates.slice(i, i + BATCH);
+      await Promise.all(chunk.map(u => base44.asServiceRole.entities.Part.update(u.id, { brand: u.new_brand })));
     }
   }
 
