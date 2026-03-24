@@ -4,7 +4,6 @@ import { MessageSquare, Search, BookOpen, User, Star, Shield, BarChart2, WifiOff
 import { getQueue } from "./lib/pendingQueue";
 import { useAuth } from "./lib/AuthContext";
 import { ConnectionBannerContext } from "./lib/ConnectionBannerContext";
-import GlobalSearchBar from "./components/GlobalSearchBar";
 
 export default function Layout({ children, currentPageName }) {
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
