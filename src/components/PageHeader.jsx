@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { ConnectionBannerContext } from "../lib/ConnectionBannerContext";
 import GlobalSearchBar from "./GlobalSearchBar";
 
-export default function PageHeader({ title, subtitle, children }) {
+export default function PageHeader({ title, subtitle, children, hideSearch = false }) {
   const banner = useContext(ConnectionBannerContext) || null;
 
   return (
@@ -20,7 +20,7 @@ export default function PageHeader({ title, subtitle, children }) {
           </div>
           {children && <div className="flex items-center gap-2">{children}</div>}
         </div>
-        <GlobalSearchBar />
+        {!hideSearch && <GlobalSearchBar />}
       </div>
       {banner}
     </div>

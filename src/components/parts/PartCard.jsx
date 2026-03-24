@@ -55,9 +55,9 @@ export default function PartCard({ part, manuals = [], onOpenManual, allParts = 
   return (
     <div className="bg-white border border-gray-200 overflow-hidden rounded-xl shadow-sm">
       {/* Card header */}
-      <button
+      <div
         onClick={() => setExpanded(e => !e)}
-        className="w-full text-left px-4 pt-4 pb-3 flex items-start justify-between gap-3"
+        className="w-full text-left px-4 pt-4 pb-3 flex items-start justify-between gap-3 cursor-pointer"
       >
         <div className="flex-1 min-w-0 space-y-2">
           {/* Part number */}
@@ -100,7 +100,7 @@ export default function PartCard({ part, manuals = [], onOpenManual, allParts = 
             {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </div>
         </div>
-      </button>
+      </div>
 
       {/* Expanded content */}
       {expanded && (
