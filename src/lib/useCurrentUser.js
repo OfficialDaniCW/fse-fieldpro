@@ -1,26 +1,26 @@
-import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { useUser } from '@clerk/clerk-react';
 
 export function useCurrentUser() {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { user, isLoaded } = useUser();
 
-  useEffect(() => {
-    if (!base44.auth) {
-      setLoading(false);
-      return;
-    }
-    base44.auth.me().then((u) => {
-      setUser(u);
-      setLoading(false);
-    }).catch(() => setLoading(false));
-  }, []);
-
-  const isAdmin = user?.role === "admin";
-  const isManager = user?.role === "manager";
-  // Treat unset role as FSE (most restrictive default)
+  const role = user?.publicMetadata?.role || 'fse';
+  const isAdmin = role === 'admin';
+  const isManager = role === 'manager';
   const isFSE = !isAdmin && !isManager;
   const canEdit = isAdmin || isManager;
 
-  return { user, loading, isAdmin, isManager, isFSE, canEdit };
+  return {
+    user: user ? {
+      id: user.id,
+      email: user.primaryEmailAddress?.emailAddress,
+      full_name: user.fullName,
+      role,
+      avatar_url: user.imageUrl,
+    } : null,
+    loading: !isLoaded,
+    isAdmin,
+    isManager,
+    isFSE,
+    canEdit,
+  };
 }

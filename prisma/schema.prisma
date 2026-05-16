@@ -1,0 +1,111 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Part {
+  id                    String   @id @default(uuid())
+  part_number           String
+  description           String?
+  manufacturer_part_ref String?
+  brand                 String?
+  pump_model            String?
+  system_area           String?
+  component_type        String?
+  image_url             String?
+  manual_ids            String[]
+  notes                 String?
+  is_verified           Boolean  @default(false)
+  created_date          DateTime @default(now())
+  updated_date          DateTime @updatedAt
+
+  @@map("parts")
+}
+
+model Manual {
+  id                String   @id @default(uuid())
+  title             String
+  manufacturer      String?
+  model             String?
+  manual_type       String?
+  version           String?
+  component_type    String?
+  pdf_url           String?
+  pdf_file          String?
+  source_url        String?
+  image_urls        Json?
+  processing_status String?
+  brand_category    String?
+  part_ids          String[]
+  wiki_content      String?
+  created_date      DateTime @default(now())
+  updated_date      DateTime @updatedAt
+
+  @@map("manuals")
+}
+
+model ActivityLog {
+  id           String   @id @default(uuid())
+  entity_type  String?
+  entity_id    String?
+  action       String?
+  details      Json?
+  user_id      String?
+  created_date DateTime @default(now())
+
+  @@map("activity_logs")
+}
+
+model SearchLog {
+  id           String   @id @default(uuid())
+  query        String
+  result_type  String?
+  result_count Int?
+  user_id      String?
+  created_date DateTime @default(now())
+
+  @@map("search_logs")
+}
+
+model StagingUpload {
+  id             String   @id @default(uuid())
+  manual_title   String?
+  manufacturer   String?
+  json_file_url  String?
+  image_urls     Json?
+  md_file_url    String?
+  pdf_file_url   String?
+  status         String?
+  result         Json?
+  created_date   DateTime @default(now())
+  updated_date   DateTime @updatedAt
+
+  @@map("staging_uploads")
+}
+
+model PartVerification {
+  id           String   @id @default(uuid())
+  part_id      String?
+  status       String?
+  notes        String?
+  verified_by  String?
+  created_date DateTime @default(now())
+
+  @@map("part_verifications")
+}
+
+model Conversation {
+  id           String   @id @default(uuid())
+  agent_name   String?
+  metadata     Json?
+  messages     Json     @default("[]")
+  user_id      String?
+  created_date DateTime @default(now())
+  updated_date DateTime @updatedAt
+
+  @@map("conversations")
+}

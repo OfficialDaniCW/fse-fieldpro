@@ -1,15 +1,23 @@
 import ReactDOM from 'react-dom/client'
+import { ClerkProvider } from '@clerk/clerk-react'
 import App from '@/App.jsx'
 import '@/index.css'
 import { registerServiceWorker } from '@/lib/serviceWorkerManager'
 import { initIndexedDB } from '@/lib/indexedDBCache'
 
-// Initialize service worker and offline storage
+const CLERK_PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+
+if (!CLERK_PUBLISHABLE_KEY) {
+  throw new Error('Missing VITE_CLERK_PUBLISHABLE_KEY environment variable');
+}
+
 Promise.all([
   registerServiceWorker(),
   initIndexedDB()
 ]).catch(err => console.error('Failed to initialize offline features:', err))
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <App />
+  <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY} afterSignOutUrl="/">
+    <App />
+  </ClerkProvider>
 )
