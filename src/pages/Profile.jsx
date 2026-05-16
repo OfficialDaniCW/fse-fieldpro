@@ -130,16 +130,7 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* WhatsApp Parts Finder */}
-        <a
-          href={base44.agents.getWhatsAppConnectURL('part_finder')}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center justify-center gap-2 w-full bg-[#25D366] hover:bg-[#1ebe5d] text-white font-semibold text-sm py-3 px-4 rounded-lg shadow-sm transition-colors"
-        >
-          <MessageCircle className="w-5 h-5" />
-          Chat on WhatsApp — Parts Finder
-        </a>
+        {/* WhatsApp Parts Finder — disabled after Base44 migration */}
 
         {/* Logo */}
         <div className="flex justify-center pt-6">
