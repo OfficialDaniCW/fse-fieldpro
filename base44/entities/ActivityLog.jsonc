@@ -1,0 +1,42 @@
+{
+  "name": "ActivityLog",
+  "type": "object",
+  "properties": {
+    "entity_type": {
+      "type": "string",
+      "description": "Type of entity affected (e.g., Part, Manual, User)"
+    },
+    "entity_id": {
+      "type": "string",
+      "description": "ID of the entity that was changed"
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "create",
+        "update",
+        "delete"
+      ],
+      "description": "Action performed on the entity"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Email of the user who performed the action"
+    },
+    "changes": {
+      "type": "object",
+      "description": "Summary of what changed (for updates)"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the action occurred"
+    }
+  },
+  "required": [
+    "entity_type",
+    "entity_id",
+    "action",
+    "user_email"
+  ]
+}

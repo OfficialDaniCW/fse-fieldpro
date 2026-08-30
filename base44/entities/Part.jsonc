@@ -1,0 +1,115 @@
+{
+  "name": "Part",
+  "type": "object",
+  "properties": {
+    "part_number": {
+      "type": "string",
+      "description": "Unique TSG part number identifier (immutable)"
+    },
+    "manufacturer_part_ref": {
+      "type": "string",
+      "description": "Manufacturer's own part number or reference code for cross-referencing"
+    },
+    "description": {
+      "type": "string",
+      "description": "Part description"
+    },
+    "brand": {
+      "type": "string",
+      "description": "Part brand / manufacturer"
+    },
+    "pump_model": {
+      "type": "string",
+      "description": "Compatible pump model"
+    },
+    "system_area": {
+      "type": "string",
+      "description": "System area (e.g. Hydraulic, Electrical)"
+    },
+    "component_type": {
+      "type": "string",
+      "description": "Component type (e.g. Seal, Valve, Sensor)"
+    },
+    "what_it_does": {
+      "type": "string",
+      "description": "Plain text explanation of what the part does"
+    },
+    "installation_step_1": {
+      "type": "string",
+      "description": "First installation step"
+    },
+    "installation_step_2": {
+      "type": "string",
+      "description": "Second installation step"
+    },
+    "installation_step_3": {
+      "type": "string",
+      "description": "Third installation step"
+    },
+    "safety_warning": {
+      "type": "string",
+      "description": "Safety warning for this part"
+    },
+    "variant_spec": {
+      "type": "string",
+      "description": "Variant or specification details"
+    },
+    "source_manual_id": {
+      "type": "string",
+      "description": "ID of the manual this part was extracted from"
+    },
+    "superseded_by": {
+      "type": "string",
+      "description": "TSG part number of the replacement/newer version of this part"
+    },
+    "supersedes": {
+      "type": "string",
+      "description": "TSG part number this part replaced"
+    },
+    "also_known_as": {
+      "type": "string",
+      "description": "Any other names or references this part is known by"
+    },
+    "compatible_parts": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array of part numbers that are compatible/interchangeable with this part"
+    },
+    "is_obsolete": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this part is no longer available or recommended"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "URL to the part's image for visual identification"
+    },
+    "manual_links": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "manual_id": {
+            "type": "string",
+            "description": "ID of the manual"
+          },
+          "manual_title": {
+            "type": "string",
+            "description": "Title of the manual"
+          },
+          "pdf_url": {
+            "type": "string",
+            "description": "URL to the PDF manual"
+          }
+        }
+      },
+      "description": "Array of manual references for this part"
+    }
+  },
+  "required": [
+    "part_number",
+    "description"
+  ]
+}

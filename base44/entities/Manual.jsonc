@@ -1,0 +1,135 @@
+{
+  "name": "Manual",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Manual title"
+    },
+    "manufacturer": {
+      "type": "string",
+      "description": "Equipment manufacturer name (brand folder)"
+    },
+    "model": {
+      "type": "string",
+      "description": "Specific equipment model"
+    },
+    "manual_type": {
+      "type": "string",
+      "description": "Type of manual (e.g. Service Manual, Installation Manual, Parts Manual, Maintenance Manual)"
+    },
+    "summary": {
+      "type": "string",
+      "description": "One paragraph plain-English overview of manual contents"
+    },
+    "pdf_file": {
+      "type": "string",
+      "description": "URL to uploaded PDF manual file"
+    },
+    "pdf_url": {
+      "type": "string",
+      "description": "URL of the stored PDF"
+    },
+    "manual_text": {
+      "type": "string",
+      "description": "Full extracted and structured wiki content for AI search"
+    },
+    "table_of_contents": {
+      "type": "string",
+      "description": "Extracted table of contents as pipe-separated sections"
+    },
+    "error_codes": {
+      "type": "string",
+      "description": "All error codes with meanings, pipe-separated"
+    },
+    "component_type": {
+      "type": "string",
+      "enum": [
+        "Dispenser",
+        "Tank Gauge",
+        "Payment Terminal",
+        "Nozzle",
+        "CCTV",
+        "POS System",
+        "Pump",
+        "Coupler",
+        "Other"
+      ],
+      "description": "Type of component covered"
+    },
+    "brand_category": {
+      "type": "string",
+      "enum": [
+        "Tokheim",
+        "Gilbarco",
+        "Wayne",
+        "GVR",
+        "Elaflex",
+        "Other"
+      ],
+      "description": "Brand category"
+    },
+    "extract_diagrams": {
+      "type": "boolean",
+      "default": false,
+      "description": "Admin toggle to extract exploded view diagrams"
+    },
+    "exploded_view_image_url": {
+      "type": "string",
+      "description": "URL of main diagram image"
+    },
+    "processing_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "processing",
+        "complete",
+        "failed"
+      ],
+      "default": "pending",
+      "description": "Status of PDF processing pipeline"
+    },
+    "processing_error": {
+      "type": "string",
+      "description": "Error message if processing failed"
+    },
+    "parts_linked": {
+      "type": "number",
+      "default": 0,
+      "description": "Count of parts linked to this manual"
+    },
+    "version": {
+      "type": "string",
+      "description": "Document version or revision"
+    },
+    "folder_id": {
+      "type": "string",
+      "description": "ID of the ManualFolder this manual belongs to"
+    },
+    "page_images": {
+      "type": "string",
+      "description": "JSON array of image metadata (filename, page_number, width_px, height_px)"
+    },
+    "source_url": {
+      "type": "string",
+      "description": "Public URL where the manual was sourced from"
+    },
+    "drive_file_id": {
+      "type": "string",
+      "description": "Google Drive file ID of the source manual_data.json, used to prevent re-importing"
+    },
+    "drive_folder_path": {
+      "type": "string",
+      "description": "Drive folder path e.g. Gilbarco/SK700_Series"
+    },
+    "import_source": {
+      "type": "string",
+      "description": "Origin of this manual: drive_crawler, pre_baked, or manual_upload"
+    }
+  },
+  "required": [
+    "title",
+    "manufacturer",
+    "model"
+  ]
+}

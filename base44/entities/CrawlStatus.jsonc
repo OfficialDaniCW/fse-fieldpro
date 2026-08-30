@@ -1,0 +1,49 @@
+{
+  "name": "CrawlStatus",
+  "type": "object",
+  "properties": {
+    "last_sync_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp of the last completed crawl"
+    },
+    "total_files_imported": {
+      "type": "number",
+      "default": 0,
+      "description": "Total number of manual files imported so far"
+    },
+    "crawl_enabled": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the crawler is enabled and should run"
+    },
+    "drive_folder_id": {
+      "type": "string",
+      "description": "Root Google Drive folder ID to watch"
+    },
+    "drive_folder_name": {
+      "type": "string",
+      "description": "Human readable root folder name e.g. FSE_FieldPro_Manuals"
+    },
+    "last_error": {
+      "type": "string",
+      "description": "Error message from last crawl if any"
+    },
+    "status": {
+      "type": "string",
+      "default": "idle",
+      "description": "Current crawl status: idle, running, complete, error"
+    },
+    "folders_created": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether Drive folder structure has been created"
+    },
+    "webhook_registered": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the Drive change webhook is registered"
+    }
+  },
+  "required": []
+}

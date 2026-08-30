@@ -1,0 +1,43 @@
+{
+  "name": "ManualFolder",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Folder name"
+    },
+    "parent_folder_id": {
+      "type": "string",
+      "description": "ID of parent folder (null for root)"
+    },
+    "brand": {
+      "type": "string",
+      "description": "Brand this folder belongs to"
+    },
+    "folder_type": {
+      "type": "string",
+      "enum": [
+        "brand",
+        "model",
+        "type"
+      ],
+      "description": "Type of folder"
+    },
+    "manual_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Count of manuals in this folder"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Icon name for UI display"
+    },
+    "drive_folder_id": {
+      "type": "string",
+      "description": "Google Drive folder ID for this folder, set after createDriveFolders runs"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "User",
+  "type": "object",
+  "properties": {
+    "role": {
+      "type": "string",
+      "enum": [
+        "admin",
+        "manager",
+        "fse"
+      ],
+      "default": "fse",
+      "description": "User role: admin = full access, manager = read + stats, fse = read only"
+    }
+  },
+  "required": []
+}

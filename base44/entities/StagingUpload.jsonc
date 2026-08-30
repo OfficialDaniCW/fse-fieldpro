@@ -1,0 +1,71 @@
+{
+  "name": "StagingUpload",
+  "type": "object",
+  "properties": {
+    "manual_title": {
+      "type": "string",
+      "description": "Title of the manual being uploaded"
+    },
+    "manufacturer": {
+      "type": "string",
+      "description": "Equipment manufacturer"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "processing",
+        "complete",
+        "failed"
+      ],
+      "default": "pending",
+      "description": "Processing status"
+    },
+    "json_file_url": {
+      "type": "string",
+      "description": "URL to uploaded manual_data.json"
+    },
+    "image_urls": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "File URL"
+          },
+          "original_name": {
+            "type": "string",
+            "description": "Original filename"
+          },
+          "uploaded_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "description": "Array of uploaded image URLs"
+    },
+    "md_file_url": {
+      "type": "string",
+      "description": "Optional URL to markdown documentation file"
+    },
+    "pdf_url": {
+      "type": "string",
+      "description": "URL of the original PDF manual file"
+    },
+    "manual_id": {
+      "type": "string",
+      "description": "ID of created Manual record (populated after processing)"
+    },
+    "error_message": {
+      "type": "string",
+      "description": "Error details if processing failed"
+    }
+  },
+  "required": [
+    "manual_title",
+    "manufacturer",
+    "json_file_url"
+  ]
+}

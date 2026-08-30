@@ -1,0 +1,32 @@
+{
+  "name": "SearchLog",
+  "type": "object",
+  "properties": {
+    "query": {
+      "type": "string",
+      "description": "The search query the FSE entered"
+    },
+    "result_type": {
+      "type": "string",
+      "enum": [
+        "part_found",
+        "manual_found",
+        "not_found",
+        "image"
+      ],
+      "description": "What kind of result was returned"
+    },
+    "result_count": {
+      "type": "number",
+      "description": "Number of results returned"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Email of the FSE who searched"
+    }
+  },
+  "required": [
+    "query",
+    "result_type"
+  ]
+}

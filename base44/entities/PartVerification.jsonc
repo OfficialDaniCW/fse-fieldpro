@@ -1,0 +1,65 @@
+{
+  "name": "PartVerification",
+  "type": "object",
+  "properties": {
+    "part_id": {
+      "type": "string",
+      "description": "ID of the part being verified"
+    },
+    "part_number": {
+      "type": "string",
+      "description": "Part number from TSG original list"
+    },
+    "tsg_original_description": {
+      "type": "string",
+      "description": "Original TSG description (reference copy)"
+    },
+    "current_description": {
+      "type": "string",
+      "description": "Current description in system"
+    },
+    "description_matches_tsg": {
+      "type": "boolean",
+      "description": "Whether current description matches TSG original"
+    },
+    "manual_id": {
+      "type": "string",
+      "description": "Manual that extracted/updated this part"
+    },
+    "fields_updated": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of fields that were updated from manual data"
+    },
+    "verification_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "verified",
+        "discrepancy",
+        "new_part"
+      ],
+      "description": "Verification result"
+    },
+    "discrepancies": {
+      "type": "object",
+      "description": "Object mapping field names to {original, current} for any mismatches"
+    },
+    "verified_by": {
+      "type": "string",
+      "description": "Email of admin who verified this part"
+    },
+    "verified_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When verification was completed"
+    }
+  },
+  "required": [
+    "part_id",
+    "part_number",
+    "verification_status"
+  ]
+}
